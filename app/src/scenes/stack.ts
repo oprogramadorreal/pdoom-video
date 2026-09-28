@@ -10,7 +10,7 @@ import { FSPass, Layer2D, W, H } from '../engine/gl';
 import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, layout } from '../engine/type';
-import { Lyrics, type Word } from '../engine/lyrics';
+import { Lyrics, norm, type Word } from '../engine/lyrics';
 import { clamp, ease, hash, lerp, prog, pulse, smoothstep, springStep, TAU, frameIdx } from '../engine/util';
 import { sparkHead, sparkParticles } from './_motifs';
 import { TextPlane, beatsIn, lin, strokeLines, type RGB } from './stack-kit';
@@ -83,10 +83,12 @@ export default class Stack extends Scene {
     const { lyrics, audio } = this.ctx;
     const q = lyrics.get('transformers all the way');
     const till = lyrics.get('Till you learned');
-    this.disobey = PT ? { ...till.words[3]!, w: till.words.slice(3).map(w => w.w).join(' '), end: till.end } : till.words[till.words.length - 1]!;
+    // pt-BR: "disobey" is the tail from “não” on ("NÃO PRA MIM")
+    const iNo = PT ? Math.max(1, till.words.findIndex((w) => norm(w.w) === 'nao')) : till.words.length - 1;
+    this.disobey = PT ? { ...till.words[iNo]!, w: till.words.slice(iNo).map(w => w.w).join(' '), end: till.end } : till.words[iNo]!;
     const t0 = this.ctx.start, t1 = this.ctx.end;
     this.pd = new PDoom(lyrics);
-    const words = [...q.words, ...(PT ? [...till.words.slice(0, 3), this.disobey] : till.words)];
+    const words = [...q.words, ...till.words.slice(0, iNo), this.disobey];
     this.craneEnd = Math.max(t0 + 0.22, Math.min(t0 + 0.62, q.words[0]!.start + 0.1));
 
     // --- steps: one per beat until the fall stops dead near "disobey" ---
@@ -150,7 +152,7 @@ export default class Stack extends Scene {
       const fam = F.archivo(75, 900);
       const text = this.disobey.w.replace(PT ? /[^\p{L}\s]/gu : /[^A-Za-z]/g, '').toUpperCase();
       if (PT) {
-        const tail = till.words.slice(3);
+        const tail = till.words.slice(iNo);
         for (const [wi, word] of tail.entries()) {
           const chars = Array.from(word.w.replace(/[^\p{L}]/gu, ''));
           chars.forEach((_, ci) => this.disobeyCharTimes.push([

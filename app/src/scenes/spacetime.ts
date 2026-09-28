@@ -421,7 +421,7 @@ export default class SpacetimeScene extends Scene {
     if (but <= 0) {
       const loss = 0.0213 - 0.0009 * prog(t, this.T0, this.tBut);
       c.fillStyle = rgba('ash', 0.7 * a);
-      c.fillText(`${tr('loss', 'erro')} ${loss.toFixed(4)}  ·  ${tr('stable', 'estável')}`, W - 96, 148);
+      c.fillText(`loss ${loss.toFixed(4)}  ·  ${tr('stable', 'estável')}`, W - 96, 148);
     }
     c.restore();
   }

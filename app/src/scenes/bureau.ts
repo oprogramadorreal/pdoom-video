@@ -888,7 +888,7 @@ export default class Bureau extends Scene {
     c.textAlign = 'right';
     c.fillText(`${tr('EPOCH', 'ÉPOCA')} ${big ? (PT ? '1.000.000' : '1,000,000') : String(epoch).padStart(6, '0')}`, 860, -236);
     c.fillStyle = PRINT(0.6);
-    c.fillText(`${tr('LOSS', 'ERRO')} ${loss.toFixed(4)}`, 860, -210);
+    c.fillText(`LOSS ${loss.toFixed(4)}`, 860, -210);
     c.textAlign = 'left'; c.letterSpacing = '0px';
 
     this.drawAnnexLyric(c, tReal, loop);

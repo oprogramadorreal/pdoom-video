@@ -45,7 +45,7 @@ linear de volume nos últimos 1,25 segundos. O MP3 fornecido não é modificado.
 As fontes de traço compõem acentos e cedilha; os layouts acomodam a nova ordem e quantidade de palavras.
 Legendas técnicas, diagramas, respostas de chat, adesivos do laptop e textos do final também são localizados.
 
-Os termos `P(doom)`, `FOOM`, `AGI`, `MLP`, `FLOPs`, `GPU/GPUs`, `RLHF`, `CDR`, `transformers`,
+Os termos `P(doom)`, `FOOM`, `AGI`, `loss`, `MLP`, `FLOPs`, `GPU`, `RLHF`, `CDR`, `transformers`,
 `auto-upgrade`, `blues`, `shoggoth` e `shinigami` seguem a letra fornecida. Nomes próprios como
 ChatGPT, Sydney, Gato, NVIDIA, Chinchilla, Loom, Ilya e von Neumann são preservados.
 Identificadores de código, notação matemática e referências técnicas reconhecíveis, como TikZ e top-p,

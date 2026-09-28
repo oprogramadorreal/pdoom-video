@@ -47,7 +47,7 @@ def transcribe(args):
     from faster_whisper import WhisperModel
     model = WhisperModel(args.model, device="cpu", compute_type="int8", cpu_threads=8,
                          download_root=str(common.CACHE / "whisper"))
-    prompt = "AGI, ChatGPT, P(doom), FOOM, shoggoth, shinigami, Sydney, NVIDIA, FLOPs, MLP, von Neumann, CDR, Gato, Chinchilla, GPUs, RLHF, Loom, Ilya."
+    prompt = "AGI, ChatGPT, P(doom), FOOM, shoggoth, shinigami, Sydney, NVIDIA, FLOPs, MLP, von Neumann, CDR, Gato, Chinchilla, GPU, RLHF, Loom, Ilya."
     input_audio = WORK / "vocals.wav" if args.vocals else AUDIO
     segs, info = model.transcribe(str(input_audio), language="pt", beam_size=5,
                                  word_timestamps=True, vad_filter=False,
@@ -138,7 +138,7 @@ def normalized(text):
 
 PRON = {
     "AGI": "a ge i", "ChatGPT,": "chat ge pe te", "P(doom),": "pe dum",
-    "MLP:": "eme ele pe", "CDR": "ce de erre", "cdr": "ce de erre", "GPUs,": "ge pe us",
+    "MLP:": "eme ele pe", "CDR": "ce de erre", "cdr": "ce de erre", "GPU,": "ge pe u",
     "RLHF": "erre ele aga efe", "FLOPs": "flops", "FOOM.": "fum",
     "Sydney,": "sidnei", "Loom.": "lum", "Ilya": "ilia",
     "shoggoth": "chogote", "shinigami.": "chinigami",

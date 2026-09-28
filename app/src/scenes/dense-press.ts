@@ -114,11 +114,13 @@ export class Press {
     this.rup = [c2, beatOf(wTh.start), beatOf(wSa.start), beatOf(wFe.start)];
     const AW = ACTION.x1 - ACTION.x0, TW = TITLE.x1 - TITLE.x0;
     // [words, Archivo width, width it bursts out to, width it is held at before, burst beat, left-anchored]
+    // pt-BR "pula a cerca sem bom senso.": PULA A / CERCA / SEM BOM / SENSO.
+    const ws = L2.words, wLast = ws[ws.length - 1]!;
     const spec: [Word[], number, number, number, number, boolean][] = PT ? [
-      [[wBr, wTh], 62, AW, TW, c2, false],
-      [[wEa], 75, AW, TW, beatOf(wEa.start), false],
-      [[wSa], 62, W, AW, beatOf(wSa.start), false],
-      [[wFe], 87.5, W * 1.05, W - 2 * FENCE_X, beatOf(wFe.start), true],
+      [ws.slice(0, 2), 62, AW, TW, c2, false],
+      [[ws[2]!], 75, AW, TW, beatOf(ws[2]!.start), false],
+      [ws.slice(3, -1), 62, W, AW, beatOf(ws[3]!.start), false],
+      [[wLast], 87.5, W * 1.05, W - 2 * FENCE_X, beatOf(wLast.start), true],
     ] : [
       [[wBr], 62, AW, TW, this.rup[0]!, false],
       [[wTh], 75, W, AW, this.rup[1]!, false],

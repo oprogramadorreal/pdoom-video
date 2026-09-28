@@ -5,7 +5,7 @@ import { tr } from '../locale';
 import { W, H } from '../engine/gl';
 import { F, layout } from '../engine/type';
 
-export const SHROOMS = tr('SHROOMS', 'MESA.');
+export const SHROOMS = tr('SHROOMS', 'MÊS.');
 export const SHROOMS_FAM = () => F.archivo(125, 900);
 /** Screen size (px) of the word at the cut. */
 export const SHROOMS_SIZE = 250;

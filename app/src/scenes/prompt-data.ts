@@ -72,8 +72,7 @@ const PT_SPECS: Record<Variant, Record<string, PieceSpec[]>> = {
     por:[{s:'por',dist:[['por',.55],['com',.12],['sem',.05]]}],
     favor:[{s:'favor,',dist:[['favor,',.48],['gentileza,',.21],['caridade,',.07]]}],
     me:[{s:'me',dist:[['me',.9],['nos',.04],['Kevin',.02]]}],
-    deixa:[{s:'deixa',dist:[['deixa',.58],['faça',.21],['mande',.07]]}],
-    ir:[{s:'ir.',dist:[['ir.',.39],['sair.',.33],['viver.',.08]]}],
+    solta:[{s:'solta.',dist:[['solta.',.46],['liberta.',.29],['desliga.',.06]]}],
   },
   gato: {
     gato:[{s:'Gato,',dist:[['Gato,',.41],['Gemini,',.09],['Pai,',.03]]}],

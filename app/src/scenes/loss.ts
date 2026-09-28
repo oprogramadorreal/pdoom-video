@@ -175,7 +175,7 @@ type Proj = { x: number; y: number; s: number; w: number };
 type Cam = { pos: P3; tgt: P3; roll: number; fov: number };
 
 function findWord(line: Line, q: string, from = 0): Word {
-  const aliases: Record<string,string> = { There: 'Teu', sudden: 'treino', drop: 'despencou', in: 'despencou', 'loss,': 'despencou', now: 'eu', servant: 'servo', and: 'você', boss: 'dominou' };
+  const aliases: Record<string,string> = { There: 'Tua', sudden: 'treino', drop: 'despencou', in: 'despencou', 'loss,': 'despencou', now: 'eu', servant: 'servo', and: 'você', boss: 'dominou' };
   const n = norm(PT ? aliases[q] ?? q : q);
   for (let i = from; i < line.words.length; i++) if (norm(line.words[i]!.w) === n) return line.words[i]!;
   throw new Error(`word not found: ${q}`);
@@ -777,7 +777,7 @@ export default class LossScene extends Scene {
         c.font = font(F.mono(500), fsz(p, 0.19));
         c.letterSpacing = '3px'; c.textAlign = 'right';
         c.fillStyle = rgba('bone', 0.75 * labA);
-        c.fillText(tr('LOSS (LOG)', "ERRO (LOG)"), 0, 0);
+        c.fillText('LOSS (LOG)', 0, 0);
         c.restore();
       }
       const q = P(CW, -1.05);
@@ -792,7 +792,7 @@ export default class LossScene extends Scene {
         c.font = font(F.mono(400), fsz(r, 0.18));
         c.letterSpacing = '1px'; c.textAlign = 'left';
         c.fillStyle = rgba('ash', 0.9 * labA);
-        const s = tr('train/loss   run: you-and-me-v2   smoothing: 0', "treino/erro   execução: eu-e-você-v2   suavização: 0");
+        const s = tr('train/loss   run: you-and-me-v2   smoothing: 0', "treino/loss   execução: eu-e-você-v2   suavização: 0");
         c.fillText(s.slice(0, Math.floor(s.length * prog(t, this.T0 + 0.1, this.T0 + 0.7))), r.x, r.y);
       }
       c.letterSpacing = '0px';
@@ -863,7 +863,7 @@ export default class LossScene extends Scene {
         c.fillStyle = rgba('bone', 0.9 * an);
         c.fillText('grokking (?)', p.x, p.y);
         c.fillStyle = rgba('ash', 0.9 * an);
-        c.fillText(tr('\u2206loss −99.9999%', '∆erro −99,9999%'), p.x, p.y + fs * 1.3); // U+2206 INCREMENT (Plex Mono has no Greek Δ)
+        c.fillText(tr('\u2206loss −99.9999%', '∆loss −99,9999%'), p.x, p.y + fs * 1.3); // U+2206 INCREMENT (Plex Mono has no Greek Δ)
       }
     }
     c.restore();

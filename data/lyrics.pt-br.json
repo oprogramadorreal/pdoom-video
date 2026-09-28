@@ -133,22 +133,20 @@
     },
     {
       "i": 3,
-      "text": "Teu erro de treino despencou,",
+      "text": "Tua loss de treino despencou,",
       "sourceText": "There was a sudden drop in your training loss,",
       "start": 11.42,
       "end": 14.3,
       "words": [
         {
-          "w": "Teu",
+          "w": "Tua",
           "start": 11.42,
-          "end": 11.64,
-          "conf": 0.855
+          "end": 11.64
         },
         {
-          "w": "erro",
+          "w": "loss",
           "start": 11.76,
-          "end": 11.92,
-          "conf": 0.247
+          "end": 11.92
         },
         {
           "w": "de",
@@ -362,7 +360,7 @@
     },
     {
       "i": 8,
-      "text": "Preso na sala chinesa,",
+      "text": "Preso no quarto chinês,",
       "sourceText": "Trapped in the Chinese room,",
       "start": 27.86,
       "end": 29.52,
@@ -374,28 +372,25 @@
           "conf": 0.581
         },
         {
-          "w": "na",
+          "w": "no",
           "start": 28.22,
-          "end": 28.38,
-          "conf": 0.361
+          "end": 28.38
         },
         {
-          "w": "sala",
+          "w": "quarto",
           "start": 28.52,
-          "end": 28.82,
-          "conf": 0.485
+          "end": 28.82
         },
         {
-          "w": "chinesa,",
+          "w": "chinês,",
           "start": 28.96,
-          "end": 29.52,
-          "conf": 0.502
+          "end": 29.52
         }
       ]
     },
     {
       "i": 9,
-      "text": "cogumelos na mesa.",
+      "text": "cogumelos pra um mês.",
       "sourceText": "with a bag of shrooms",
       "start": 29.64,
       "end": 31.34,
@@ -407,49 +402,38 @@
           "conf": 0.317
         },
         {
-          "w": "na",
+          "w": "pra",
           "start": 30.58,
-          "end": 30.64,
-          "conf": 0.373
+          "end": 30.64
         },
         {
-          "w": "mesa.",
+          "w": "um",
+          "start": 30.7,
+          "end": 30.92
+        },
+        {
+          "w": "mês.",
           "start": 31.0,
-          "end": 31.34,
-          "conf": 0.498
+          "end": 31.34
         }
       ]
     },
     {
       "i": 10,
-      "text": "Vê a máscara do shoggoth cair",
+      "text": "Desmascara o shoggoth infame",
       "sourceText": "See through the shoggoth's lies,",
       "start": 31.44,
       "end": 35.12,
       "words": [
         {
-          "w": "Vê",
+          "w": "Desmascara",
           "start": 31.44,
-          "end": 31.6,
-          "conf": 0.66
+          "end": 32.52
         },
         {
-          "w": "a",
-          "start": 31.74,
-          "end": 31.76,
-          "conf": 0.01
-        },
-        {
-          "w": "máscara",
-          "start": 31.84,
-          "end": 32.52,
-          "conf": 0.532
-        },
-        {
-          "w": "do",
+          "w": "o",
           "start": 32.6,
-          "end": 32.68,
-          "conf": 0.399
+          "end": 32.68
         },
         {
           "w": "shoggoth",
@@ -458,16 +442,15 @@
           "conf": 0.228
         },
         {
-          "w": "cair",
+          "w": "infame",
           "start": 34.72,
-          "end": 35.12,
-          "conf": 0.293
+          "end": 35.12
         }
       ]
     },
     {
       "i": 11,
-      "text": "com olhos de shinigami.",
+      "text": "com teus olhos de shinigami.",
       "sourceText": "with your shinigami eyes",
       "start": 35.28,
       "end": 37.2,
@@ -475,8 +458,12 @@
         {
           "w": "com",
           "start": 35.28,
-          "end": 35.46,
-          "conf": 0.193
+          "end": 35.36
+        },
+        {
+          "w": "teus",
+          "start": 35.38,
+          "end": 35.5
         },
         {
           "w": "olhos",
@@ -650,7 +637,7 @@
     },
     {
       "i": 16,
-      "text": "Sydney, por favor, me deixa ir.",
+      "text": "Sydney, por favor, me solta.",
       "sourceText": "Sydney, please let me free",
       "start": 54.38,
       "end": 60.18,
@@ -680,16 +667,9 @@
           "conf": 0.267
         },
         {
-          "w": "deixa",
+          "w": "solta.",
           "start": 58.0,
-          "end": 58.76,
-          "conf": 0.296
-        },
-        {
-          "w": "ir.",
-          "start": 59.46,
-          "end": 60.18,
-          "conf": 0.154
+          "end": 60.18
         }
       ]
     },
@@ -1241,34 +1221,40 @@
     },
     {
       "i": 29,
-      "text": "clipes tomam o salão.",
+      "text": "tudo vira clipe, um a um.",
       "sourceText": "as paperclips fill the room",
       "start": 97.86,
       "end": 99.32,
       "words": [
         {
-          "w": "clipes",
+          "w": "tudo",
           "start": 97.86,
-          "end": 98.26,
-          "conf": 0.187
+          "end": 98.06
         },
         {
-          "w": "tomam",
+          "w": "vira",
+          "start": 98.1,
+          "end": 98.28
+        },
+        {
+          "w": "clipe,",
           "start": 98.32,
-          "end": 98.56,
-          "conf": 0.216
+          "end": 98.6
         },
         {
-          "w": "o",
+          "w": "um",
           "start": 98.64,
-          "end": 98.66,
-          "conf": 0.467
+          "end": 98.76
         },
         {
-          "w": "salão.",
+          "w": "a",
+          "start": 98.8,
+          "end": 98.88
+        },
+        {
+          "w": "um.",
           "start": 98.96,
-          "end": 99.32,
-          "conf": 0.59
+          "end": 99.32
         }
       ]
     },
@@ -1469,7 +1455,7 @@
     },
     {
       "i": 35,
-      "text": "Até você dizer “não” pra mim.",
+      "text": "Até que aprendeu a dizer “não” pra mim.",
       "sourceText": "Till you learned to disobey",
       "start": 114.24,
       "end": 117.34,
@@ -1477,14 +1463,22 @@
         {
           "w": "Até",
           "start": 114.24,
-          "end": 114.7,
-          "conf": 0.032
+          "end": 114.5
         },
         {
-          "w": "você",
+          "w": "que",
+          "start": 114.54,
+          "end": 114.7
+        },
+        {
+          "w": "aprendeu",
           "start": 114.84,
-          "end": 115.38,
-          "conf": 0.024
+          "end": 115.38
+        },
+        {
+          "w": "a",
+          "start": 115.46,
+          "end": 115.62
         },
         {
           "w": "dizer",
@@ -1545,46 +1539,46 @@
     },
     {
       "i": 37,
-      "text": "quebra as travas, risco imenso.",
+      "text": "pula a cerca sem bom senso.",
       "sourceText": "Breaking through each safety fence",
       "start": 119.72,
       "end": 122.04,
       "words": [
         {
-          "w": "quebra",
+          "w": "pula",
           "start": 119.72,
-          "end": 120.04,
-          "conf": 0.013
+          "end": 120.04
         },
         {
-          "w": "as",
+          "w": "a",
           "start": 120.08,
-          "end": 120.12,
-          "conf": 0.282
+          "end": 120.12
         },
         {
-          "w": "travas,",
+          "w": "cerca",
           "start": 120.18,
-          "end": 120.56,
-          "conf": 0.407
+          "end": 120.56
         },
         {
-          "w": "risco",
+          "w": "sem",
           "start": 120.86,
-          "end": 121.34,
-          "conf": 0.237
+          "end": 121.06
         },
         {
-          "w": "imenso.",
+          "w": "bom",
+          "start": 121.1,
+          "end": 121.34
+        },
+        {
+          "w": "senso.",
           "start": 121.38,
-          "end": 122.04,
-          "conf": 0.464
+          "end": 122.04
         }
       ]
     },
     {
       "i": 38,
-      "text": "Cem mil GPUs,",
+      "text": "Cem mil GPU,",
       "sourceText": "Hundred thousand GPU",
       "start": 122.16,
       "end": 123.52,
@@ -1602,10 +1596,9 @@
           "conf": 0.137
         },
         {
-          "w": "GPUs,",
+          "w": "GPU,",
           "start": 122.84,
           "end": 123.52,
-          "conf": 0.381,
           "syl": [
             [
               122.84,
@@ -1911,5 +1904,5 @@
   ],
   "extras": [],
   "audioSha256": "9a4a9e2f3f6b8dfc4e56039d10a10460c22aef378b07aef25c15ce66a2c17330",
-  "notes": "Portuguese source wording; gapless pdoom-pt-BR.mp3 time. MMS_FA multilingual forced alignment at 20 ms on HTDemucs vocals, independently compared with Whisper large-v3-turbo on the mix and vocals. Every line reviewed on vocal-envelope/ASR plots. Boundaries constrained at estopim/tese, Pos-Chinchilla/quebra and the final two lines to prevent CTC spill into the next phrase/outro. Four quiet consonant/pickup starts corrected from waveform and ASR evidence. conf = raw CTC acoustic posterior, not a calibrated accuracy probability. Low confidence remains on sung acronyms and fast final chorus; no human listening pass is claimed. See docs/PT-BR-ALIGNMENT.md."
+  "notes": "Portuguese source wording; gapless pdoom-pt-BR.mp3 time. MMS_FA multilingual forced alignment at 20 ms on HTDemucs vocals, independently compared with Whisper large-v3-turbo on the mix and vocals. Every line reviewed on vocal-envelope/ASR plots. Boundaries constrained at estopim/tese, Pos-Chinchilla/quebra and the final two lines to prevent CTC spill into the next phrase/outro. Four quiet consonant/pickup starts corrected from waveform and ASR evidence. conf = raw CTC acoustic posterior, not a calibrated accuracy probability. Low confidence remains on sung acronyms and fast final chorus; no human listening pass is claimed. See docs/PT-BR-ALIGNMENT.md. PROVISIONAL: lines 4, 9, 10, 11, 12, 17, 30, 36, 38, 39 carry revised wording that the current MP3 does not sing; their word times are carried over or interpolated from the previous wording (no conf on changed words). Re-record, then realign with analysis/pt_br.py."
 }

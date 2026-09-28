@@ -21,7 +21,7 @@ import { Scene, type Frame, type PostOverrides } from '../engine/scene';
 import { FSPass, Layer2D, W, H } from '../engine/gl';
 import { rgba } from '../engine/palette';
 import { F, font, layout, measure } from '../engine/type';
-import { Lyrics, type Line, type Word } from '../engine/lyrics';
+import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
 import { PDoom, formatPDoom, drawReadout } from '../engine/hud';
 import { clamp, lerp, ease, prog, springStep, pulse, hash, TAU, frameIdx } from '../engine/util';
 import { GBUF_FRAG, COMP_FRAG, NK, NT, NE } from './shoggoth-glsl';
@@ -138,6 +138,8 @@ export default class Shoggoth extends Scene {
   private over = new Layer2D();
 
   private L1!: Line; private L2!: Line; private shroomsW: Word | null = null; private tSee = 0;
+  /** L1's "shoggoth" word (the words before it are the mask's polite print); L2's "shinigami". */
+  private iShog = 0; private wShini!: Word;
   private tS = 0; private tE = 0; private tThrough = 0; private tLies = 0; private tBack = 0; private tCut2 = 0; private tWith = 0; private tClose0 = 0; private tCollapse = 0;
   private openT: number[] = []; private closeT: number[] = [];
   private pdoom!: PDoom;
@@ -161,7 +163,11 @@ export default class Shoggoth extends Scene {
     const sh = ly.find('bag of shrooms')[0];
     const sw = sh?.words[sh.words.length - 1];
     this.shroomsW = sw && sw.end > this.tS ? sw : null;
-    this.tThrough = this.L1.words[1]!.start;
+    this.iShog = Math.max(1, this.L1.words.findIndex((w) => norm(w.w).startsWith('shoggoth')));
+    this.wShini = this.L2.words.find((w) => norm(w.w).startsWith('shinigami')) ?? this.L2.words[2]!;
+    // the x-ray sweeps on "through" (pt-BR: from the middle of "Desmascara")
+    const w0 = this.L1.words[0]!;
+    this.tThrough = PT ? lerp(w0.start, w0.end, 0.5) : this.L1.words[1]!.start;
     this.tLies = this.L1.words[this.L1.words.length - 1]!.start;
     this.tBack = this.tLies; // pull back starts with "lies,"
     // hard reframe on the first downbeat after the pull back has landed
@@ -456,7 +462,7 @@ export default class Shoggoth extends Scene {
     const m = SHOG.cap / (this.capK * 100);
     const U = v3(1, 0, 0), V = v3(0, -1, 0);
     const O = SHOG.C.clone().addScaledVector(U, (-lay.width * m) / 2).addScaledVector(V, SHOG.cap / 2);
-    return { fam, text, lay, m, U, V, O, cap: SHOG.cap, word: this.L1.words[PT ? 4 : 3]!, step: 0 };
+    return { fam, text, lay, m, U, V, O, cap: SHOG.cap, word: this.L1.words[this.iShog]!, step: 0 };
   }
   /** LIES,: another plane, deeper; it stretches one Archivo width step per beat of the held note. */
   private liesGeom(t: number) {
@@ -464,17 +470,17 @@ export default class Shoggoth extends Scene {
     const w = this.L1.words[this.L1.words.length - 1]!;
     const step = clamp(Math.floor(au.beatAt(t) - au.beatAt(w.start) + 0.02), 0, LIES_W.length - 1);
     const fam = F.archivo(LIES_W[step]!, 900);
-    const lay = layout(tr('LIES,', "CAIR"), fam, 100, 2);
+    const lay = layout(tr('LIES,', "INFAME"), fam, 100, 2);
     const m = LIES.cap / (this.capK * 100);
-    return { fam, text: tr('LIES,', "CAIR"), lay, m, U: v3(1, 0, 0), V: v3(0, -1, 0), O: LIES.O.clone(), cap: LIES.cap, word: w, step };
+    return { fam, text: tr('LIES,', "INFAME"), lay, m, U: v3(1, 0, 0), V: v3(0, -1, 0), O: LIES.O.clone(), cap: LIES.cap, word: w, step };
   }
 
   private updateBand(t: number) {
     const w = this.L1.words;
-    const thr = w[1]!, the = w[2]!;
+    const the = w[this.iShog - 1]!;
     this.bandOn = 0; this.trailK = 0; this.bandX = -1000;
-    if (t >= thr.start - 0.06 && t < the.end) {
-      this.bandX = lerp(W + this.bandW, -this.bandW, ease.inOutQuad(prog(t, thr.start - 0.06, the.end)));
+    if (t >= this.tThrough - 0.06 && t < the.end) {
+      this.bandX = lerp(W + this.bandW, -this.bandW, ease.inOutQuad(prog(t, this.tThrough - 0.06, the.end)));
       this.bandOn = 1;
     } else if (t >= the.end && t < this.tBack + 0.03) {
       this.bandX = this.shogCursor(t) - this.bandW;
@@ -552,7 +558,7 @@ export default class Shoggoth extends Scene {
    * the mask and stays on it (small, top right) until "with".
    */
   private drawPolite(c: CanvasRenderingContext2D, t: number) {
-    const words = this.L1.words.slice(0, PT ? 4 : 3);
+    const words = this.L1.words.slice(0, this.iShog);
     const out = prog(t, this.tWith - 0.02, this.tWith + 0.2);
     if (out >= 1 || t < this.tSee - 0.4) return;
     const cu = this.comp.u;
@@ -607,11 +613,18 @@ export default class Shoggoth extends Scene {
     const w = this.L2.words;
     if (t < w[0]!.start) return;
     const all = Array.from({ length: NE }, (_, i) => i);
-    const specs = [
+    // pt-BR "com teus olhos de shinigami": five tags, set tighter; "shinigami" takes every eye
+    const specs = PT ? [
+      { wi: 0, eyes: [0], size: 50, y: 240 },
+      { wi: 1, eyes: [1], size: 50, y: 330 },
+      { wi: 2, eyes: [2, 3, 4, 5], size: 70, y: 440 },
+      { wi: 3, eyes: [6, 7], size: 50, y: 530 },
+      { wi: 4, eyes: all, size: 70, y: 660 },
+    ] : [
       { wi: 0, eyes: [0], size: 50, y: 262 },
       { wi: 1, eyes: [1], size: 50, y: 362 },
       { wi: 2, eyes: [2, 3, 4, 5], size: 70, y: 496 },
-      { wi: 3, eyes: all, size: PT ? 70 : 100, y: 664 },
+      { wi: 3, eyes: all, size: 100, y: 664 },
     ];
     const x0 = 126;
     c.save();
@@ -649,7 +662,7 @@ export default class Shoggoth extends Scene {
       const ax = x + tw + 16, ay = y - sp.size * 0.36;
       const bx = 660 + si * 18;
       sp.eyes.forEach((e, j) => {
-        const ta = Math.max(word.start, this.openT[e]!) + (sp.wi === 3 ? j * 0.022 : 0);
+        const ta = Math.max(word.start, this.openT[e]!) + (sp.eyes === all ? j * 0.022 : 0);
         if (t < ta) return;
         const shut = t > this.closeT[e]! ? clamp((t - this.closeT[e]!) / 0.14) : 0;
         const f = ease.outCubic(clamp((t - ta) / 0.14)) * (1 - shut);
@@ -706,10 +719,10 @@ export default class Shoggoth extends Scene {
       this.box(c, t, s.x, s.y, r * 1.25, r * 1.25, tr('ASSISTANT', "ASSISTENTE"), 0.99, tr('FRIENDLY · HELPFUL · FINE', "AMIGÁVEL · PRESTATIVO · OK"), this.tBack + 0.55, -1);
     }
     // the whole mass
-    if (t > this.L2.words[2]!.start) {
+    if (t > this.wShini.start) {
       const s = this.project(v3(0, 0, 0), 1);
       const r = 1.55 * s.s;
-      this.box(c, t, s.x, s.y + r * 0.04, Math.min(r * 1.05, W / 2 - 150), Math.min(r * 0.92, H / 2 - 150), 'SHOGGOTH', 0.98, 't−∞', this.L2.words[2]!.start, -1, true);
+      this.box(c, t, s.x, s.y + r * 0.04, Math.min(r * 1.05, W / 2 - 150), Math.min(r * 0.92, H / 2 - 150), 'SHOGGOTH', 0.98, 't−∞', this.wShini.start, -1, true);
     }
     // eyes
     for (let i = 0; i < NE; i++) {

@@ -15,7 +15,7 @@ import { drawReadout } from '../engine/hud';
 import OpenScene from './open';
 
 const PLATES = [
-  tr("Sparks", "Faíscas"), tr("Training loss", "Erro de treino"), tr("The room", "A sala"), tr("Shoggoth", "Shoggoth"), tr("A stable run", "Um treino estável"), tr("Ascent", "Ascensão"), tr("Paperwork", "Papelada"), tr("Trajectory", "Trajetória"),
+  tr("Sparks", "Faíscas"), tr("Training loss", "Loss de treino"), tr("The room", "O quarto"), tr("Shoggoth", "Shoggoth"), tr("A stable run", "Um treino estável"), tr("Ascent", "Ascensão"), tr("Paperwork", "Papelada"), tr("Trajectory", "Trajetória"),
   tr("Paperclips", "Clipes"), tr("The fuse", "O estopim"), tr("Architecture", "Arquitetura"), tr("Scale", "Escala"), 'Loom', tr("What was seen", "O que foi visto"),
 ];
 
