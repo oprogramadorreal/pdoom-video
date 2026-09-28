@@ -32,7 +32,7 @@ Se Bun não estiver no PATH do PowerShell, invoque-o pelo caminho da instalaçã
 ## Arquivos e convenções
 
 - `lyrics/lyrics.src.pt-br.js`: as 46 linhas fornecidas, com os intervalos corrigidos para este áudio.
-- `audio/pdoom-pt-BR.mp3`: áudio fornecido, preservado; duração de 170 segundos.
+- `audio/pdoom-pt-BR.mp3`: nova gravação fornecida, preservada; duração de 155,6 segundos.
 - `data/lyrics.pt-br.json`: palavras e intervalos da versão brasileira. `sourceText` é um identificador de autoria em inglês, invisível ao público, que mantém as consultas semânticas das cenas.
 - `data/audio.pt-br.json`: análise própria de batidas, seções, envelopes, ataques e altura vocal.
 - `app/src/locale.ts`: seleção única de idioma, arquivos e nomes das cenas.
@@ -40,8 +40,9 @@ Se Bun não estiver no PATH do PowerShell, invoque-o pelo caminho da instalaçã
 
 Os cortes acompanham as novas palavras. Quando uma nota atravessa a batida escolhida para o corte,
 o final da frase é preservado. O desfecho é ajustado ao intervalo restante até o fim do MP3.
-O arquivo original termina com música ainda ativa: a prévia e o render aplicam uma redução
-linear de volume nos últimos 1,25 segundos. O MP3 fornecido não é modificado.
+A nova gravação já reduz o volume no final, mas conserva uma cauda audível até o limite
+do arquivo. A prévia e o render mantêm a redução linear de volume nos últimos 1,25 segundos
+para encerrar essa cauda. O MP3 fornecido não é modificado.
 As fontes de traço compõem acentos e cedilha; os layouts acomodam a nova ordem e quantidade de palavras.
 Legendas técnicas, diagramas, respostas de chat, adesivos do laptop e textos do final também são localizados.
 
@@ -64,8 +65,9 @@ bun scripts/render.ts verify --lang en --out ../out/verify-en.json
 bun scripts/render.ts sheet --lang pt-BR --cuts --out ../out/pt-br-cuts.png
 ```
 
-`check:pt-br` confere a integridade da letra, a ordem dos intervalos, os quatro refrões,
-os dados musicais e a duração real do MP3. Isso detecta inconsistências estruturais; a evidência
+`check:pt-br` confere a integridade das 46 linhas e 226 palavras, os intervalos de palavras
+e sílabas, os quatro refrões, os dados musicais, a duração real do MP3 e o SHA-256 do áudio
+nos dois JSONs. Isso detecta inconsistências estruturais e dados de uma gravação antiga; a evidência
 de sincronização vem do alinhamento do áudio descrito abaixo.
 `verify` renderiza o início, o fim, os limites das cenas, as transições e os centros das palavras,
 além de amostras regulares durante pausas. Erros de cena, carregamento ou duração fazem o comando falhar.
@@ -79,7 +81,8 @@ imagens que ainda está gerando. Não sobrescreve as imagens inglesas.
 O renderizador usa os JSONs versionados e não precisa dos modelos de análise.
 O fluxo brasileiro está em `analysis/pt_br.py` e as dependências em
 `analysis/requirements.pt-br.txt`; os modelos, stems e intermediários ficam nas pastas ignoradas
-`analysis/.cache`, `analysis/stems` e `analysis/work`.
+`analysis/.cache` e `analysis/work/pt-br/<prefixo SHA-256>`; os gráficos ficam em `analysis/qa/pt-br`.
+Os intermediários desta gravação usam o prefixo `bab524ed0335`, separado dos arquivos antigos.
 Consulte as opções de `python analysis/pt_br.py --help` e o procedimento completo,
 com instalação, comandos e limites da sincronização, em
 [PT-BR-ALIGNMENT.md](PT-BR-ALIGNMENT.md).

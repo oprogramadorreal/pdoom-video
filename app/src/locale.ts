@@ -1,7 +1,7 @@
 /** One language selection controls preview, analysis data, and generated assets. */
 export const PT = typeof location !== 'undefined' && new URLSearchParams(location.search).get('lang')?.toLowerCase() === 'pt-br';
 export const LANG = PT ? 'pt-BR' : 'en';
-/** The supplied Portuguese master is still active at its exact file boundary. */
+/** Finish the Portuguese master's quiet but non-silent tail at the file boundary. */
 export const PT_END_FADE_SECONDS = 1.25;
 export const tr = (en: string, pt: string): string => PT ? pt : en;
 export const AUDIO_URL = PT ? 'audio/pdoom-pt-BR.mp3' : 'audio/pdoom.mp3';

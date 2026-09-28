@@ -20,15 +20,21 @@ import unicodedata
 import numpy as np
 
 AUDIO = common.PROJECT / "audio/pdoom-pt-BR.mp3"
-EXPECTED_AUDIO_SHA256 = "9a4a9e2f3f6b8dfc4e56039d10a10460c22aef378b07aef25c15ce66a2c17330"
+EXPECTED_AUDIO_SHA256 = "bab524ed03356d5576de04beaa6edb100f36efb591a620987a9426e9e4fc6bc8"
 SOURCE = common.PROJECT / "lyrics/lyrics.src.pt-br.js"
-WORK = common.WORK / "pt-br"
-WORK.mkdir(exist_ok=True)
+# Isolate intermediates by recording so an old stem/emission cannot be reused
+# accidentally after replacing the MP3 (even when both files have equal length).
+WORK = common.WORK / "pt-br" / EXPECTED_AUDIO_SHA256[:12]
+WORK.mkdir(parents=True, exist_ok=True)
 
 
 def source():
     text = SOURCE.read_text(encoding="utf-8-sig")
-    return json.loads(text[text.index("["):text.rindex("]") + 1])
+    # Preserve quoted text while accepting editorial // comments after rows.
+    body = text[text.index("["):text.rindex("]") + 1]
+    body = re.sub(r'"(?:\\.|[^"\\])*"|//[^\n]*',
+                  lambda m: "" if m[0].startswith("//") else m[0], body)
+    return json.loads(body)
 
 
 def save(path, doc):
@@ -181,32 +187,38 @@ def align(args):
     tokens = [text.split() for _, _, text in lines]
     overrides = {(li, ti): PRON.get(w, normalized(w)).split()
                  for li, row in enumerate(tokens) for ti, w in enumerate(row)}
-    # The final lyrics precede the long non-lexical outro, verified independently
-    # by Whisper on the mix. Keep the CTC path out of its repeated "oh" vocals.
-    windows = {32: (102.9, 105.5), 33: (106.0, 110.7),
-               36: (117.4, 119.5), 37: (119.4, 122.1),
-               44: (131.6, 135.6), 45: (135.6, 139.7)}
+    # Recording-specific constraints, reviewed against independent recognition.
+    # Never carry the earlier 170-second recording's windows into this master.
+    windows = {32: (102.7, 105.6), 38: (120.3, 121.78), 39: (121.78, 124.44)}
     spans, score, _, _ = ctc_align(E, tokens, pron_override=overrides, line_windows=windows)
     words = word_table(spans, tokens)
-    # Waveform/ASR-reviewed corrections: low-energy initial consonants/pickups,
-    # and a held note that CTC had incorrectly extended into the next line.
+    if args.check_only:
+        # Compare independent acoustic paths before any shared manual fixes.
+        save(WORK / f"alignment-{args.acoustic}.json", dict(score=score, words=words))
+        return
+    save(WORK / "raw-alignment.json", dict(score=score, words=words))
+    # Recording-specific waveform/ASR-reviewed corrections.
     # See docs/PT-BR-ALIGNMENT.md for evidence and remaining ambiguous passages.
-    fixes = {(0, 0): {"start": 3.50}, (5, 0): {"start": 18.42},
-             (12, 0): {"start": 39.96}, (33, 0): {"start": 106.10}}
+    fixes = {(0, 0): {"start": 1.72}, (12, 0): {"start": 37.64},
+             (13, 3): {"end": 43.96}, (14, 0): {"start": 44.00},
+             (15, 0): {"start": 48.34}, (17, 0): {"start": 58.30},
+             (22, 6): {"start": 70.40}, (27, 7): {"end": 95.64},
+             (28, 0): {"start": 95.72}, (32, 3): {"end": 105.52},
+             (33, 0): {"start": 105.70}, (39, 0): {"start": 121.80},
+             (44, 0): {"start": 131.28}, (45, 0): {"start": 135.94}}
+    assert fixes.keys() <= {(word["li"], word["ti"]) for word in words}
     for word in words:
         fix = fixes.get((word["li"], word["ti"]), {})
         word.update(fix)
         if "start" in fix:
             word["subs"][0] = (fix["start"], word["subs"][0][1])
+        if "end" in fix:
+            word["subs"][-1] = (word["subs"][-1][0], fix["end"])
         if word["w"] == "cdr":
             word["w"] = "CDR"
-    save(WORK / "raw-alignment.json", dict(score=score, words=words))
     for li, row in enumerate(lines):
         ws = [w for w in words if w["li"] == li]
         print(f"{li:02d} {ws[0]['start']:7.2f} {ws[-1]['end']:7.2f} {row[2]}", flush=True)
-    if args.check_only:
-        save(WORK / f"alignment-{args.acoustic}.json", dict(score=score, words=words))
-        return
     english = json.loads((common.DATA / "lyrics.json").read_text(encoding="utf-8"))["lines"]
     result = []
     for li, (_, _, text) in enumerate(lines):
@@ -218,7 +230,7 @@ def align(args):
             ws.append(item)
         text = text.replace(" cdr ", " CDR ")
         result.append(dict(i=li, text=text, sourceText=english[li]["text"], start=ws[0]["start"], end=ws[-1]["end"], words=ws))
-    save(common.DATA / "lyrics.pt-br.json", dict(lines=result, extras=[], audioSha256=EXPECTED_AUDIO_SHA256, notes="Portuguese source wording; gapless pdoom-pt-BR.mp3 time. MMS_FA multilingual forced alignment at 20 ms on HTDemucs vocals, independently compared with Whisper large-v3-turbo on the mix and vocals. Every line reviewed on vocal-envelope/ASR plots. Boundaries constrained at estopim/tese, Pos-Chinchilla/quebra and the final two lines to prevent CTC spill into the next phrase/outro. Four quiet consonant/pickup starts corrected from waveform and ASR evidence. conf = raw CTC acoustic posterior, not a calibrated accuracy probability. Low confidence remains on sung acronyms and fast final chorus; no human listening pass is claimed. See docs/PT-BR-ALIGNMENT.md."))
+    save(common.DATA / "lyrics.pt-br.json", dict(lines=result, extras=[], audioSha256=EXPECTED_AUDIO_SHA256, notes="Portuguese source wording; gapless pdoom-pt-BR.mp3 time. MMS_FA multilingual forced alignment at 20 ms on HTDemucs vocals; independent Whisper large-v3-turbo recognition of the mix and vocals and Portuguese CTC comparison. conf = raw CTC acoustic posterior, not a calibrated accuracy probability. Singing and technical acronyms remain uncertain; no human listening pass is claimed. See docs/PT-BR-ALIGNMENT.md for this recording's review and corrections."))
     SOURCE.write_text("// Times measured against audio/pdoom-pt-BR.mp3; regenerate with analysis/pt_br.py.\nconst LY = [\n" + ",\n".join("  " + json.dumps([line["start"], line["end"], line["text"]], ensure_ascii=False) for line in result) + "\n];\n", encoding="utf-8")
 
 
@@ -284,6 +296,7 @@ def features(args):
     for name, (lo, hi) in {"low": (None, 150), "mid": (150, 2000), "high": (4000, None)}.items():
         envelopes[name] = frame_rms(sosfiltfilt(band_sos(lo, hi, sr), mix), sr)
     for name, stem in stems.items():
+        assert len(stem) == len(mix), f"{name} stem does not match the decoded recording"
         envelopes["vocal" if name == "vocals" else name] = frame_rms(stem, sr)
     envelopes = {name: np.round(norm01(smooth_env(values)), 3).tolist() for name, values in envelopes.items()}
     f0 = librosa.yin(stems["vocals"], fmin=65, fmax=1050, sr=sr, frame_length=2048, hop_length=441)
@@ -316,7 +329,7 @@ def features(args):
                time_signature=4, beats=np.round(beats, 3).tolist(), downbeats=np.round(downbeats, 3).tolist(),
                sections=sections, fps=fps, **envelopes, onsets=events,
                audioSha256=EXPECTED_AUDIO_SHA256,
-               notes="All features measured from pdoom-pt-BR.mp3 (gapless decode), 170 s. HTDemucs stems generated directly from that decode, no inherited EN offset. 100 fps normalized stem/band RMS; pitchMidi = vocal YIN estimate, 0 for low-energy frames (not a note transcription). beat_track measured pulse times, extrapolated only outside detected pulse interval. Downbeat phase anchored at first chorus P(doom); sections follow pt-BR lyric boundaries. Kick/snare/hat extracted from drums; vocal events from vocal spectral flux. Beat/downbeat detection is automatic, not a musicological bar transcription. Source audio remains active to170s; output fade belongs in the renderer.")
+               notes=f"All features measured from pdoom-pt-BR.mp3 (gapless decode), {duration:.3f} s. HTDemucs stems generated directly from that decode, no inherited EN offset. 100 fps normalized stem/band RMS; pitchMidi = vocal YIN estimate, 0 for low-energy frames (not a note transcription). beat_track measured pulse times, extrapolated only outside detected pulse interval. Downbeat phase anchored at first chorus P(doom); sections follow pt-BR lyric boundaries. Kick/snare/hat extracted from drums; vocal events from vocal spectral flux. Beat/downbeat detection is automatic, not a musicological bar transcription.")
     (common.DATA / "audio.pt-br.json").write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     save(WORK / "features-summary.json", {k: doc[k] for k in ("duration", "bpm", "beat_period", "sections", "notes")})
     print(f"Audio: {duration:.3f}s, median pulse {60/period:.3f} BPM, {len(beats)} beats", flush=True)
@@ -328,7 +341,9 @@ def validate(args):
     lines = lyrics["lines"]
     assert len(lines) == len(source()) == 46
     words = [w for line in lines for w in line["words"]]
-    assert len(words) == 222
+    assert len(words) == sum(len(text.split()) for _, _, text in source())
+    digest = hashlib.sha256(AUDIO.read_bytes()).hexdigest()
+    assert audio["audioSha256"] == lyrics["audioSha256"] == digest == EXPECTED_AUDIO_SHA256
     for line, (start, end, text) in zip(lines, source()):
         assert (line["start"], line["end"], line["text"]) == (start, end, text)
         assert " ".join(w["w"] for w in line["words"]) == text
@@ -340,9 +355,14 @@ def validate(args):
     assert all(a["end"] <= b["start"] for a, b in zip(words, words[1:]))
     for name in ("rms", "low", "mid", "high", "vocal", "drums", "bass", "other", "pitchMidi"):
         values = np.asarray(audio[name])
-        assert len(values) == 17000 and np.isfinite(values).all()
+        assert len(values) == round(audio["duration"] * audio["fps"]) and np.isfinite(values).all()
         assert values.min() >= 0 and values.max() <= (128 if name == "pitchMidi" else 1)
-    assert audio["duration"] == len(decode(16000)) / 16000 == 170
+    assert abs(audio["duration"] - len(decode(16000)) / 16000) < .001
+    sections = {s["name"]: s for s in audio["sections"]}
+    assert sections["verse1"]["start"] == lines[0]["start"]
+    assert sections["chorus2"]["start"] == lines[17]["start"]
+    assert sections["chorus3"]["start"] == lines[28]["start"]
+    assert sections["outro"]["start"] == lines[-1]["end"]
     report = dict(duration=audio["duration"], lines=len(lines), words=len(words), firstLyric=lines[0]["start"],
                   lastLyric=lines[-1]["end"], beats=len(audio["beats"]),
                   audioSha256=hashlib.sha256(AUDIO.read_bytes()).hexdigest(),
@@ -372,4 +392,6 @@ if __name__ == "__main__":
     parser.add_argument("--acoustic", choices=["mms", "portuguese", "fused"], default="mms")
     parser.add_argument("--check-only", action="store_true")
     args = parser.parse_args()
+    if hashlib.sha256(AUDIO.read_bytes()).hexdigest() != EXPECTED_AUDIO_SHA256:
+        parser.error("The MP3 changed: review this recording's hash, pronunciations and alignment constraints first.")
     (all_phases if args.phase == "all" else globals()[args.phase])(args)

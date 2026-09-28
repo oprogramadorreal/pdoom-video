@@ -77,7 +77,13 @@ export default class Loom extends Scene {
     const beats: number[] = [];
     for (let b = b0; au.timeOfBeat(b) < end + 0.01; b++) beats.push(au.timeOfBeat(b));
     // cuts on the beats nearest the line starts
-    const s2 = au.nearestBeat(this.L2.start), s3 = au.nearestBeat(this.L3.start);
+    const cut = (previous: Line, next: Line) => {
+      const beat = au.nearestBeat(next.start);
+      // The new vocal can start ahead of the nearest beat ("ao" fits entirely
+      // before it). Keep both the held ending and the next phrase's pickup.
+      return PT ? Math.min(next.start, Math.max(previous.end, beat)) : beat;
+    };
+    const s2 = cut(this.L1, this.L2), s3 = cut(this.L2, this.L3);
     const inTree = beats.filter((b) => b > start + 0.1 && b < s2 - 0.1);
     const self = this.L3.words[this.L3.words.length - 1]!;
     const twist = Math.min(au.nearestBeat(self.start), end - 0.9);

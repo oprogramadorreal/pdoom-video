@@ -22,7 +22,7 @@ import { PDoom, formatPDoom } from '../engine/hud';
 type Mv = 'A' | 'B' | 'C' | 'D';
 
 function wordOf(l: Line, s: string): Word {
-  const aliases: Record<string,string> = { boom: 'BUM', moon: 'Lua', second: 'segundo', to: 'pra', omega: 'Ômega', thirty: 'trinta' };
+  const aliases: Record<string,string> = { basilisk: 'basilisco', boom: 'BUM', moon: 'Lua', second: 'segundo', to: 'pra', omega: 'Ômega', thirty: 'trinta' };
   const q = norm(PT ? aliases[s] ?? s : s);
   return l.words.find((w) => norm(w.w).includes(q)) ?? l.words[0]!;
 }

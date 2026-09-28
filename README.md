@@ -43,7 +43,7 @@ Open http://localhost:5173 and use the keys below. `?t=23` starts at a given tim
 ### Brazilian Portuguese
 
 The complete pt-BR edit uses `audio/pdoom-pt-BR.mp3`, the supplied Portuguese lyrics,
-its own word alignment and audio analysis, translated scene artwork, and a 170-second timeline.
+its own word alignment and audio analysis, translated scene artwork, and a 155.6-second timeline.
 Open **http://localhost:5173/?lang=pt-BR**. The default URL still plays the original English edit.
 
 ```sh

@@ -190,6 +190,7 @@ export default class Room extends Scene {
     // hard cut into the room on the beat nearest "Trapped"
     this.tB = au.nearestBeat(this.L2.words[0]!.start);
     if (this.tB <= this.tF + 0.3) this.tB = this.L2.words[0]!.start;
+    if (PT) this.tB = Math.min(this.L2.start, Math.max(this.L1.end, this.tB));
     this.B0 = Math.round(au.beatAt(this.tB));
     for (let k = 0; k <= 12; k++) this.tb.push(au.timeOfBeat(this.B0 + k));
     const w3 = this.L3.words;
