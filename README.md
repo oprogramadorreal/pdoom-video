@@ -12,13 +12,19 @@ The song is not ours: see [Credits](#credits) for who wrote and made it.
 
 The concept, style bible and plate-by-plate treatment are in [`docs/TREATMENT.md`](docs/TREATMENT.md). The engine and scene API are documented in [`docs/ENGINE.md`](docs/ENGINE.md).
 
+There is also a Brazilian Portuguese edition, with its own recording, timing data and translated artwork, and a narrated extension for it that explains the lyrics: see [Brazilian Portuguese](#brazilian-portuguese).
+
 ## Layout
 
 - `audio/pdoom.mp3` — the song (the Claude-Pop version, see Credits).
+- `audio/pdoom-pt-BR.mp3` — the Brazilian Portuguese recording (see Credits).
+- `audio/letra-explicada-pt-br/` — the narration of the pt-BR lyrics explainer: one MP3 per chapter, the background track and the mix (`mixagem.mp3`).
 - `lyrics/lyrics.src.js` — the original line-level lyrics (approximate timings).
 - `analysis/` — Python (uv) tools that produced the timing data: Demucs stem separation, CTC forced alignment cross-checked with Whisper, beat/downbeat/onset analysis. See `analysis/align.py` and `analysis/analyze.py`.
 - `data/lyrics.json` — word-level (and some syllable-level) lyric timings.
 - `data/audio.json` — tempo (132.007 BPM), beats, downbeats, sections, drum/vocal onsets and loudness envelopes.
+- `lyrics/lyrics.src.pt-br.js`, `data/lyrics.pt-br.json`, `data/audio.pt-br.json` — the same for the Brazilian Portuguese recording.
+- `docs/letra-explicada-pt-br/` — the pt-BR lyrics explainer: lyrics guide, narration script and storyboard.
 - `app/` — the renderer: TypeScript + three.js, bun + Vite.
   - `src/engine/` — renderer core: timeline playback, post-processing (bloom, halation, grain), typography (Archivo, IBM Plex Mono, Cormorant Garamond, single-stroke plotter fonts), GPU line batches, HUD.
   - `src/scenes/` — one module per plate (`open`, `loss`, `prompt`, `hook`, `room`, `shoggoth`, `spacetime`, `ascent`, `bureau`, `leftturn`, `paperclips`, `fuse`, `stack`, `dense`, `loom`, `ilya`, `outro`) plus shared motifs.
@@ -57,6 +63,10 @@ All rendering modes accept `--lang pt-BR`, including `stills`, `sheet`, `plates`
 `verify` (renders across the entire track at word transitions and scene cuts, checks errors and audio duration).
 After changing translated scenes, run `bun run plates:pt-br` to regenerate the Portuguese rewind images.
 See [the pt-BR guide](docs/PT-BR.md) for generation, validation, terminology and draft-render commands.
+
+The pt-BR edition is getting a narrated extension that explains the lyrics. Its script, storyboard and audio
+are described in [`docs/letra-explicada-pt-br/`](docs/letra-explicada-pt-br/); the narration mix is
+`audio/letra-explicada-pt-br/mixagem.mp3`.
 
 | Key | Action |
 |---|---|
@@ -110,8 +120,10 @@ The models download about 4 GB of weights into `analysis/.cache/`; delete that f
 ## Credits
 
 - **Song:** "I'm Upping My P(doom)". The lyrics are by [osmarks](https://docs.osmarks.net/hypha/p%28doom%29_song_objectively_correct_interpretation), built on an opening verse and chorus by [MusicPerson](https://www.udio.com/creators/MusicPerson), with lines suggested on the EleutherAI Discord and help from Claude on the outro and final chorus. The original was generated with Udio and released in November 2024 ([YouTube](https://www.youtube.com/watch?v=uEB5E67vcPA)). This video uses the "Claude-Pop" version made with Suno, posted by [deckard (@slimer48484)](https://x.com/slimer48484/status/2097752569212756134) in September 2026.
+- **Brazilian Portuguese edition:** a Portuguese version of the lyrics, recorded with Suno (`audio/pdoom-pt-BR.mp3`).
+- **Lyrics explainer (pt-BR):** the narration script was written with Claude from the Portuguese lyrics guide, starting from a first draft generated with GPT-6 Astra. The voice was generated with ElevenLabs, and the background track was made with Suno.
 - **Fonts:** Archivo, IBM Plex Mono and Cormorant Garamond (SIL Open Font License). Single-stroke EMS and Hershey fonts via the `hersheytext` package (OFL / public domain).
 
 ## License
 
-The code is released under the [MIT License](LICENSE). The fonts in `app/public/fonts/` keep their own licenses (see Credits), and the song and lyrics (`audio/`, `lyrics/`, `data/lyrics.json`) are not covered by it: they belong to their authors (see Credits).
+The code is released under the [MIT License](LICENSE). The fonts in `app/public/fonts/` keep their own licenses (see Credits), and the songs, the narration and the lyrics (`audio/`, `lyrics/`, `data/lyrics.json`, `data/lyrics.pt-br.json`) are not covered by it: they belong to their authors (see Credits).

@@ -2,21 +2,37 @@
 
 Extensão do vídeo em português: depois da música, uma narração explica as referências da letra.
 Os arquivos de `tts/` são o texto exato de cada geração no ElevenLabs, um arquivo por pedido.
+O áudio está em `audio/letra-explicada-pt-br/`, e `mixagem.mp3` é a referência de tempo para montar o vídeo.
 Este roteiro liga cada parágrafo a um trecho da música e a uma imagem.
 
 ## Arquivos
 
-| Arquivo | Capítulo | Palavras | Caracteres |
-|---|---|---:|---:|
-| `tts/00-abertura.txt` | Espera | 170 | 978 |
-| `tts/01-faiscas.txt` | P(doom) 0,02 · Faíscas | 151 | 861 |
-| `tts/02-o-que-tem-dentro.txt` | 0,15 · O que tem lá dentro | 271 | 1.547 |
-| `tts/03-poder-demais.txt` | 0,42 · Poder demais | 301 | 1.672 |
-| `tts/04-clipes-de-papel.txt` | 0,81 · Clipes de papel | 281 | 1.615 |
-| `tts/05-o-que-ilya-viu.txt` | 0,99 · O que Ilya viu | 245 | 1.415 |
-| `tts/06-final.txt` | NaN · E o seu P(doom)? | 93 | 504 |
+Cada capítulo tem o mesmo nome em `tts/` (texto, `.txt`) e em `audio/letra-explicada-pt-br/`
+(voz gerada no ElevenLabs, `.mp3` mono de 44,1 kHz).
+O início na mixagem é a soma das durações dos capítulos anteriores.
 
-São cerca de 1.500 palavras, entre 9 e 10 minutos de voz, mais uns 90 segundos de trechos da música.
+| Arquivo | Capítulo | Caracteres | Duração | Início na mixagem |
+|---|---|---:|---:|---:|
+| `00-abertura` | Espera | 978 | 56,0 s | 0:00,0 |
+| `01-faiscas` | P(doom) 0,02 · Faíscas | 861 | 50,1 s | 0:56,0 |
+| `02-o-que-tem-dentro` | 0,15 · O que tem lá dentro | 1.547 | 90,8 s | 1:46,2 |
+| `03-poder-demais` | 0,42 · Poder demais | 1.672 | 99,7 s | 3:17,0 |
+| `04-clipes-de-papel` | 0,81 · Clipes de papel | 1.615 | 95,2 s | 4:56,7 |
+| `05-o-que-ilya-viu` | 0,99 · O que Ilya viu | 1.415 | 86,8 s | 6:31,9 |
+| `06-final` | NaN · E o seu P(doom)? | 504 | 31,5 s | 7:58,6 |
+
+São 1.512 palavras e 8 min 30 s de voz.
+
+### Mixagem
+
+- `audio/letra-explicada-pt-br/mixagem.mp3`: os sete capítulos em ordem, sem pausas extras, sobre a trilha de fundo.
+  Tem 510,1 s, em MP3 estéreo de 48 kHz. É a referência de tempo para montar o vídeo.
+- `audio/letra-explicada-pt-br/trilha-de-fundo.mp3`: trilha gerada no Suno, com 204,8 s.
+  Segundo os metadados da mixagem, ela toca sem interrupção, em loop com crossfades de 2 s, abaixa sob a voz
+  e foi aumentada em 9 dB em relação à mixagem original.
+- A mixagem não tem trechos da música nem pausas para eles. Nos quadros abaixo, a coluna Trecho indica
+  a linha da letra e a cena a mostrar naquele parágrafo. Para ouvir também a música, é preciso abrir pausas
+  na voz e refazer a mixagem, o que muda os tempos da tabela acima.
 
 ## Geração no ElevenLabs
 
@@ -26,8 +42,7 @@ São cerca de 1.500 palavras, entre 9 e 10 minutos de voz, mais uns 90 segundos 
 - O texto não tem marcações, então funciona em qualquer modelo. No v3, dá para acrescentar tags como
   `[excited]` ou `[pause]`; ele não aceita `<break>`. No Multilingual v2, `<break time="1.0s" />`
   (até 3 s) funciona, mas as tags do v3 não.
-- Cada parágrafo é um bloco. Os trechos da música entram nas pausas entre parágrafos; corte o áudio da voz ali.
-  No bloco rápido do capítulo 0,42, corte também entre as frases.
+- Salve cada geração em `audio/letra-explicada-pt-br/`, com o mesmo nome do texto, e refaça a mixagem.
 
 ### Grafia para a voz
 
@@ -66,8 +81,8 @@ Na última frase de `tts/06-final.txt`, o cursor clica e o vídeo volta ao prime
 ## Roteiro por bloco
 
 Os tempos dos trechos são de `lyrics/lyrics.src.pt-br.js`, em segundos de `audio/pdoom-pt-BR.mp3`.
-Deixe uns 0,15 s de folga e fades de 80 ms. As cenas podem ser renderizadas nos mesmos intervalos
-com `bun scripts/render.ts video --lang pt-BR --from <início> --to <fim>`.
+As cenas podem ser renderizadas nesses intervalos com `bun scripts/render.ts video --lang pt-BR --from <início> --to <fim>`.
+Se o áudio da música entrar na mixagem, deixe uns 0,15 s de folga e fades de 80 ms.
 "Novo" marca imagens que ainda não existem.
 
 ### 00 · Espera
@@ -157,18 +172,20 @@ Usar fotos seria uma exceção deliberada e exigiria imagens licenciadas.
 
 ## Capítulos do YouTube
 
-Os tempos dependem da duração final do áudio. A música termina em 2:35,6.
+Tempos com a mixagem começando logo depois da música, em 2:35,6, sem pausa:
 
 ```
 0:00 Aumento meu P(doom)
-2:36 Espera
-     P(doom) 0,02 · Faíscas
-     0,15 · O que tem lá dentro
-     0,42 · Poder demais
-     0,81 · Clipes de papel
-     0,99 · O que Ilya viu
-     NaN · E o seu P(doom)?
+2:35 Espera
+3:31 P(doom) 0,02 · Faíscas
+4:21 0,15 · O que tem lá dentro
+5:52 0,42 · Poder demais
+7:32 0,81 · Clipes de papel
+9:07 0,99 · O que Ilya viu
+10:34 NaN · E o seu P(doom)?
 ```
+
+O vídeo completo terá cerca de 11:06. Se houver uma pausa entre a música e a narração, some a pausa a esses tempos.
 
 ## Fontes dos fatos novos
 
