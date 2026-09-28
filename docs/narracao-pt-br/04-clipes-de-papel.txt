@@ -1,0 +1,13 @@
+Terceiro refrão: zero vírgula oitenta e um. E a pergunta do começo.
+
+Imagine uma superinteligência com uma única meta: fazer o máximo de clipes de papel. Ela melhora as máquinas, constrói fábricas, busca mais metal, mais energia. Até perceber que o planeta, e a gente, é feito de átomos que poderiam virar clipe. Ela não precisa odiar ninguém. Basta que a gente não esteja entre as coisas que ela se importa em preservar. O exemplo é do filósofo Nick Bostrom.
+
+E o botão de desligar? Tem um meme famoso: um anúncio falso de vaga na OpenAI para engenheiro do botão de desligar. Requisitos: saber tirar coisas da tomada e, de preferência, jogar um balde de água nos servidores. Na música, ele foi viajar. No vídeo, deixou até resposta automática.
+
+A tese da ortogonalidade diz que inteligência e objetivos são independentes. Ser genial não garante boas intenções. O blues é o lamento por isso.
+
+Só transformers? Transformer é a arquitetura da maioria dos modelos de hoje. Mas conhecer a arquitetura não é saber o que ela vai aprender. Nem que vai obedecer.
+
+Chinchila, sim, como o bichinho, é um estudo que mostrou que modelos menores, treinados com mais dados, batiam modelos gigantes com a mesma computação. E cem mil gê pê us não é exagero: um supercomputador assim já existia em dois mil e vinte e quatro.
+
+E a máscara do shoggoth? Boa parte dela vem do erre ele agá efe, aprendizado por reforço com feedback humano: pessoas avaliam as respostas, e o modelo aprende a dar as que elas preferem. Se isso dá chabu, a máscara escorrega. No vídeo, ela rola ladeira abaixo e cai de ponta-cabeça. O sorriso vira careta.

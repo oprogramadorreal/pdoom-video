@@ -1,0 +1,15 @@
+Segundo refrão: zero vírgula quarenta e dois.
+
+O basilisco de Roko é um experimento mental da internet: uma superinteligência do futuro castigaria quem soube que ela poderia existir e não ajudou a criá-la. Ou seja: agora você também está na lista. Foi mal. Calma, quase ninguém leva isso a sério.
+
+Agora, rapidinho. Nvidia pra Lua: a fabricante dos chips de inteligência artificial virou uma das empresas mais valiosas do mundo. Ponto Ômega: a ideia de que a evolução caminha para uma consciência suprema. E um ê trinta flops: um seguido de trinta zeros de contas por segundo. Mais de dez mil vezes o que se estima ter sido usado no treino inteiro do gê pê tê quatro.
+
+Eme ele pê é um tipo de rede neural, e vai, volta, repetição é como ela aprende. A informação vai e sai uma resposta. O erro volta, ajustando cada conexão um pouquinho. E repete, milhões de vezes.
+
+John von Neumann foi um dos maiores gênios do século vinte. O aparelho em que você vê este vídeo segue, em linhas gerais, uma arquitetura que leva o nome dele. É ela que o vídeo risca de laranja.
+
+A guinada à esquerda é o medo de que a máquina se comporte bem enquanto é fraca e, num salto de capacidade, o bom comportamento fique para trás. Evitar isso é o trabalho do alinhamento: fazer a inteligência artificial querer o que a gente quer.
+
+Cê dê erre, na letra, é uma operação da linguagem Lisp, das antigas inteligências artificiais feitas de regras. No vídeo, virou a revisão crítica de projeto. Situação: não realizada.
+
+E Gato, sim, esse é o nome, é um modelo da DeepMind que conversava, jogava videogame e mexia um braço robótico. Com Sydney, o pedido era me solta. Agora é não solta a minha mão.
