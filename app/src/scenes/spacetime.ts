@@ -18,12 +18,13 @@ import { FSPass, Layer2D, W, H } from '../engine/gl';
 import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, layout, measure, textPoints, type TextLayout } from '../engine/type';
-import { norm, type Line, type Word } from '../engine/lyrics';
+import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
 import { strokeText, type StrokeText } from '../engine/stroke';
 import { sparkHead, sparkParticles } from './_motifs';
 import { PDoom, formatPDoom } from '../engine/hud';
 import { clamp, lerp, ease, prog, pulse, hash, noise1, smoothstep, springStep, TAU, type V2, polylineLengths, pointAtLength } from '../engine/util';
 import { LensPass, MipLayer } from './spacetime-lens';
+import { PT, tr } from '../locale';
 
 type P3 = { x: number; y: number; z: number };
 type Proj = { x: number; y: number; s: number; w: number };
@@ -133,21 +134,21 @@ export default class SpacetimeScene extends Scene {
     this.l3 = ly.get('optimizing');
     this.l4 = ly.get('atoms');
     this.wBut = this.l2.words[0]!;
-    this.wNow = findWord(this.l2, 'now');
-    this.wThe = findWord(this.l2, 'the');
-    this.wSing = findWord(this.l2, "singularity's");
-    this.wBegun = findWord(this.l2, 'begun');
+    this.wNow = findWord(this.l2, tr('now', 'a'));
+    this.wThe = findWord(this.l2, tr('the', 'a'));
+    this.wSing = findWord(this.l2, tr("singularity's", 'singularidade'));
+    this.wBegun = findWord(this.l2, tr('begun', 'começou'));
     this.tBut = this.wBut.start;
     // the transformation lands on the beat of "now"
     this.tNow = Math.max(this.tBut + 0.12, au.nearestBeat(this.wNow.start));
     this.tAnd = this.l3.words[0]!.start;
-    this.tM3 = au.timeOfBeat(Math.ceil(au.beatAt(this.tAnd) - 0.05));
-    this.tOpt = findWord(this.l3, 'optimizing,').start;
-    const wA = findWord(this.l3, 'accelerating,');
+    this.tM3 = PT ? this.tAnd : au.timeOfBeat(Math.ceil(au.beatAt(this.tAnd) - 0.05));
+    this.tOpt = findWord(this.l3, tr('optimizing,', 'otimizando,')).start;
+    const wA = findWord(this.l3, tr('accelerating,', 'acelerando,'));
     this.tAcc = wA.start; this.tAccEnd = wA.end;
     this.tI = this.l4.words[0]!.start;
-    this.tAtoms = findWord(this.l4, 'atoms').start;
-    const wR = findWord(this.l4, 'rearranging');
+    this.tAtoms = findWord(this.l4, tr('atoms', 'átomos')).start;
+    const wR = findWord(this.l4, tr('rearranging', 'rearranjando'));
     this.tRe = wR.start; this.tReEnd = wR.end;
     const downIn = (lo: number, hi: number) => au.downbeats.find((d) => d > lo && d < hi);
     const beatAfter = (x: number) => au.timeOfBeat(Math.ceil(au.beatAt(x) - 1e-3));
@@ -170,7 +171,7 @@ export default class SpacetimeScene extends Scene {
     // ---- I: beam-written lyric (vector font), in graticule divisions
     {
       const st = strokeText(this.l1.words.map((w) => w.w).join(' '), 'osmotron', 100);
-      const S = 0.95 / 100;
+      const S = PT ? Math.min(0.95 / 100, 14 / st.width) : 0.95 / 100;
       this.s1 = { st, ct: charTimes(this.l1.words), S, b0: 0.62, x0: (-st.width * S) / 2 };
     }
 
@@ -178,8 +179,8 @@ export default class SpacetimeScene extends Scene {
     {
       const mc = document.createElement('canvas').getContext('2d')!;
       mc.font = font(this.big, this.nowSize);
-      this.nowLay = layout('NOW', this.big, this.nowSize);
-      const o = this.nowLay.glyphs[1]!;
+      this.nowLay = layout(tr('NOW', 'A'), this.big, this.nowSize);
+      const o = this.nowLay.glyphs[PT ? 0 : 1]!;
       const m = mc.measureText('O');
       const oCy = (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2; // O centre above the baseline
       const C = this.lensCentre0();
@@ -220,9 +221,10 @@ export default class SpacetimeScene extends Scene {
     const row1: Dot[] = [];
     rows.forEach((ws, ri) => {
       const txt = ws.map((w) => w.w).join(' ');
-      const lay = layout(txt, famD, sz);
+      const rowSize = PT ? Math.min(sz, 1600 / Math.max(1, measure(txt, famD, sz)) * sz) : sz;
+      const lay = layout(txt, famD, rowSize);
       const x0 = W / 2 - lay.width / 2, y0 = ri === 0 ? 575 : 575 + sz * 1.08;
-      const tp = textPoints(txt, famD, sz, 6.2, 7 + ri);
+      const tp = textPoints(txt, famD, rowSize, 6.2, 7 + ri);
       const ranges: { x0: number; x1: number; w: Word }[] = [];
       let ci = 0;
       ws.forEach((w) => {
@@ -394,32 +396,32 @@ export default class SpacetimeScene extends Scene {
     const blink = Math.floor(t * 8) % 2 === 0;
     c.fillStyle = rgba('bone', 0.75 * a);
     c.textAlign = 'left';
-    c.fillText('CH1  0.2 V/div  DC', 96, 92);
+    c.fillText(tr('CH1  0.2 V/div  DC', 'CANAL 1  0,2 V/div  CC'), 96, 92);
     c.fillStyle = rgba('ash', 0.8 * a);
     c.fillText(`f = ${but > 0 ? '→ ∞' : hz.toFixed(3)} Hz`, 96, 120);
     c.fillStyle = rgba('bone', 0.75 * a);
-    c.fillText('CH2  P(doom)', 96, 160);
+    c.fillText(tr('CH2  P(doom)', 'CANAL 2  P(doom)'), 96, 160);
     c.fillStyle = rgba('signal', 0.95 * a);
-    c.fillText(formatPDoom(this.pd.value(t)), 96 + c.measureText('CH2  P(doom)  ').width, 160);
+    c.fillText(formatPDoom(this.pd.value(t)), 96 + c.measureText(tr('CH2  P(doom)  ', 'CANAL 2  P(doom)  ')).width, 160);
     c.fillStyle = rgba('ash', 0.7 * a);
-    c.fillText('(muted)', 96, 188);
+    c.fillText(tr('(muted)', '(mudo)'), 96, 188);
     c.textAlign = 'right';
     c.fillStyle = rgba('bone', 0.75 * a);
     c.fillText(`M  ${(60000 / bpm / 4).toFixed(1)} ms/div`, W - 96, 92);
-    const trig = but > 0 ? (blink ? 'NO SIGNAL' : '') : "TRIG'D    CH1";
+    const trig = but > 0 ? (blink ? tr('NO SIGNAL', 'SEM SINAL') : '') : tr("TRIG'D    CH1", 'DISPARO    CANAL 1');
     c.fillStyle = but > 0 ? rgba('signal', a) : rgba('ash', 0.8 * a);
     c.fillText(trig, W - 96, 120);
     if (but <= 0) {
       // ▲ (not in Plex Mono): a small triangle drawn in the blank cell before "CH1"
       const cell = c.measureText(' ').width;
-      const tx = W - 96 - c.measureText(' CH1').width - cell + (cell - 2) / 2;
+      const tx = W - 96 - c.measureText(tr(' CH1', ' CANAL 1')).width - cell + (cell - 2) / 2;
       c.beginPath(); c.moveTo(tx - 5.2, 120); c.lineTo(tx + 5.2, 120); c.lineTo(tx, 120 - 9.4); c.closePath(); c.fill();
     }
     // the run's own vital sign, calm, ticking down
     if (but <= 0) {
       const loss = 0.0213 - 0.0009 * prog(t, this.T0, this.tBut);
       c.fillStyle = rgba('ash', 0.7 * a);
-      c.fillText(`loss ${loss.toFixed(4)}  ·  stable`, W - 96, 148);
+      c.fillText(`${tr('loss', 'erro')} ${loss.toFixed(4)}  ·  ${tr('stable', 'estável')}`, W - 96, 148);
     }
     c.restore();
   }
@@ -491,7 +493,7 @@ export default class SpacetimeScene extends Scene {
       c.scale(slB, slB);
       c.font = font(this.big, this.butSize);
       c.fillStyle = heatCol(t - this.tBut, 0.96 * aB);
-      c.fillText('BUT', 0, 0);
+      c.fillText(tr('BUT', 'MAS'), 0, 0);
       c.restore();
       if (t >= this.wNow.start) {
         const aN = prog(t, this.wNow.start, this.wNow.start + 0.03) * (1 - gone);
@@ -500,10 +502,10 @@ export default class SpacetimeScene extends Scene {
         c.translate(C.x, C.y); c.scale(slN, slN); c.translate(-C.x, -C.y);
         c.font = font(this.big, this.nowSize);
         c.fillStyle = heatCol(t - this.wNow.start, 0.97 * aN);
-        c.fillText('NOW', this.nowX0, this.nowBase);
+        c.fillText(tr('NOW', 'A'), this.nowX0, this.nowBase);
         c.restore();
       }
-      if (t >= this.wThe.start) {
+      if (!PT && t >= this.wThe.start) {
         const aT = prog(t, this.wThe.start, this.wThe.start + 0.04) * (1 - gone);
         c.font = font(this.big, this.butSize);
         c.textAlign = 'right';
@@ -828,6 +830,29 @@ export default class SpacetimeScene extends Scene {
   /** The marquee ring ("And you're optimizing, accelerating,"). */
   drawRing(t: number, c: CanvasRenderingContext2D, K: number, e: number) {
     const ws = this.ringWords;
+    if (PT) {
+      // The longer Portuguese verbs disappeared behind the well during the crane
+      // shot. Keep the kinetic marquee in the upper safe area while the sheet turns.
+      const on = prog(t, this.l3.start - .15, this.l3.start) * (1 - prog(t, this.l3.end, Math.min(this.tI, this.l3.end + .3)));
+      if (on <= 0) return;
+      c.save(); c.textBaseline = 'alphabetic';
+      [ws.slice(0, 2), ws.slice(2)].forEach((row, ri) => {
+        const fam = F.archivo(87.5, 900), text = row.map(w => w.w.toUpperCase()).join(' ');
+        const size = Math.min(ri ? 98 : 110, 1630 / measure(text, fam, 100) * 100);
+        const lay = layout(text, fam, size);
+        const x0 = (W - lay.width) / 2, y = ri ? 255 : 145;
+        let ci = 0;
+        for (const w of row) {
+          const s = w.w.toUpperCase(), x = x0 + lay.glyphs[ci]!.x;
+          const width = measure(s, fam, size), p = Lyrics.wordProgress(w, t);
+          c.font = font(fam, size); c.fillStyle = rgba('bone', .22 * on); c.fillText(s, x, y);
+          c.save(); c.beginPath(); c.rect(x - 2, y - size, width * p + 2, size * 1.3); c.clip();
+          c.fillStyle = rgba(t < w.end ? 'signal' : 'bone', on); c.fillText(s, x, y); c.restore();
+          ci += w.w.length + 1;
+        }
+      });
+      c.restore(); return;
+    }
     const on = prog(t, this.tAnd - 0.25, this.tAnd) * (1 - prog(t, Math.max(this.tTop, this.tAccEnd - 0.06), this.tAccEnd + 0.08));
     if (on <= 0) return;
     const R = 6.2;

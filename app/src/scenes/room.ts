@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // Room plate — "The room, from inside" (chorus 1, after the hook).
 //
 // Three beats:
@@ -14,7 +15,7 @@
 //  C  "with a bag of shrooms": the board flips over on the snare while the camera whips up into
 //     a high orbit round the desk; a paper bag drops onto it, the rulebook's pages riffle on the
 //     eighths, mycelium spreads, the room breathes (warp + echo trails, the acid accent),
-//     mushrooms pop on the sixteenths, the orbit tips into a roll and "SHROOMS" tears off the
+//     mushrooms pop on the sixteenths, the orbit tips into a roll and tr("SHROOMS", "COGUMELOS") tears off the
 //     board toward the lens, ending in the exact screen layout the shoggoth plate picks up.
 import * as THREE from 'three';
 import { Scene, type Frame, type PostOverrides } from '../engine/scene';
@@ -194,7 +195,7 @@ export default class Room extends Scene {
     const w3 = this.L3.words;
     // the board flips over on the snare that lands with "with"
     this.tFlip = w3[0]!.start - 0.09;
-    const bagW = w3.find((w) => /bag/i.test(w.w)) ?? w3[2]!;
+    const bagW = PT ? w3[0]! : w3.find((w) => /bag/i.test(w.w)) ?? w3[2]!;
     this.tBag = bagW.start;
     this.tLand = au.timeOfBeat(Math.ceil(au.beatAt(this.tBag + 0.15)));
     this.tShrooms = w3[w3.length - 1]!.start;
@@ -575,7 +576,7 @@ export default class Room extends Scene {
     c.font = font(F.mono(400), 14);
     c.letterSpacing = '2px';
     c.fillStyle = rgba('ash', 0.8 * (1 - out));
-    c.fillText('GROWTH, AS ADVERTISED', x, 82);
+    c.fillText(tr('GROWTH, AS ADVERTISED', "CRESCIMENTO, COMO PROMETIDO"), x, 82);
     c.restore();
   }
 
@@ -612,7 +613,7 @@ export default class Room extends Scene {
     c.letterSpacing = '2px';
     c.fillStyle = rgba('bone', 0.75);
     c.textAlign = 'center';
-    c.fillText(`WDTH ${[62, 75, 87.5, 100, 112.5, 125][Lf.step]}  ·  d(FOOM)/dt > 0`, W / 2, Math.min(H - 170, Lf.base + 60));
+    c.fillText(`${tr('WDTH', 'LARGURA')} ${[62, 75, 87.5, 100, 112.5, 125][Lf.step]}  ·  d(FOOM)/dt > 0`, W / 2, Math.min(H - 170, Lf.base + 60));
     c.restore();
   }
 
@@ -627,7 +628,7 @@ export default class Room extends Scene {
     c.font = font(F.mono(500), 15);
     c.letterSpacing = '2px';
     c.fillStyle = rgba('ash', 0.85);
-    c.fillText('BRANCHES', x, 108);
+    c.fillText(tr('BRANCHES', "RAMOS"), x, 108);
     c.font = font(F.mono(400), 44);
     c.letterSpacing = '0px';
     const fl = pulse(t, this.gens[g]!, 0.06);
@@ -695,7 +696,7 @@ export default class Room extends Scene {
       }
       return { glyphs, m, base, cap: this.capK * S_PX * m, fam, words, x0: -(lay.width * m) / 2, width: lay.width * m };
     };
-    this.rowsA = [row(w2.slice(0, 3), F.archivo(100, 900), 0.3, -0.2, 4), row(w2.slice(3), F.archivo(87.5, 900), 0.48, 0.4, 3)];
+    this.rowsA = [row(w2.slice(0, PT ? 2 : 3), F.archivo(100, 900), 0.3, -0.2, 4), row(w2.slice(PT ? 2 : 3), F.archivo(87.5, 900), 0.48, 0.4, 3)];
     this.rowsB = [row(w3.slice(0, w3.length - 1), F.archivo(100, 900), 0.3, -0.2, 4), row(w3.slice(w3.length - 1), SHROOMS_FAM(), 0.48, 0.4, 5)];
   }
 
@@ -1260,9 +1261,9 @@ export default class Room extends Scene {
         }
       } });
     };
-    label(0, 2.1, 'OUT  ', F.mono(500), 0.075, rgba('bone', 0.65), true);
-    label(2.0, 2.24, 'EXIT', F.mono(500), 0.075, rgba('bone', 0.65));
-    label(2.0, 2.155, '(DECORATIVE)', F.mono(500), 0.06, rgba('signal', 0.85));
+    label(0, 2.1, tr('OUT  ', "SAÍDA  "), F.mono(500), 0.075, rgba('bone', 0.65), true);
+    label(2.0, 2.24, tr('EXIT', "SAÍDA"), F.mono(500), 0.075, rgba('bone', 0.65));
+    label(2.0, 2.155, tr('(DECORATIVE)', "(DECORATIVA)"), F.mono(500), 0.06, rgba('signal', 0.85));
     // cards
     for (const cd of this.cards) {
       const pose = this.cardPose(cd, t);
@@ -1328,11 +1329,11 @@ export default class Room extends Scene {
     c.fillText('我不懂', 0, -8);
     c.font = font(F.mono(400), 7);
     c.fillStyle = rgba('ink', 0.85);
-    c.fillText('(i don’t understand)', 0, 10);
+    c.fillText(tr('(i don’t understand)', "(não entendo)"), 0, 10);
     c.font = font(F.mono(400), 5);
     c.fillStyle = rgba('ink', 0.5);
-    c.fillText('RULE 4.2.1 · OUTPUT OK', 0, 40);
-    c.fillText(`P(DOOM) ${formatPDoom(this.pdoom.value(t))} · ALSO ???`, 0, 48);
+    c.fillText(tr('RULE 4.2.1 · OUTPUT OK', "REGRA 4.2.1 · SAÍDA OK"), 0, 40);
+    c.fillText(`P(DOOM) ${formatPDoom(this.pdoom.value(t))} · ${tr('ALSO', 'TAMBÉM')} ???`, 0, 48);
     c.textAlign = 'left';
     c.globalAlpha = 1;
   }
@@ -1368,7 +1369,7 @@ export default class Room extends Scene {
       c.strokeStyle = rgba('ash', 0.22);
       c.beginPath(); c.moveTo(ax, ay); c.lineTo(bx, by); c.stroke();
     }
-    const foot = sideA ? 'NO UNDERSTANDING ON THE PREMISES *' : '* CONTENTS NOT COVERED BY THE RULEBOOK';
+    const foot = sideA ? tr('NO UNDERSTANDING ON THE PREMISES *', "NÃO HÁ COMPREENSÃO NESTE RECINTO *") : tr('* CONTENTS NOT COVERED BY THE RULEBOOK', "* CONTEÚDO NÃO PREVISTO NO MANUAL");
     {
       c.font = font(F.mono(400), 20);
       const wpx = c.measureText(foot).width;
@@ -1402,7 +1403,7 @@ export default class Room extends Scene {
     }
   }
 
-  /** "SHROOMS" tears off the board and ends in the fixed screen layout the shoggoth plate continues. */
+  /** The final word tears off the board and ends in the fixed screen layout the shoggoth plate continues. */
   private drawShroomsWord(c: CanvasRenderingContext2D, t: number) {
     if (t < this.tEsc) return;
     const r = this.rowsB[1]!;
@@ -1444,10 +1445,10 @@ export default class Room extends Scene {
     c.beginPath(); c.moveTo(bx, by); c.lineTo(bx + 60, by - 40); c.lineTo(bx + 240, by - 40); c.stroke();
     c.font = font(F.mono(500), 13);
     c.fillStyle = rgba('bone', 0.9);
-    c.fillText('BAG (1)', bx + 66, by - 48);
+    c.fillText(tr('BAG (1)', "SACO (1)"), bx + 66, by - 48);
     c.font = font(F.mono(400), 11);
     c.fillStyle = rgba('acid', 0.9);
-    c.fillText('CONTENTS: FUNGAL', bx + 66, by - 24);
+    c.fillText(tr('CONTENTS: FUNGAL', "CONTEÚDO: FUNGOS"), bx + 66, by - 24);
     c.restore();
   }
 }

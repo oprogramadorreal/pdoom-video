@@ -13,11 +13,16 @@
 import { chromium, type Page } from 'playwright-core';
 import { mkdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
+import { PT_END_FADE_SECONDS } from '../src/locale';
 
 const argv = process.argv.slice(2);
 const mode = argv[0] ?? 'stills';
 const opt = (k: string, d?: string) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
 const flag = (k: string) => argv.includes(`--${k}`);
+const language = opt('lang', 'en')!.toLowerCase();
+if (!['en', 'pt-br'].includes(language)) throw new Error('--lang must be en or pt-BR');
+const PT = language === 'pt-br';
+const LANG = PT ? 'pt-BR' : 'en';
 const APP = path.resolve(import.meta.dir, '..');
 const SCALE = Math.max(1, Math.round(+opt('scale', '1')!));
 const OW = 1920 * SCALE, OH = 1080 * SCALE; // output size
@@ -37,7 +42,7 @@ async function ensureServer(): Promise<{ url: string; stop: () => void }> {
   if (await reachable(url)) return { url, stop: () => {} };
   const port = 5300 + Math.floor(Math.random() * 500);
   // no live reload: a file saved mid-render must not reload the page
-  const proc = Bun.spawn(['bunx', 'vite', '--port', String(port), '--strictPort'], { cwd: APP, stdout: 'ignore', stderr: 'ignore', env: { ...process.env, PDOOM_NO_HMR: '1' } });
+  const proc = Bun.spawn([process.execPath, 'x', 'vite', '--port', String(port), '--strictPort'], { cwd: APP, stdout: 'ignore', stderr: 'ignore', env: { ...process.env, PDOOM_NO_HMR: '1' } });
   const u = `http://localhost:${port}`;
   for (let i = 0; i < 100 && !(await reachable(u)); i++) await Bun.sleep(100);
   return { url: u, stop: () => proc.kill() };
@@ -47,26 +52,27 @@ async function openPage(url: string) {
   const browser = await chromium.launch({
     channel: 'chrome',
     headless: !flag('headed'),
-    args: ['--use-angle=metal', '--enable-gpu-rasterization', '--ignore-gpu-blocklist', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows'],
+    args: ['--enable-gpu-rasterization', '--ignore-gpu-blocklist', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows'],
   });
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
   const logs: string[] = [];
   page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') logs.push(`[${m.type()}] ${m.text()}`); });
   page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}`));
+  page.on('response', (r) => { if (r.status() >= 400) logs.push(`[http ${r.status()}] ${r.url()}`); });
   const only = opt('only');
-  await page.goto(`${url}/?export=1${only ? `&only=${only}` : ''}${SCALE !== 1 ? `&scale=${SCALE}` : ''}`);
+  await page.goto(`${url}/?export=1&lang=${LANG}${only ? `&only=${only}` : ''}${SCALE !== 1 ? `&scale=${SCALE}` : ''}`);
   await page.waitForFunction(() => (window as any).__pdoom?.ready || (window as any).__pdoom?.error, null, { timeout: 120000 });
   const err = await page.evaluate(() => (window as any).__pdoom.error);
-  if (err) throw new Error(`app failed to boot:\n${err}\n${logs.join('\n')}`);
+  if (err) { await browser.close(); throw new Error(`app failed to boot:\n${err}\n${logs.join('\n')}`); }
   const size: [number, number] = await page.evaluate(() => [(window as any).__pdoom.width ?? 1920, (window as any).__pdoom.height ?? 1080]);
   if (size[0] !== OW || size[1] !== OH) throw new Error(`app renders ${size[0]}x${size[1]}, expected ${OW}x${OH} (--scale ${SCALE})`);
   const sceneErrors: string[] = await page.evaluate(() => (window as any).__pdoom.errors);
-  if (sceneErrors.length) console.error('SCENE ERRORS:\n' + sceneErrors.join('\n'));
+  if (sceneErrors.length) { await browser.close(); throw new Error('SCENE ERRORS:\n' + sceneErrors.join('\n')); }
   return { browser, page, logs };
 }
 
 async function stills(page: Page, times: number[], outDir: string) {
-  mkdirSync(outDir, { recursive: true });
+  if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
   const files: string[] = [];
   for (const t of times) {
     const k: number = await page.evaluate(([t, s, sh]) => (window as any).__pdoom.still(t, s, sh), [t, SAMPLES, +opt('shutter', '0.5')!] as const);
@@ -98,14 +104,14 @@ async function sheet(page: Page, times: number[], cols: number, out: string) {
     });
     return cv.toDataURL('image/png');
   }, { times, cols });
-  mkdirSync(path.dirname(out), { recursive: true });
+  if (!existsSync(path.dirname(out))) mkdirSync(path.dirname(out), { recursive: true });
   await Bun.write(out, Buffer.from(dataUrl.split(',')[1]!, 'base64'));
 }
 
 async function video(page: Page, from: number, to: number, fps: number, out: string) {
-  mkdirSync(path.dirname(out), { recursive: true });
+  if (!existsSync(path.dirname(out))) mkdirSync(path.dirname(out), { recursive: true });
   const crf = opt('crf', '16')!;
-  const audio = path.join(ROOT, 'audio/pdoom.mp3');
+  const audio = path.join(ROOT, PT ? 'audio/pdoom-pt-BR.mp3' : 'audio/pdoom.mp3');
   const args = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${OW}x${OH}`, '-r', String(fps), '-i', 'pipe:0'];
   if (!flag('noaudio')) args.push('-ss', String(from), '-t', String(to - from), '-i', audio);
   // Frames are sRGB (toSRGB in the final pass): convert with the BT.709 matrix and tag the stream,
@@ -113,6 +119,14 @@ async function video(page: Page, from: number, to: number, fps: number, out: str
   // scale tags the matrix and range; primaries and transfer need setparams (the -color_* output flags don't reach the stream).
   args.push('-vf', 'vflip,scale=out_color_matrix=bt709,setparams=color_primaries=bt709:color_trc=bt709', '-c:v', 'libx264', '-preset', opt('preset', 'slow')!, '-crf', crf, '-pix_fmt', 'yuv420p', '-tune', 'grain', '-x264-params', opt('x264', 'aq-mode=3')!);
   if (!flag('noaudio')) args.push('-c:a', 'aac', '-b:a', '320k', '-shortest');
+  if (PT && !flag('noaudio')) {
+    const duration: number = await page.evaluate(() => (window as any).__pdoom.duration);
+    const remaining = duration - from;
+    // Match preview volume; source MP3 stays byte-for-byte unchanged. Handles
+    // clips starting within the fade, as well as the complete recording.
+    const initialVolume = Math.min(1, remaining / PT_END_FADE_SECONDS);
+    args.push('-af', `volume=${initialVolume},afade=t=out:st=${Math.max(0, remaining - PT_END_FADE_SECONDS)}:d=${Math.min(PT_END_FADE_SECONDS, remaining)}`);
+  }
   args.push('-movflags', '+faststart', out);
   const ff = Bun.spawn(args, { stdin: 'pipe', stdout: 'inherit', stderr: 'inherit' });
   let frames = 0;
@@ -139,16 +153,43 @@ async function video(page: Page, from: number, to: number, fps: number, out: str
   // wait for all frames to arrive
   while (frames < total) await Bun.sleep(20);
   ff.stdin.end();
-  await ff.exited;
+  const code = await ff.exited;
   server.stop();
+  if (code !== 0) throw new Error(`ffmpeg failed with exit code ${code}`);
   console.log(`\nwrote ${out} (${frames} frames in ${((performance.now() - t0) / 1000).toFixed(1)}s)`);
   console.log(`sub-frames per frame (count:frames): ${hist(used)}`);
 }
 
 const { url, stop } = await ensureServer();
-const { browser, page, logs } = await openPage(url);
+let activeBrowser: Awaited<ReturnType<typeof openPage>>['browser'] | undefined;
 try {
-  if (mode === 'gpu') {
+  const { browser, page, logs } = await openPage(url);
+  activeBrowser = browser;
+  if (mode === 'verify') {
+    const report = await page.evaluate(async () => {
+      const p = (window as any).__pdoom;
+      const times = new Set<number>([0, p.duration - 1 / 60]);
+      for (const w of p.engine.lyrics.words) for (const t of [w.start - 1 / 60, w.start + 1 / 60, (w.start + w.end) / 2, w.end]) times.add(t);
+      for (const e of p.timeline) for (const t of [e.start - 1 / 60, e.start + 1 / 60, e.end - 1 / 60]) times.add(t);
+      for (let t = 0; t < p.duration; t += 0.5) times.add(t);
+      let frames = 0;
+      for (const t of [...times].sort((a, b) => a - b)) {
+        if (t < 0 || t >= p.duration) continue;
+        p.still(t); frames++;
+        if (frames % 20 === 0) await new Promise((r) => setTimeout(r, 0));
+      }
+      const audio = new Audio(p.audioUrl);
+      await new Promise<void>((resolve, reject) => { audio.onloadedmetadata = () => resolve(); audio.onerror = () => reject(new Error('Audio asset failed')); });
+      if (Math.abs(audio.duration - p.duration) > 0.1) throw new Error(`Audio duration ${audio.duration} != timeline ${p.duration}`);
+      return { language: p.language, frames, duration: p.duration, audioDuration: audio.duration, timeline: p.timeline, errors: p.errors };
+    });
+    const file = path.resolve(opt('out', path.join(ROOT, `out/verify-${LANG}.json`))!);
+    if (!existsSync(path.dirname(file))) mkdirSync(path.dirname(file), { recursive: true });
+    const browserErrors = logs.filter((l) => /^\[(error|pageerror|http )/.test(l));
+    const result = { ...report, browserErrors, passed: report.errors.length === 0 && browserErrors.length === 0 };
+    await Bun.write(file, JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(result));
+  } else if (mode === 'gpu') {
     console.log(await page.evaluate(() => {
       const gl = document.createElement('canvas').getContext('webgl2')!;
       const ext = gl.getExtension('WEBGL_debug_renderer_info');
@@ -173,9 +214,10 @@ try {
   } else if (mode === 'plates') {
     const tl: { id: string; start: number; end: number }[] = await page.evaluate(() => (window as any).__pdoom.timeline);
     const figs = ['open', 'loss', 'room', 'shoggoth', 'spacetime', 'ascent', 'bureau', 'leftturn', 'paperclips', 'fuse', 'stack', 'dense', 'loom', 'ilya'];
-    const overrides: Record<string, number> = existsSync(path.join(APP, 'plates.json')) ? await Bun.file(path.join(APP, 'plates.json')).json() : {};
-    const dir = path.join(APP, 'public/plates');
-    mkdirSync(dir, { recursive: true });
+    const plateConfig = path.join(APP, PT ? 'plates.pt-br.json' : 'plates.json');
+    const overrides: Record<string, number> = existsSync(plateConfig) ? await Bun.file(plateConfig).json() : {};
+    const dir = path.join(APP, PT ? 'public/plates/pt-br' : 'public/plates');
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
     await page.evaluate(() => { (window as any).__pdoom.engine.hudOff = true; });
     for (let i = 0; i < figs.length; i++) {
       const e = tl.find((x) => x.id === figs[i]);
@@ -207,10 +249,13 @@ try {
     console.log(`frames ${r.n}  avg ${r.avg.toFixed(1)}ms  p50 ${r.p50.toFixed(1)}  p95 ${r.p95.toFixed(1)}  max ${r.max.toFixed(1)}  sub-frames ${hist(r.used)}`);
   } else if (mode === 'video') {
     const dur: number = await page.evaluate(() => (window as any).__pdoom.duration);
-    await video(page, +opt('from', '0')!, +opt('to', String(dur))!, +opt('fps', '60')!, path.resolve(opt('out', path.join(ROOT, 'out/pdoom.mp4'))!));
+    await video(page, +opt('from', '0')!, +opt('to', String(dur))!, +opt('fps', '60')!, path.resolve(opt('out', path.join(ROOT, PT ? 'out/pdoom-pt-BR.mp4' : 'out/pdoom.mp4'))!));
   }
+  const finalErrors: string[] = await page.evaluate(() => (window as any).__pdoom.errors);
+  if (finalErrors.length) throw new Error('SCENE ERRORS:\n' + finalErrors.join('\n'));
   if (logs.length) console.error('BROWSER LOG:\n' + logs.slice(0, 40).join('\n'));
+  if (logs.some((l) => /^\[(error|pageerror|http )/.test(l))) throw new Error('Browser errors occurred; render is incomplete (see log).');
 } finally {
-  await browser.close();
+  await activeBrowser?.close();
   stop();
 }

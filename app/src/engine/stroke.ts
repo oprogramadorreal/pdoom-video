@@ -36,6 +36,7 @@ export async function loadStrokeFonts() {
       const txt = await (await fetch(`fonts/stroke/${STROKE_FONTS[k]}`)).text();
       const f = parseSvgFont(txt);
       addTypographic(f);
+      addPortuguese(f);
       fonts.set(k, f);
     }),
   );
@@ -47,6 +48,29 @@ const inkBox = (strokes: V2[][]) => {
   return { x0, x1, y0, y1 };
 };
 const moved = (g: SGlyph, dx: number, dy = 0): V2[][] => g.strokes.map((s) => s.map((p) => ({ x: p.x + dx, y: p.y + dy })));
+
+/** The bundled plotter fonts are ASCII. Compose real accent strokes instead of losing vowels. */
+function addPortuguese(f: SFont) {
+  for (const ch of 'áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇ') {
+    if (f.glyphs.has(ch)) continue;
+    const [base, mark] = ch.normalize('NFD');
+    const g = f.glyphs.get(base!);
+    if (!g?.strokes.length) continue;
+    const b = inkBox(g.strokes), cx = (b.x0 + b.x1) / 2;
+    const u = f.upm, y = b.y1 + u * 0.07;
+    let accent: V2[][] = [];
+    const pts = (a: number[][]) => a.map(([x, dy]) => ({ x: cx + x! * u, y: y + dy! * u }));
+    if (mark === '\u0301') accent = [pts([[-.055, 0], [.065, .11]])];
+    if (mark === '\u0300') accent = [pts([[.055, 0], [-.065, .11]])];
+    if (mark === '\u0302') accent = [pts([[-.10, 0], [0, .095], [.10, 0]])];
+    if (mark === '\u0303') accent = [pts([[-.12, .015], [-.06, .055], [0, .035], [.06, .015], [.12, .055]])];
+    if (mark === '\u0308') accent = [pts([[-.065, .025], [-.065, .055]]), pts([[.065, .025], [.065, .055]])];
+    if (mark === '\u0327') accent = [[{ x: cx, y: b.y0 }, { x: cx - u * .035, y: b.y0 - u * .055 }, { x: cx + u * .04, y: b.y0 - u * .08 }, { x: cx + u * .03, y: b.y0 - u * .13 }, { x: cx - u * .045, y: b.y0 - u * .15 }]];
+    f.glyphs.set(ch, { adv: g.adv, strokes: [...g.strokes, ...accent] });
+  }
+  const bounds = inkBox([...f.glyphs.values()].flatMap((g) => g.strokes));
+  f.yLo = bounds.y0; f.dy = (bounds.y1 - bounds.y0 + 1) / ROWS;
+}
 
 /** Curly quotes and the ellipsis, built from the font's own ' and . (in Hershey the ' is already comma-shaped). */
 function addTypographic(f: SFont) {

@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // "Without a single CDR": the review schedule, drawn in world units on the same drawing sheet as
 // the roadmap (north of it). Time runs along x at the song's own rate, so the lyric is literally
 // scheduled: each word is a Gantt bar spanning exactly the time it is sung, filled as it is sung,
@@ -21,6 +22,7 @@ export const GANTT = {
 export interface ScheduleTimes {
   t0: number; // time at x = GX
   words: Word[]; // Without, a, single
+  tail: Word[]; // Portuguese continues after CDR: "no meio".
   cdr: Word;
   syl: number[]; // C, D, R
   SRR: number; PDR: number; TRR: number; LAUNCH: number;
@@ -80,9 +82,9 @@ export class Schedule {
       // title
       c.textAlign = 'left';
       c.font = font(F.mono(600), 30); c.fillStyle = rgba('bone', 0.95);
-      c.fillText('REVIEW SCHEDULE — AGI, v1.0', x0, L + G.RULER - 100);
+      c.fillText(tr("REVIEW SCHEDULE — AGI, v1.0", "CRONOGRAMA DE REVISÕES — AGI, v1.0"), x0, L + G.RULER - 100);
       c.font = font(F.mono(400), 20); c.fillStyle = rgba('ash', 0.9);
-      c.fillText('REV C · BASELINE · ALL DATES FIRM', x0, L + G.RULER - 70);
+      c.fillText(tr("REV C · BASELINE · ALL DATES FIRM", "REV C · REFERÊNCIA · DATAS DEFINIDAS"), x0, L + G.RULER - 70);
       // ruler: a tick per beat, weeks on the downbeats
       const ry = L + G.RULER;
       c.fillStyle = rgba('ash', 0.7);
@@ -98,15 +100,15 @@ export class Schedule {
         c.fillRect(x - 0.5 * px, ry + 34, 1 * px, L + 90 - ry - 34);
         if (down) {
           c.font = font(F.mono(500), 20); c.fillStyle = rgba('ash', 0.85);
-          c.fillText(`WK ${31 + T.downbeats.findIndex((d) => Math.abs(d - b) < 0.02)}`, x + 8, ry + 30);
+          c.fillText(`${tr('WK', 'SEM')} ${31 + T.downbeats.findIndex((d) => Math.abs(d - b) < 0.02)}`, x + 8, ry + 30);
         }
       }
       // lane
       c.strokeStyle = rgba('ash', 0.55); c.lineWidth = 1.5 * px; c.setLineDash([10, 8]);
       c.beginPath(); c.moveTo(x0, L); c.lineTo(x1, L); c.stroke(); c.setLineDash([]);
       c.font = font(F.mono(500), 18); c.fillStyle = rgba('graphite', 1);
-      c.fillText('MILESTONES', x0, L - 14);
-      c.fillText('LYRIC', x0, L + G.ROW[0]! + 6);
+      c.fillText(tr("MILESTONES", "MARCOS"), x0, L - 14);
+      c.fillText(tr("LYRIC", "LETRA"), x0, L + G.ROW[0]! + 6);
       this.drawRows(c, t, px);
       for (const m of this.ms) if (m.kind !== 'slot') this.drawMilestone(c, t, px, m);
       this.drawPlayhead(c, t, px);
@@ -121,7 +123,7 @@ export class Schedule {
         c.beginPath(); c.moveTo(lx + 6, ly - 9); c.lineTo(lx + 11, ly - 3); c.lineTo(lx + 21, ly - 17); c.stroke();
         c.lineCap = 'butt';
         c.font = font(F.mono(400), 24); c.fillStyle = rgba('ash', 1); c.textAlign = 'left';
-        c.fillText(`P(doom) ${this.pdoom} · within tolerance (±1.00)`, lx + 44, ly);
+        c.fillText(`P(doom) ${this.pdoom} · ${tr('within tolerance (±1.00)', 'dentro da tolerância (±1,00)')}`, lx + 44, ly);
       }
     }
     c.globalAlpha = o.alpha;
@@ -188,7 +190,7 @@ export class Schedule {
     // code label above, date below
     c.textAlign = 'center';
     c.font = font(F.mono(600), 44); c.fillStyle = rgba('bone', 0.95);
-    c.fillText(m.code, x, y - r - 22);
+    c.fillText(m.code === 'LAUNCH' ? tr('LAUNCH', 'LANÇAMENTO') : m.code, x, y - r - 22);
     const cw = c.measureText(m.code).width;
     c.textAlign = 'left';
     c.font = font(F.mono(500), 18); c.fillStyle = rgba('graphite', 1);
@@ -205,7 +207,7 @@ export class Schedule {
       c.strokeStyle = rgba('ash', 1); c.lineWidth = 5 * px;
       c.beginPath(); c.moveTo(x - r * 0.5, y); c.lineTo(x + r * 0.5, y); c.stroke();
       c.font = font(F.mono(500), 22); c.fillStyle = rgba('ash', prog(e, 0, 0.05));
-      c.fillText('SKIPPED', x, y + r + 34);
+      c.fillText(tr("SKIPPED", "IGNORADA"), x, y + r + 34);
       c.textAlign = 'left';
       return;
     }
@@ -216,14 +218,14 @@ export class Schedule {
     const s = 1 + 0.25 * Math.pow(0.5, e / 0.05);
     if (m.kind === 'launch') {
       c.font = font(F.mono(500), 22); c.fillStyle = rgba('signal', prog(e, 0, 0.05));
-      c.fillText('AHEAD OF SCHEDULE', x, y + r + 34);
+      c.fillText(tr("AHEAD OF SCHEDULE", "ANTES DO PRAZO"), x, y + r + 34);
     } else {
       c.save(); c.translate(x, y); c.scale(s, s);
       c.strokeStyle = rgba('ink', 1); c.lineWidth = 6 * px * 1.2; c.lineCap = 'round'; c.lineJoin = 'round';
       c.beginPath(); c.moveTo(-14, 0); c.lineTo(-4, 11); c.lineTo(16, -13); c.stroke();
       c.restore();
       c.font = font(F.mono(500), 22); c.fillStyle = rgba('ash', prog(e, 0, 0.05));
-      c.fillText('PASSED', x, y + r + 34);
+      c.fillText(tr("PASSED", "APROVADA"), x, y + r + 34);
     }
     // ring
     const rr = r * (1 + 2.2 * ease.outCubic(prog(e, 0, 0.35)));
@@ -328,10 +330,19 @@ export class Schedule {
       // status and footnote
       const sa = prog(t, T.syl[1]! - 0.02, T.syl[1]! + 0.05);
       c.font = font(F.mono(600), 26); c.fillStyle = rgba('signal', sa);
-      c.fillText('STATUS: NOT HELD', lx + 6, base + 52);
+      c.fillText(tr("STATUS: NOT HELD", "SITUAÇÃO: NÃO REALIZADA"), lx + 6, base + 52);
       const fa = prog(t, T.syl[0]! + 0.3, T.syl[0]! + 0.45);
       c.font = font(F.mono(400), 22); c.fillStyle = rgba('ash', fa);
-      c.fillText('* CDR: Critical Design Review', lx + 6, base + 92);
+      c.fillText(tr("* CDR: Critical Design Review", "* CDR: revisão crítica de projeto"), lx + 6, base + 92);
+      if (T.tail.length) {
+        c.font = font(F.archivo(87.5, 900), 72);
+        let tx = lx + 6;
+        for (const w of T.tail) {
+          c.fillStyle = rgba(t >= w.start && t < w.end ? 'signal' : 'bone', t >= w.start ? 1 : 0.12);
+          c.fillText(w.w, tx, base + 184);
+          tx += c.measureText(w.w + ' ').width;
+        }
+      }
     }
     c.textAlign = 'left';
   }

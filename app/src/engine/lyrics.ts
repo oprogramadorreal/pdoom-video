@@ -1,5 +1,6 @@
 // Word-timed lyrics (data/lyrics.json) with queries for karaoke rendering.
 import { smart } from './type';
+import { LYRICS_URLS } from '../locale';
 
 export interface Word {
   w: string; // display token (punctuation attached, typographic quotes: don’t, ’cause)
@@ -15,6 +16,8 @@ export interface Word {
 export interface Line {
   i: number;
   text: string;
+  /** Stable authoring alias; never displayed. Translations keep the source line identity. */
+  sourceText?: string;
   start: number;
   end: number;
   words: Word[];
@@ -37,7 +40,7 @@ export class Lyrics {
   }
 
   static async load(): Promise<Lyrics> {
-    for (const url of ['data/lyrics.json', 'data/lyrics.approx.json']) {
+    for (const url of LYRICS_URLS) {
       const r = await fetch(url);
       if (r.ok && (r.headers.get('content-type') ?? '').includes('json')) return new Lyrics(await r.json());
     }
@@ -63,7 +66,8 @@ export class Lyrics {
   /** Lines whose text includes `s` (case-insensitive, straight or curly quotes). Handy for finding a lyric by content. */
   find(s: string): Line[] {
     const q = fold(s);
-    return this.lines.filter((l) => fold(l.text).includes(q));
+    const source = this.lines.filter((l) => l.sourceText && fold(l.sourceText).includes(q));
+    return source.length ? source : this.lines.filter((l) => fold(l.text).includes(q));
   }
   /** First line containing `s`; throws if missing (fail loudly while authoring). */
   get(s: string, nth = 0): Line {
@@ -117,5 +121,5 @@ export class Lyrics {
   }
 }
 
-export const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9()]/g, '');
+export const norm = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9()]/g, '');
 const fold = (s: string) => s.toLowerCase().replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');

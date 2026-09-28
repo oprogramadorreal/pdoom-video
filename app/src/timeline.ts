@@ -4,6 +4,7 @@ import type { TimelineEntry } from './engine/engine';
 import type { SceneClass } from './engine/scene';
 import type { Lyrics } from './engine/lyrics';
 import type { AudioData } from './engine/audio';
+import { PT } from './locale';
 
 // Scene modules are discovered lazily so a missing/broken scene never breaks the build.
 const modules = import.meta.glob<{ default: SceneClass }>('./scenes/*.ts');
@@ -15,8 +16,11 @@ const scene = (name: string) => () => {
 export function makeTimeline(ly: Lyrics, au: AudioData): TimelineEntry[] {
   /** Cut on the last beat at/before the first word of the matching line (never after the word). */
   const cut = (q: string, nth = 0, tol = 0.02) => {
-    const s = ly.get(q, nth).words[0]!.start;
-    return au.timeOfBeat(Math.floor(au.beatAt(s + tol)));
+    const line = ly.get(q, nth), s = line.words[0]!.start;
+    const beat = au.timeOfBeat(Math.floor(au.beatAt(s + (PT ? 0 : tol))));
+    // A translated phrase can sustain across the original beat cut. Keep its last
+    // word visible; when necessary the cut follows the vocal instead of the grid.
+    return PT ? Math.min(s, Math.max(beat, ly.lines[line.i - 1]?.end ?? 0)) : beat;
   };
   /** Nearest downbeat to the end of a line. */
   const after = (q: string, nth = 0) => {
@@ -46,7 +50,8 @@ export function makeTimeline(ly: Lyrics, au: AudioData): TimelineEntry[] {
     loom: cut('Just as foretold'),
     ilya: cut('What did Ilya'),
     // the outro section from the music analysis if present (the last word may be a long held note)
-    outro: au.sections.find((x) => x.name === 'outro')?.start ?? after('Was it all for show'),
+    outro: PT ? Math.max(ly.get('Was it all for show').end, au.sections.find((x) => x.name === 'outro')?.start ?? 0)
+      : au.sections.find((x) => x.name === 'outro')?.start ?? after('Was it all for show'),
     end: au.duration,
   };
 

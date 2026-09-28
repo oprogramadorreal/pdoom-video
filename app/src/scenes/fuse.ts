@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // FIG. 10 `fuse` — the quiet tail of chorus 3.
 //  1. "Too late now, we lit the fuse": the spark's line is revealed as a braided, engraved fuse. The lyric rides
 //     along the cord; the spark burns through it in time with the voice (each word ignites as it is sung), the words
@@ -227,6 +228,7 @@ export default class Fuse extends Scene {
   bluesLay!: TextLayout;
   bluesFam = F.serif(600, true);
   bluesSize = 176;
+  bluesCharTimes: [number, number][] = [];
   /** String displacement (plane px, up) sampled at SIM_HZ from simT0: the singer's pitch bends it. */
   simT0 = 0; sim = new Float32Array(0); simV = new Float32Array(0);
   orthLay!: TextLayout;
@@ -242,10 +244,22 @@ export default class Fuse extends Scene {
     this.L1 = lyrics.get('lit the fuse');
     this.L2 = lyrics.get('Orthogonality');
     const find = (l: Line, q: string) => l.words.find((w) => norm(w.w).startsWith(norm(q))) ?? l.words[l.words.length - 1]!;
-    this.wFuse = find(this.L1, 'fuse');
+    this.wFuse = find(this.L1, PT ? 'estopim' : 'fuse');
     this.wOrth = find(this.L2, 'orthogonal');
     this.wThesis = find(this.L2, 'thesis');
     this.wBlues = find(this.L2, 'blues');
+    if (PT) {
+      const ws = this.L2.words;
+      this.wOrth = ws[0]!;
+      this.wThesis = { ...ws[1]!, w: ws.slice(1, 3).map(w => w.w).join(' '), end: ws[2]!.end };
+      this.wBlues = { ...ws[3]!, w: ws.slice(3).map(w => w.w).join(' '), end: this.L2.end };
+      this.bluesSize = 116;
+      for (const [wi, w] of ws.slice(3).entries()) {
+        if (wi) this.bluesCharTimes.push([w.start, w.start]);
+        const chars = Array.from(w.w.replace(/[^\p{L}]/gu, ''));
+        chars.forEach((_, i) => this.bluesCharTimes.push([lerp(w.start, w.end, i / chars.length), lerp(w.start, w.end, (i + 1) / chars.length)]));
+      }
+    }
     const au = audio;
     this.T0 = this.ctx.start;
     this.tEnd = this.ctx.end;
@@ -267,7 +281,7 @@ export default class Fuse extends Scene {
     this.tBluesDb = au.nearestBeat(this.wBlues.start);
     this.tFit = this.tString;
     this.initString();
-    this.bluesLay = layout(this.wBlues.w.replace(/[^A-Za-z]/g, ''), this.bluesFam, this.bluesSize, 1);
+    this.bluesLay = layout(this.wBlues.w.replace(PT ? /[^\p{L}\s]/gu : /[^A-Za-z]/g, ''), this.bluesFam, this.bluesSize, 1);
 
     // ---- the fuse path (world px): a long lazy S across and beyond the frame
     const ctrl: V2[] = [];
@@ -322,7 +336,7 @@ export default class Fuse extends Scene {
 
     // ---- blue plane: "Orthogonality thesis" along the x axis
     const ofam = F.archivo(100, 500);
-    this.orthLay = layout(`${this.wOrth.w} ${this.wThesis.w}`, ofam, 78, 2);
+    this.orthLay = layout(`${this.wOrth.w} ${this.wThesis.w}`, ofam, PT ? 70 : 78, 2);
     const nO = Array.from(this.wOrth.w).length;
     this.orthGlyphT = this.orthLay.glyphs.map((g) => {
       const inO = g.i < nO;
@@ -332,6 +346,14 @@ export default class Fuse extends Scene {
       const dur = Math.min(w.end - w.start, inO ? 0.8 : 0.4);
       return w.start + (Math.max(0, j) / n) * dur;
     });
+    if (PT) {
+      const times: number[] = [];
+      this.L2.words.slice(0, 3).forEach((w, wi) => {
+        if (wi) times.push(w.start);
+        Array.from(w.w).forEach((_, i) => times.push(lerp(w.start, w.end, i / w.w.length)));
+      });
+      this.orthGlyphT = times;
+    }
     const sk: [number, number][] = [[this.tDrop1 - 0.2, O.x], [this.tBlue + 0.001, this.orthX0 - 4]];
     this.orthLay.glyphs.forEach((g, i) => sk.push([this.orthGlyphT[i]!, this.orthX0 + g.x]));
     const xTextEnd = this.orthX0 + this.orthLay.width;
@@ -342,10 +364,10 @@ export default class Fuse extends Scene {
     // ---- agents
     const rnd = mulberry32(1010);
     const labels = [
-      ['thermostat', 0.07, 0.12], ['chess engine', 0.36, 0.08], ['paperclip maximizer', 0.93, 0.05], ['you', 0.1, 0.45],
-      ['golden retriever', 0.12, 0.9], ['a very capable stapler', 0.84, 0.2], ['the market', 0.5, 0.95], ['evolution', 0.2, 0.2],
-      ['me', 0.64, 0.15],   // the singer, carrying the P(doom) cameo
-      ['helpful assistant (claimed)', 0.95, 0.72], ['a committee', 0.45, 0.2], ['?', 0.97, 0.97],
+      [tr("thermostat", "termostato"), 0.07, 0.12], [tr("chess engine", "motor de xadrez"), 0.36, 0.08], [tr("paperclip maximizer", "maximizador de clipes"), 0.93, 0.05], [tr("you", "você"), 0.1, 0.45],
+      [tr("golden retriever", "golden retriever"), 0.12, 0.9], [tr("a very capable stapler", "um grampeador muito capaz"), 0.84, 0.2], [tr("the market", "o mercado"), 0.5, 0.95], [tr("evolution", "evolução"), 0.2, 0.2],
+      [tr("me", "eu"), 0.64, 0.15],   // the singer, carrying the P(doom) cameo
+      [tr("helpful assistant (claimed)", "assistente útil (segundo ele)"), 0.95, 0.72], [tr("a committee", "um comitê"), 0.45, 0.2], ['?', 0.97, 0.97],
     ] as const;
     const px0 = 470, px1 = 1650, py0 = 200, py1 = 690;
     const bStart = au.beatAt(this.tYAxis);
@@ -363,7 +385,7 @@ export default class Fuse extends Scene {
       const x = lerp(px0, px1, u), y = lerp(py1, py0, v);
       const beat = bStart + 1 + Math.round(((i % 6) + 0.5 * (i % 2)) * bk * 2) / 2;
       const lx = u > 0.7 ? -1 : 1, ly = v > 0.8 ? 1 : -1;
-      const pd = name === 'me';
+      const pd = name === tr("me", "eu");
       lab.push({ x, y, t0: au.timeOfBeat(beat), size: 6, kind: 4, phase: i * 1.7, group: i % 2, depth: 1, label: name, lx, ly, pdoom: pd });
       const w = (pd ? 'me · P(doom) 0.00'.length : name.length) * 9.6 + 50;
       boxes.push({ x0: lx > 0 ? x - 16 : x - w, x1: lx > 0 ? x + w : x + 16, y0: y + ly * 16 - 20, y1: y + ly * 16 + 16 });
@@ -425,7 +447,11 @@ export default class Fuse extends Scene {
     this.sim = new Float32Array(n); this.simV = new Float32Array(n);
     // fill short unvoiced gaps (< 70 ms) so a glide is not read as a release
     const raw: (number | null)[] = [];
-    for (let i = 0; i < n; i++) raw.push(bluesPitch(this.simT0 + i / HZ, wb.start));
+    for (let i = 0; i < n; i++) {
+      const t = this.simT0 + i / HZ;
+      const ptPitch = PT ? this.ctx.audio.env('pitchMidi', t) : 0;
+      raw.push(PT ? (ptPitch > 0 ? ptPitch : null) : bluesPitch(t, wb.start));
+    }
     const gap = Math.round(0.07 * HZ);
     for (let i = 0; i < n; i++) {
       if (raw[i] != null) continue;
@@ -846,9 +872,9 @@ export default class Fuse extends Scene {
     c.font = font(F.mono(500), 17); c.letterSpacing = '5px';
     c.fillStyle = rgba('bone', 0.85 * guide);
     c.textAlign = 'right';
-    c.fillText('INTELLIGENCE →', XEND - 10, O.y + 40);
+    c.fillText(tr("INTELLIGENCE →", "INTELIGÊNCIA →"), XEND - 10, O.y + 40);
     c.textAlign = 'left';
-    if (ky > 0) { c.fillStyle = rgba('bone', 0.85 * ky); c.fillText('GOALS ↑', O.x + 22, YEND + 16); }
+    if (ky > 0) { c.fillStyle = rgba('bone', 0.85 * ky); c.fillText(tr("GOALS ↑", "OBJETIVOS ↑"), O.x + 22, YEND + 16); }
     c.letterSpacing = '0px';
     if (kf > 0) {
       c.font = font(F.mono(500), 18); c.fillStyle = rgba('bone', 0.9 * kf);
@@ -861,7 +887,7 @@ export default class Fuse extends Scene {
     if (kn > 0) {
       c.font = font(F.serif(400, true), 24); c.fillStyle = rgba('bone', 0.7 * kn);
       c.textAlign = 'right';
-      c.fillText('Any level of intelligence, any final goal.', XEND - 10, YEND + 10);
+      c.fillText(tr("Any level of intelligence, any final goal.", "Qualquer nível de inteligência, qualquer objetivo final."), XEND - 10, YEND + 10);
       c.textAlign = 'left';
     }
 
@@ -958,7 +984,7 @@ export default class Fuse extends Scene {
       const y = this.stringY(gx, D) - 7;
       const e = 2;
       const ang = Math.atan2(this.stringY(gx + e, D) - this.stringY(gx - e, D), 2 * e);
-      const tg = wb.start + (i / lay.glyphs.length) * span;
+      const tg = PT ? this.bluesCharTimes[i]?.[0] ?? wb.end : wb.start + (i / lay.glyphs.length) * span;
       const sung = t >= tg;
       c.save();
       c.translate(gx, y); c.rotate(ang);
@@ -994,7 +1020,7 @@ export default class Fuse extends Scene {
     // bend +12 — tab notation: a curved arrow from the rest pitch up to the bent pitch
     const kb = prog(t, this.tLeap - 0.02, this.tLeapEnd + 0.05, ease.outCubic);
     const bA = kb * (1 - prog(t, this.tBack - 0.2, this.tBack + 0.2));
-    if (bA > 0) {
+    if (bA > 0 && !PT) {
       const ax = x0 + lay.width + 90, baseY = STRING.y - 16;
       const peak = this.stringY(XP, Math.max(D, this.bend(this.tLeapEnd))) - sz * 0.35;
       const tipY = Math.min(baseY - 60, peak), tipX = ax + 64;
@@ -1012,13 +1038,13 @@ export default class Fuse extends Scene {
         c.textAlign = 'center';
         c.fillText('+12', tipX, tipY - 14);
         c.font = font(F.mono(400), 13); c.fillStyle = rgba('ash', 0.9 * bA);
-        c.fillText('(one octave)', tipX, tipY - 36);
+        c.fillText(tr("(one octave)", "(uma oitava)"), tipX, tipY - 36);
         c.textAlign = 'left';
       }
     }
     // the blue note: a scrap of staff, one B-flat on its middle line; the flat and the note in orange
     const kf = prog(t, this.tBlueNote - 0.06, this.tBlueNote + 0.25, ease.outCubic);
-    if (kf > 0 && this.tBlueNote < this.tEnd) {
+    if (kf > 0 && this.tBlueNote < this.tEnd && !PT) {
       const sp = 12, sw = 150;
       const fx = BLUE_NOTE.x, fy = BLUE_NOTE.y;
       c.save();
@@ -1036,7 +1062,7 @@ export default class Fuse extends Scene {
       const la = prog(t, this.tBlueNote + 0.12, this.tBlueNote + 0.4);
       c.font = font(F.mono(400), 14); c.letterSpacing = '1px';
       c.fillStyle = rgba('ash', 0.95 * la);
-      c.fillText('B-flat  ·  the blue note', fx, fy + 3 * sp + 22);
+      c.fillText(tr("B-flat  ·  the blue note", "Si bemol  ·  a blue note"), fx, fy + 3 * sp + 22);
       c.restore();
     }
     c.letterSpacing = '0px';

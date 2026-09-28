@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // FIG. 11 — "Architecture (recursive)". The bridge, part 1:
 //   “Just transformers all the way!” / Till you learned to disobey
 // An infinite vertical stack of transformer blocks drawn as technical line diagrams. The camera
@@ -67,6 +68,7 @@ export default class Stack extends Scene {
   private disobey!: Word;
   private disobeyLetters: TextPlane[] = [];
   private disobeyGlyphX: number[] = [];
+  private disobeyCharTimes: [number, number][] = [];
   private quoteOpen!: TextPlane;
   private quoteClose!: TextPlane;
   private labels = new Map<number, Seg[]>();
@@ -81,10 +83,10 @@ export default class Stack extends Scene {
     const { lyrics, audio } = this.ctx;
     const q = lyrics.get('transformers all the way');
     const till = lyrics.get('Till you learned');
-    this.disobey = till.words[till.words.length - 1]!;
+    this.disobey = PT ? { ...till.words[3]!, w: till.words.slice(3).map(w => w.w).join(' '), end: till.end } : till.words[till.words.length - 1]!;
     const t0 = this.ctx.start, t1 = this.ctx.end;
     this.pd = new PDoom(lyrics);
-    const words = [...q.words, ...till.words];
+    const words = [...q.words, ...(PT ? [...till.words.slice(0, 3), this.disobey] : till.words)];
     this.craneEnd = Math.max(t0 + 0.22, Math.min(t0 + 0.62, q.words[0]!.start + 0.1));
 
     // --- steps: one per beat until the fall stops dead near "disobey" ---
@@ -146,8 +148,19 @@ export default class Stack extends Scene {
     // tracked about as tight as before, the inks of E–Y kept a hairline apart
     {
       const fam = F.archivo(75, 900);
-      const text = this.disobey.w.replace(/[^A-Za-z]/g, '').toUpperCase();
-      const capH = 2.3, minGap = capH * 0.04;
+      const text = this.disobey.w.replace(PT ? /[^\p{L}\s]/gu : /[^A-Za-z]/g, '').toUpperCase();
+      if (PT) {
+        const tail = till.words.slice(3);
+        for (const [wi, word] of tail.entries()) {
+          const chars = Array.from(word.w.replace(/[^\p{L}]/gu, ''));
+          chars.forEach((_, ci) => this.disobeyCharTimes.push([
+            lerp(word.start, word.end, ci / chars.length),
+            lerp(word.start, word.end, (ci + 1) / chars.length),
+          ]));
+          if (wi < tail.length - 1) this.disobeyCharTimes.push([word.end, word.end + 0.001]);
+        }
+      }
+      const capH = PT ? 1.65 : 2.3, minGap = capH * 0.04;
       const lay = layout(text, fam, 100, -0.03 * 100);
       let shift = 0, right = -Infinity;
       const pl: TextPlane[] = [];
@@ -157,7 +170,7 @@ export default class Stack extends Scene {
         const xl = (lay.glyphs[i]!.x / 100) * tp.em + tp.inkX;
         const x = Math.max(xl + shift, right + minGap);
         shift = x - xl;
-        right = x + tp.w;
+        right = x + tp.w + (PT && ch === ' ' ? capH * 0.28 : 0);
         this.disobeyGlyphX.push(x);
         this.text3.add(tp.mesh);
       });
@@ -187,7 +200,7 @@ export default class Stack extends Scene {
     for (const o of this.text3.children) ((o as THREE.Mesh).material as THREE.Material).depthTest = true;
     // phase cuts (camera setups change on these step times)
     const gFirst = (re: RegExp) => this.groups.find((g) => g.words.some((w) => re.test(w.w)));
-    const gAll = gFirst(/^all$/i), gTill = gFirst(/^till$/i);
+    const gAll = gFirst(PT ? /^simples$/i : /^all$/i), gTill = gFirst(PT ? /^até$/i : /^till$/i);
     this.phaseCuts = [
       { t: t0, id: 'A' },
       ...(gAll ? [{ t: gAll.stepT, id: 'C' }] : []),
@@ -293,10 +306,10 @@ export default class Stack extends Scene {
       }
       label(name, (BX0 + BX1) / 2, (y0 + y1) / 2, Math.min(0.26, (y1 - y0) * 0.36), C_ASH, 0.95);
     };
-    box(-2.15, -1.15, 'MULTI-HEAD ATTENTION', 3);
-    box(-0.8, -0.3, 'ADD & NORM');
-    box(0.25, 1.25, 'FEED FORWARD');
-    box(1.6, 2.1, 'ADD & NORM');
+    box(-2.15, -1.15, tr("MULTI-HEAD ATTENTION", "ATENÇÃO MULTICABEÇA"), 3);
+    box(-0.8, -0.3, tr("ADD & NORM", "SOMA E NORMALIZAÇÃO"));
+    box(0.25, 1.25, tr("FEED FORWARD", "PROPAGAÇÃO DIRETA"));
+    box(1.6, 2.1, tr("ADD & NORM", "SOMA E NORMALIZAÇÃO"));
     // main path (hot)
     const hotW = 1.6;
     s([MX, -HY, z], [MX, -2.55, z], hotW, C_BONE, 0.8, Hh);
@@ -327,9 +340,9 @@ export default class Stack extends Scene {
     label('K', MX - 0.25, -2.42, 0.14, C_ASH, 0.9);
     label('V', MX + 1.8 - 0.25, -2.42, 0.14, C_ASH, 0.9);
     // title & specs
-    label('TRANSFORMER BLOCK', -HX + 0.55, HY - 0.55, 0.17, C_ASH, 0.9, true);
+    label(tr("TRANSFORMER BLOCK", "BLOCO TRANSFORMER"), -HX + 0.55, HY - 0.55, 0.17, C_ASH, 0.9, true);
     label('D_MODEL 12288', 4.0, -1.0, 0.12, C_GRAPH, 1, true);
-    label('HEADS 96', 4.0, -1.35, 0.12, C_GRAPH, 1, true);
+    label(tr("HEADS 96", "CABEÇAS 96"), 4.0, -1.35, 0.12, C_GRAPH, 1, true);
     label('FFN 4×', 4.0, 0.75, 0.12, C_GRAPH, 1, true);
     label('PRE-LN', 4.0, 1.1, 0.12, C_GRAPH, 1, true);
     // registration crosses
@@ -648,7 +661,8 @@ export default class Stack extends Scene {
     const d = this.disobeyAngles(t);
     this.disobeyLetters.forEach((tp, i) => {
       const ri = n - 1 - i;
-      const lp = clamp(pr * n - ri);
+      const ct = this.disobeyCharTimes[i];
+      const lp = PT && ct ? prog(t, ct[0], ct[1]) : clamp(pr * n - ri);
       const kk = lp > 0 ? ease.outBack(clamp(lp * 1.5), 2.2) : 0;
       const drop = (hash(i, 7) - 0.5) * 0.55 * kk;
       const rot = (hash(i, 9) - 0.5) * 0.3 * kk;
@@ -682,14 +696,14 @@ export default class Stack extends Scene {
     c.font = font(F.mono(500), 15);
     c.letterSpacing = '3px';
     c.fillStyle = rgba('bone', 0.55);
-    c.fillText('DEPTH', 110, 118);
+    c.fillText(tr("DEPTH", "PROFUNDIDADE"), 110, 118);
     c.font = font(F.mono(400), 30);
     c.letterSpacing = '0px';
     c.fillStyle = rgba('bone', 0.9);
     c.fillText(`L.${String(layer).padStart(3, '0')} / ${t >= this.stopT ? String(layer).padStart(3, '0') : '∞'}`, 108, 154);
     c.font = font(F.mono(400), 13);
     c.fillStyle = rgba('bone', 0.4);
-    c.fillText('N × transformer block, N → ∞', 110, 178);
+    c.fillText(tr("N × transformer block, N → ∞", "N × bloco transformer, N → ∞"), 110, 178);
     // P(doom) cameo under the depth gauge
     c.fillStyle = rgba('bone', 0.18); c.fillRect(110, 194, 236, 1);
     c.font = font(F.mono(500), 15); c.letterSpacing = '2px'; c.fillStyle = rgba('signal', 0.95);
@@ -715,7 +729,7 @@ export default class Stack extends Scene {
       c.fillText(` = ${deg.toFixed(1)}°`, a.x + 66 + 2 * c.measureText('0').width, a.y - 50);
       c.font = font(F.mono(400), 14);
       c.fillStyle = rgba('bone', 0.7);
-      c.fillText('MISALIGNED (1 of ∞)', a.x + 66, a.y - 18);
+      c.fillText(tr("MISALIGNED (1 of ∞)", "DESALINHADO (1 de ∞)"), a.x + 66, a.y - 18);
       c.restore();
     }
   }

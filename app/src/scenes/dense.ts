@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // "Scale, post-Chinchilla". The bridge, part 2, in three movements cut on the beat:
 //  1–2. "Post-Chinchilla, super-dense" / "Breaking through each safety fence": typographic
 //     pressure. The lyric is compressed kick by kick inside the broadcast title-safe area until it
@@ -41,6 +42,11 @@ export default class Dense extends Scene {
     this.c2 = cutBeat(audio, this.L2.words[0]!.start);
     this.c3 = cutBeat(audio, this.L3.words[0]!.start);
     this.c4 = cutBeat(audio, this.L4.words[0]!.start);
+    if (PT) {
+      this.c2 = Math.min(this.L2.words[0]!.start, Math.max(this.L1.words.at(-1)!.end, this.c2));
+      this.c3 = Math.min(this.L3.words[0]!.start, Math.max(this.L2.words.at(-1)!.end, this.c3));
+      this.c4 = Math.min(this.L4.words[0]!.start, Math.max(this.L3.words.at(-1)!.end, this.c4));
+    }
     this.beats = beatsIn(audio, this.ctx.start - 2, this.ctx.end + 1);
     this.pd = new PDoom(lyrics);
     this.press = new Press(audio, this.L1, this.L2, this.ctx.start, this.c2, this.c3);
@@ -116,18 +122,18 @@ export default class Dense extends Scene {
     c.strokeStyle = rgba('bone', 0.35); c.lineWidth = 1; c.strokeRect(pxX + 0.5, pxY + 0.5, 380, ph);
     c.translate(pxX - 96, pxY - 88);
     c.font = font(F.mono(500), 14); c.letterSpacing = '3px'; c.fillStyle = rgba('bone', 0.6);
-    c.fillText('ACCELERATORS ONLINE', 116, 116);
+    c.fillText(tr("ACCELERATORS ONLINE", "ACELERADORES ATIVOS"), 116, 116);
     c.letterSpacing = '0px';
     c.font = font(F.mono(500), 58); c.fillStyle = t >= wH.start ? rgba('bone', 0.95) : rgba('bone', 0.4);
-    c.fillText(val.toLocaleString('en-US').padStart(7, ' '), 112, 178);
+    c.fillText(val.toLocaleString(PT ? 'pt-BR' : 'en-US').padStart(7, ' '), 112, 178);
     c.font = font(F.mono(400), 14); c.fillStyle = rgba('bone', 0.5);
-    c.fillText(`util ${(97 + 2.9 * Math.abs(Math.sin(t * 3.1))).toFixed(1)}%  ·  1.4 GW  ·  ${GXY} cells`, 116, 212);
+    c.fillText(`util ${(97 + 2.9 * Math.abs(Math.sin(t * 3.1))).toFixed(1)}%  ·  1.4 GW  ·  ${GXY} ${tr('cells', 'células')}`, 116, 212);
     // P(doom) cameo: one more line on the dashboard, a hairline rule above it
     c.fillStyle = rgba('bone', 0.18); c.fillRect(116, 226, 348, 1);
     c.font = font(F.mono(500), 15); c.letterSpacing = '2px'; c.fillStyle = rgba('signal', 0.95);
     c.fillText(`P(DOOM) ${formatPDoom(this.pd.value(t))}`, 116, 250);
     c.letterSpacing = '0px'; c.font = font(F.mono(400), 13); c.fillStyle = rgba('bone', 0.45);
-    c.textAlign = 'right'; c.fillText('scaling as planned', 116 + 348, 250); c.textAlign = 'left';
+    c.textAlign = 'right'; c.fillText(tr("scaling as planned", "escala conforme previsto"), 116 + 348, 250); c.textAlign = 'left';
     c.restore();
     this.ctx.comp.draw(renderer, L.upload(), out);
     return { bloom: 0.55, vignette: 0.45, ca: 1.3 };

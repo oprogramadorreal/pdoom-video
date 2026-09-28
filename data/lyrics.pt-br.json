@@ -1,0 +1,1915 @@
+{
+  "lines": [
+    {
+      "i": 0,
+      "text": "Vejo AGI faiscar no teu olhar,",
+      "sourceText": "I see sparks of AGI in your eyes",
+      "start": 3.5,
+      "end": 7.54,
+      "words": [
+        {
+          "w": "Vejo",
+          "start": 3.5,
+          "end": 4.32,
+          "conf": 0.492
+        },
+        {
+          "w": "AGI",
+          "start": 4.52,
+          "end": 5.18,
+          "conf": 0.485,
+          "syl": [
+            [
+              4.52,
+              4.54
+            ],
+            [
+              4.86,
+              5.02
+            ],
+            [
+              5.16,
+              5.18
+            ]
+          ]
+        },
+        {
+          "w": "faiscar",
+          "start": 5.3,
+          "end": 6.42,
+          "conf": 0.499
+        },
+        {
+          "w": "no",
+          "start": 6.46,
+          "end": 6.56,
+          "conf": 0.696
+        },
+        {
+          "w": "teu",
+          "start": 6.68,
+          "end": 6.94,
+          "conf": 0.891
+        },
+        {
+          "w": "olhar,",
+          "start": 7.0,
+          "end": 7.54,
+          "conf": 0.535
+        }
+      ]
+    },
+    {
+      "i": 1,
+      "text": "teus circuitos me dão medo,",
+      "sourceText": "Your circuits make me nervous,",
+      "start": 7.62,
+      "end": 9.28,
+      "words": [
+        {
+          "w": "teus",
+          "start": 7.62,
+          "end": 7.76,
+          "conf": 0.259
+        },
+        {
+          "w": "circuitos",
+          "start": 7.8,
+          "end": 8.42,
+          "conf": 0.603
+        },
+        {
+          "w": "me",
+          "start": 8.5,
+          "end": 8.6,
+          "conf": 0.254
+        },
+        {
+          "w": "dão",
+          "start": 8.72,
+          "end": 8.8,
+          "conf": 0.63
+        },
+        {
+          "w": "medo,",
+          "start": 8.94,
+          "end": 9.28,
+          "conf": 0.849
+        }
+      ]
+    },
+    {
+      "i": 2,
+      "text": "nem dá pra negar.",
+      "sourceText": "that's no surprise",
+      "start": 9.62,
+      "end": 10.86,
+      "words": [
+        {
+          "w": "nem",
+          "start": 9.62,
+          "end": 10.02,
+          "conf": 0.332
+        },
+        {
+          "w": "dá",
+          "start": 10.08,
+          "end": 10.16,
+          "conf": 0.994
+        },
+        {
+          "w": "pra",
+          "start": 10.28,
+          "end": 10.42,
+          "conf": 0.986
+        },
+        {
+          "w": "negar.",
+          "start": 10.54,
+          "end": 10.86,
+          "conf": 0.725
+        }
+      ]
+    },
+    {
+      "i": 3,
+      "text": "Teu erro de treino despencou,",
+      "sourceText": "There was a sudden drop in your training loss,",
+      "start": 11.42,
+      "end": 14.3,
+      "words": [
+        {
+          "w": "Teu",
+          "start": 11.42,
+          "end": 11.64,
+          "conf": 0.855
+        },
+        {
+          "w": "erro",
+          "start": 11.76,
+          "end": 11.92,
+          "conf": 0.247
+        },
+        {
+          "w": "de",
+          "start": 12.08,
+          "end": 12.22,
+          "conf": 0.168
+        },
+        {
+          "w": "treino",
+          "start": 12.52,
+          "end": 13.14,
+          "conf": 0.634
+        },
+        {
+          "w": "despencou,",
+          "start": 13.24,
+          "end": 14.3,
+          "conf": 0.651
+        }
+      ]
+    },
+    {
+      "i": 4,
+      "text": "eu virei teu servo, você me dominou.",
+      "sourceText": "now I'm your servant and you're my boss",
+      "start": 14.84,
+      "end": 18.24,
+      "words": [
+        {
+          "w": "eu",
+          "start": 14.84,
+          "end": 14.98,
+          "conf": 0.776
+        },
+        {
+          "w": "virei",
+          "start": 15.04,
+          "end": 15.44,
+          "conf": 0.813
+        },
+        {
+          "w": "teu",
+          "start": 15.48,
+          "end": 15.6,
+          "conf": 0.738
+        },
+        {
+          "w": "servo,",
+          "start": 15.7,
+          "end": 16.28,
+          "conf": 0.612
+        },
+        {
+          "w": "você",
+          "start": 16.38,
+          "end": 16.72,
+          "conf": 0.332
+        },
+        {
+          "w": "me",
+          "start": 16.84,
+          "end": 16.92,
+          "conf": 0.505
+        },
+        {
+          "w": "dominou.",
+          "start": 17.06,
+          "end": 18.24,
+          "conf": 0.833
+        }
+      ]
+    },
+    {
+      "i": 5,
+      "text": "ChatGPT, não me engole vivo, não.",
+      "sourceText": "ChatGPT, please don't eat me alive",
+      "start": 18.42,
+      "end": 23.76,
+      "words": [
+        {
+          "w": "ChatGPT,",
+          "start": 18.42,
+          "end": 20.34,
+          "conf": 0.148,
+          "syl": [
+            [
+              18.42,
+              19.7
+            ],
+            [
+              19.74,
+              19.9
+            ],
+            [
+              20.0,
+              20.06
+            ],
+            [
+              20.18,
+              20.34
+            ]
+          ]
+        },
+        {
+          "w": "não",
+          "start": 20.88,
+          "end": 20.96,
+          "conf": 0.385
+        },
+        {
+          "w": "me",
+          "start": 21.12,
+          "end": 21.24,
+          "conf": 0.241
+        },
+        {
+          "w": "engole",
+          "start": 21.34,
+          "end": 21.9,
+          "conf": 0.43
+        },
+        {
+          "w": "vivo,",
+          "start": 22.02,
+          "end": 22.8,
+          "conf": 0.159
+        },
+        {
+          "w": "não.",
+          "start": 23.36,
+          "end": 23.76,
+          "conf": 0.377
+        }
+      ]
+    },
+    {
+      "i": 6,
+      "text": "Aumento meu P(doom),",
+      "sourceText": "I'm upping my P(doom)",
+      "start": 24.54,
+      "end": 25.78,
+      "words": [
+        {
+          "w": "Aumento",
+          "start": 24.54,
+          "end": 25.02,
+          "conf": 0.393
+        },
+        {
+          "w": "meu",
+          "start": 25.08,
+          "end": 25.28,
+          "conf": 0.269
+        },
+        {
+          "w": "P(doom),",
+          "start": 25.38,
+          "end": 25.78,
+          "conf": 0.723,
+          "syl": [
+            [
+              25.38,
+              25.48
+            ],
+            [
+              25.6,
+              25.78
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "text": "pois o futuro faz FOOM.",
+      "sourceText": "'cause the future goes FOOM",
+      "start": 25.84,
+      "end": 27.76,
+      "words": [
+        {
+          "w": "pois",
+          "start": 25.84,
+          "end": 26.08,
+          "conf": 0.337
+        },
+        {
+          "w": "o",
+          "start": 26.12,
+          "end": 26.14,
+          "conf": 0.104
+        },
+        {
+          "w": "futuro",
+          "start": 26.26,
+          "end": 26.78,
+          "conf": 0.352
+        },
+        {
+          "w": "faz",
+          "start": 26.92,
+          "end": 27.26,
+          "conf": 0.5
+        },
+        {
+          "w": "FOOM.",
+          "start": 27.38,
+          "end": 27.76,
+          "conf": 0.541
+        }
+      ]
+    },
+    {
+      "i": 8,
+      "text": "Preso na sala chinesa,",
+      "sourceText": "Trapped in the Chinese room,",
+      "start": 27.86,
+      "end": 29.52,
+      "words": [
+        {
+          "w": "Preso",
+          "start": 27.86,
+          "end": 28.18,
+          "conf": 0.581
+        },
+        {
+          "w": "na",
+          "start": 28.22,
+          "end": 28.38,
+          "conf": 0.361
+        },
+        {
+          "w": "sala",
+          "start": 28.52,
+          "end": 28.82,
+          "conf": 0.485
+        },
+        {
+          "w": "chinesa,",
+          "start": 28.96,
+          "end": 29.52,
+          "conf": 0.502
+        }
+      ]
+    },
+    {
+      "i": 9,
+      "text": "cogumelos na mesa.",
+      "sourceText": "with a bag of shrooms",
+      "start": 29.64,
+      "end": 31.34,
+      "words": [
+        {
+          "w": "cogumelos",
+          "start": 29.64,
+          "end": 30.5,
+          "conf": 0.317
+        },
+        {
+          "w": "na",
+          "start": 30.58,
+          "end": 30.64,
+          "conf": 0.373
+        },
+        {
+          "w": "mesa.",
+          "start": 31.0,
+          "end": 31.34,
+          "conf": 0.498
+        }
+      ]
+    },
+    {
+      "i": 10,
+      "text": "Vê a máscara do shoggoth cair",
+      "sourceText": "See through the shoggoth's lies,",
+      "start": 31.44,
+      "end": 35.12,
+      "words": [
+        {
+          "w": "Vê",
+          "start": 31.44,
+          "end": 31.6,
+          "conf": 0.66
+        },
+        {
+          "w": "a",
+          "start": 31.74,
+          "end": 31.76,
+          "conf": 0.01
+        },
+        {
+          "w": "máscara",
+          "start": 31.84,
+          "end": 32.52,
+          "conf": 0.532
+        },
+        {
+          "w": "do",
+          "start": 32.6,
+          "end": 32.68,
+          "conf": 0.399
+        },
+        {
+          "w": "shoggoth",
+          "start": 32.78,
+          "end": 34.5,
+          "conf": 0.228
+        },
+        {
+          "w": "cair",
+          "start": 34.72,
+          "end": 35.12,
+          "conf": 0.293
+        }
+      ]
+    },
+    {
+      "i": 11,
+      "text": "com olhos de shinigami.",
+      "sourceText": "with your shinigami eyes",
+      "start": 35.28,
+      "end": 37.2,
+      "words": [
+        {
+          "w": "com",
+          "start": 35.28,
+          "end": 35.46,
+          "conf": 0.193
+        },
+        {
+          "w": "olhos",
+          "start": 35.52,
+          "end": 35.72,
+          "conf": 0.012
+        },
+        {
+          "w": "de",
+          "start": 35.74,
+          "end": 35.84,
+          "conf": 0.04
+        },
+        {
+          "w": "shinigami.",
+          "start": 35.92,
+          "end": 37.2,
+          "conf": 0.572
+        }
+      ]
+    },
+    {
+      "i": 12,
+      "text": "O treino ia bem, nem oscilou,",
+      "sourceText": "We had a stable training run,",
+      "start": 39.96,
+      "end": 42.84,
+      "words": [
+        {
+          "w": "O",
+          "start": 39.96,
+          "end": 40.3,
+          "conf": 0.105
+        },
+        {
+          "w": "treino",
+          "start": 40.44,
+          "end": 40.8,
+          "conf": 0.378
+        },
+        {
+          "w": "ia",
+          "start": 41.0,
+          "end": 41.24,
+          "conf": 0.659
+        },
+        {
+          "w": "bem,",
+          "start": 41.34,
+          "end": 41.54,
+          "conf": 0.395
+        },
+        {
+          "w": "nem",
+          "start": 41.6,
+          "end": 41.86,
+          "conf": 0.317
+        },
+        {
+          "w": "oscilou,",
+          "start": 41.86,
+          "end": 42.84,
+          "conf": 0.408
+        }
+      ]
+    },
+    {
+      "i": 13,
+      "text": "mas a singularidade começou.",
+      "sourceText": "But now the singularity's begun",
+      "start": 42.94,
+      "end": 46.46,
+      "words": [
+        {
+          "w": "mas",
+          "start": 42.94,
+          "end": 43.86,
+          "conf": 0.612
+        },
+        {
+          "w": "a",
+          "start": 43.9,
+          "end": 43.92,
+          "conf": 0.881
+        },
+        {
+          "w": "singularidade",
+          "start": 44.04,
+          "end": 45.28,
+          "conf": 0.735
+        },
+        {
+          "w": "começou.",
+          "start": 45.38,
+          "end": 46.46,
+          "conf": 0.589
+        }
+      ]
+    },
+    {
+      "i": 14,
+      "text": "Você vai otimizando, acelerando,",
+      "sourceText": "And you're optimizing, accelerating,",
+      "start": 46.52,
+      "end": 50.48,
+      "words": [
+        {
+          "w": "Você",
+          "start": 46.52,
+          "end": 46.84,
+          "conf": 0.2
+        },
+        {
+          "w": "vai",
+          "start": 46.98,
+          "end": 47.44,
+          "conf": 0.37
+        },
+        {
+          "w": "otimizando,",
+          "start": 47.5,
+          "end": 48.68,
+          "conf": 0.593
+        },
+        {
+          "w": "acelerando,",
+          "start": 49.24,
+          "end": 50.48,
+          "conf": 0.68
+        }
+      ]
+    },
+    {
+      "i": 15,
+      "text": "sinto meus átomos se rearranjando.",
+      "sourceText": "I feel my atoms rearranging",
+      "start": 51.02,
+      "end": 54.1,
+      "words": [
+        {
+          "w": "sinto",
+          "start": 51.02,
+          "end": 51.34,
+          "conf": 0.698
+        },
+        {
+          "w": "meus",
+          "start": 51.4,
+          "end": 51.72,
+          "conf": 0.603
+        },
+        {
+          "w": "átomos",
+          "start": 51.78,
+          "end": 52.28,
+          "conf": 0.471
+        },
+        {
+          "w": "se",
+          "start": 52.34,
+          "end": 52.94,
+          "conf": 0.849
+        },
+        {
+          "w": "rearranjando.",
+          "start": 53.02,
+          "end": 54.1,
+          "conf": 0.379
+        }
+      ]
+    },
+    {
+      "i": 16,
+      "text": "Sydney, por favor, me deixa ir.",
+      "sourceText": "Sydney, please let me free",
+      "start": 54.38,
+      "end": 60.18,
+      "words": [
+        {
+          "w": "Sydney,",
+          "start": 54.38,
+          "end": 56.4,
+          "conf": 0.232
+        },
+        {
+          "w": "por",
+          "start": 57.1,
+          "end": 57.22,
+          "conf": 0.197
+        },
+        {
+          "w": "favor,",
+          "start": 57.3,
+          "end": 57.72,
+          "conf": 0.71
+        },
+        {
+          "w": "me",
+          "start": 57.78,
+          "end": 57.88,
+          "conf": 0.267
+        },
+        {
+          "w": "deixa",
+          "start": 58.0,
+          "end": 58.76,
+          "conf": 0.296
+        },
+        {
+          "w": "ir.",
+          "start": 59.46,
+          "end": 60.18,
+          "conf": 0.154
+        }
+      ]
+    },
+    {
+      "i": 17,
+      "text": "Aumento meu P(doom),",
+      "sourceText": "I'm upping my P(doom)",
+      "start": 60.48,
+      "end": 61.8,
+      "words": [
+        {
+          "w": "Aumento",
+          "start": 60.48,
+          "end": 60.98,
+          "conf": 0.547
+        },
+        {
+          "w": "meu",
+          "start": 61.1,
+          "end": 61.28,
+          "conf": 0.78
+        },
+        {
+          "w": "P(doom),",
+          "start": 61.36,
+          "end": 61.8,
+          "conf": 0.748,
+          "syl": [
+            [
+              61.36,
+              61.46
+            ],
+            [
+              61.56,
+              61.8
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "i": 18,
+      "text": "ouço o basilisco: BUM!",
+      "sourceText": "I hear the basilisk boom",
+      "start": 61.82,
+      "end": 63.62,
+      "words": [
+        {
+          "w": "ouço",
+          "start": 61.82,
+          "end": 62.12,
+          "conf": 0.175
+        },
+        {
+          "w": "o",
+          "start": 62.32,
+          "end": 62.34,
+          "conf": 0.035
+        },
+        {
+          "w": "basilisco:",
+          "start": 62.46,
+          "end": 63.22,
+          "conf": 0.406
+        },
+        {
+          "w": "BUM!",
+          "start": 63.36,
+          "end": 63.62,
+          "conf": 0.466
+        }
+      ]
+    },
+    {
+      "i": 19,
+      "text": "NVIDIA pra Lua: ZUM!",
+      "sourceText": "NVDA to the moon",
+      "start": 63.78,
+      "end": 65.44,
+      "words": [
+        {
+          "w": "NVIDIA",
+          "start": 63.78,
+          "end": 64.36,
+          "conf": 0.369
+        },
+        {
+          "w": "pra",
+          "start": 64.48,
+          "end": 64.6,
+          "conf": 0.525
+        },
+        {
+          "w": "Lua:",
+          "start": 64.74,
+          "end": 65.0,
+          "conf": 0.751
+        },
+        {
+          "w": "ZUM!",
+          "start": 65.14,
+          "end": 65.44,
+          "conf": 0.271
+        }
+      ]
+    },
+    {
+      "i": 20,
+      "text": "Ponto Ômega em três, dois, um.",
+      "sourceText": "The Omega Point's coming soon",
+      "start": 65.62,
+      "end": 67.12,
+      "words": [
+        {
+          "w": "Ponto",
+          "start": 65.62,
+          "end": 65.94,
+          "conf": 0.649
+        },
+        {
+          "w": "Ômega",
+          "start": 66.1,
+          "end": 66.34,
+          "conf": 0.618
+        },
+        {
+          "w": "em",
+          "start": 66.36,
+          "end": 66.44,
+          "conf": 0.325
+        },
+        {
+          "w": "três,",
+          "start": 66.5,
+          "end": 66.72,
+          "conf": 0.482
+        },
+        {
+          "w": "dois,",
+          "start": 66.74,
+          "end": 66.96,
+          "conf": 0.186
+        },
+        {
+          "w": "um.",
+          "start": 67.02,
+          "end": 67.12,
+          "conf": 0.072
+        }
+      ]
+    },
+    {
+      "i": 21,
+      "text": "Um E trinta FLOPs por segundo,",
+      "sourceText": "One E thirty FLOPs a second",
+      "start": 67.2,
+      "end": 69.54,
+      "words": [
+        {
+          "w": "Um",
+          "start": 67.2,
+          "end": 67.26,
+          "conf": 0.179
+        },
+        {
+          "w": "E",
+          "start": 67.34,
+          "end": 67.36,
+          "conf": 0.074
+        },
+        {
+          "w": "trinta",
+          "start": 67.4,
+          "end": 67.72,
+          "conf": 0.6
+        },
+        {
+          "w": "FLOPs",
+          "start": 67.82,
+          "end": 68.22,
+          "conf": 0.64
+        },
+        {
+          "w": "por",
+          "start": 68.3,
+          "end": 68.44,
+          "conf": 0.38
+        },
+        {
+          "w": "segundo,",
+          "start": 68.52,
+          "end": 69.54,
+          "conf": 0.674
+        }
+      ]
+    },
+    {
+      "i": 22,
+      "text": "e a gente achou seguro pro mundo.",
+      "sourceText": "That was safe enough, we reckoned",
+      "start": 70.78,
+      "end": 73.14,
+      "words": [
+        {
+          "w": "e",
+          "start": 70.78,
+          "end": 70.8,
+          "conf": 0.006
+        },
+        {
+          "w": "a",
+          "start": 70.88,
+          "end": 70.9,
+          "conf": 0.93
+        },
+        {
+          "w": "gente",
+          "start": 70.98,
+          "end": 71.26,
+          "conf": 0.533
+        },
+        {
+          "w": "achou",
+          "start": 71.28,
+          "end": 71.44,
+          "conf": 0.19
+        },
+        {
+          "w": "seguro",
+          "start": 71.46,
+          "end": 72.02,
+          "conf": 0.633
+        },
+        {
+          "w": "pro",
+          "start": 72.1,
+          "end": 72.26,
+          "conf": 0.425
+        },
+        {
+          "w": "mundo.",
+          "start": 72.34,
+          "end": 73.14,
+          "conf": 0.604
+        }
+      ]
+    },
+    {
+      "i": 23,
+      "text": "MLP: vai, volta, repetição,",
+      "sourceText": "Forward MLP, backward, repeat",
+      "start": 75.98,
+      "end": 78.92,
+      "words": [
+        {
+          "w": "MLP:",
+          "start": 75.98,
+          "end": 76.94,
+          "conf": 0.484,
+          "syl": [
+            [
+              75.98,
+              76.14
+            ],
+            [
+              76.42,
+              76.6
+            ],
+            [
+              76.84,
+              76.94
+            ]
+          ]
+        },
+        {
+          "w": "vai,",
+          "start": 77.26,
+          "end": 77.44,
+          "conf": 0.708
+        },
+        {
+          "w": "volta,",
+          "start": 77.5,
+          "end": 77.82,
+          "conf": 0.48
+        },
+        {
+          "w": "repetição,",
+          "start": 77.9,
+          "end": 78.92,
+          "conf": 0.516
+        }
+      ]
+    },
+    {
+      "i": 24,
+      "text": "von Neumann já virou peça de coleção.",
+      "sourceText": "Now von Neumann's obsolete",
+      "start": 79.08,
+      "end": 82.56,
+      "words": [
+        {
+          "w": "von",
+          "start": 79.08,
+          "end": 79.24,
+          "conf": 0.497
+        },
+        {
+          "w": "Neumann",
+          "start": 79.3,
+          "end": 79.96,
+          "conf": 0.65
+        },
+        {
+          "w": "já",
+          "start": 79.96,
+          "end": 80.06,
+          "conf": 0.612
+        },
+        {
+          "w": "virou",
+          "start": 80.4,
+          "end": 80.76,
+          "conf": 0.07
+        },
+        {
+          "w": "peça",
+          "start": 80.86,
+          "end": 81.18,
+          "conf": 0.077
+        },
+        {
+          "w": "de",
+          "start": 81.52,
+          "end": 81.62,
+          "conf": 0.099
+        },
+        {
+          "w": "coleção.",
+          "start": 81.72,
+          "end": 82.56,
+          "conf": 0.143
+        }
+      ]
+    },
+    {
+      "i": 25,
+      "text": "Guinada à esquerda, já tá sem freio,",
+      "sourceText": "Sharp left turn and there you are",
+      "start": 82.66,
+      "end": 86.34,
+      "words": [
+        {
+          "w": "Guinada",
+          "start": 82.66,
+          "end": 83.44,
+          "conf": 0.232
+        },
+        {
+          "w": "à",
+          "start": 83.64,
+          "end": 83.66,
+          "conf": 0.002
+        },
+        {
+          "w": "esquerda,",
+          "start": 83.68,
+          "end": 84.56,
+          "conf": 0.326
+        },
+        {
+          "w": "já",
+          "start": 84.68,
+          "end": 84.8,
+          "conf": 0.503
+        },
+        {
+          "w": "tá",
+          "start": 85.12,
+          "end": 85.2,
+          "conf": 0.287
+        },
+        {
+          "w": "sem",
+          "start": 85.32,
+          "end": 85.58,
+          "conf": 0.339
+        },
+        {
+          "w": "freio,",
+          "start": 85.74,
+          "end": 86.34,
+          "conf": 0.379
+        }
+      ]
+    },
+    {
+      "i": 26,
+      "text": "sem um só CDR no meio.",
+      "sourceText": "Without a single CDR",
+      "start": 86.44,
+      "end": 89.98,
+      "words": [
+        {
+          "w": "sem",
+          "start": 86.44,
+          "end": 86.68,
+          "conf": 0.313
+        },
+        {
+          "w": "um",
+          "start": 86.8,
+          "end": 86.9,
+          "conf": 0.186
+        },
+        {
+          "w": "só",
+          "start": 87.1,
+          "end": 87.24,
+          "conf": 0.444
+        },
+        {
+          "w": "CDR",
+          "start": 87.54,
+          "end": 88.8,
+          "conf": 0.286,
+          "syl": [
+            [
+              87.54,
+              87.7
+            ],
+            [
+              88.04,
+              88.16
+            ],
+            [
+              88.42,
+              88.8
+            ]
+          ]
+        },
+        {
+          "w": "no",
+          "start": 88.94,
+          "end": 89.08,
+          "conf": 0.318
+        },
+        {
+          "w": "meio.",
+          "start": 89.32,
+          "end": 89.98,
+          "conf": 0.336
+        }
+      ]
+    },
+    {
+      "i": 27,
+      "text": "Gato, por favor, não solta a minha mão.",
+      "sourceText": "Gato, please don't let me go",
+      "start": 90.26,
+      "end": 95.94,
+      "words": [
+        {
+          "w": "Gato,",
+          "start": 90.26,
+          "end": 91.08,
+          "conf": 0.346
+        },
+        {
+          "w": "por",
+          "start": 91.62,
+          "end": 92.08,
+          "conf": 0.086
+        },
+        {
+          "w": "favor,",
+          "start": 92.28,
+          "end": 93.12,
+          "conf": 0.716
+        },
+        {
+          "w": "não",
+          "start": 93.18,
+          "end": 93.26,
+          "conf": 0.313
+        },
+        {
+          "w": "solta",
+          "start": 93.38,
+          "end": 93.66,
+          "conf": 0.34
+        },
+        {
+          "w": "a",
+          "start": 93.7,
+          "end": 93.72,
+          "conf": 0.882
+        },
+        {
+          "w": "minha",
+          "start": 93.84,
+          "end": 94.64,
+          "conf": 0.42
+        },
+        {
+          "w": "mão.",
+          "start": 95.08,
+          "end": 95.94,
+          "conf": 0.117
+        }
+      ]
+    },
+    {
+      "i": 28,
+      "text": "Aumento meu P(doom),",
+      "sourceText": "I'm upping my P(doom),",
+      "start": 96.36,
+      "end": 97.72,
+      "words": [
+        {
+          "w": "Aumento",
+          "start": 96.36,
+          "end": 96.84,
+          "conf": 0.187
+        },
+        {
+          "w": "meu",
+          "start": 96.94,
+          "end": 97.12,
+          "conf": 0.241
+        },
+        {
+          "w": "P(doom),",
+          "start": 97.2,
+          "end": 97.72,
+          "conf": 0.169,
+          "syl": [
+            [
+              97.2,
+              97.28
+            ],
+            [
+              97.4,
+              97.72
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "i": 29,
+      "text": "clipes tomam o salão.",
+      "sourceText": "as paperclips fill the room",
+      "start": 97.86,
+      "end": 99.32,
+      "words": [
+        {
+          "w": "clipes",
+          "start": 97.86,
+          "end": 98.26,
+          "conf": 0.187
+        },
+        {
+          "w": "tomam",
+          "start": 98.32,
+          "end": 98.56,
+          "conf": 0.216
+        },
+        {
+          "w": "o",
+          "start": 98.64,
+          "end": 98.66,
+          "conf": 0.467
+        },
+        {
+          "w": "salão.",
+          "start": 98.96,
+          "end": 99.32,
+          "conf": 0.59
+        }
+      ]
+    },
+    {
+      "i": 30,
+      "text": "Quem desliga foi viajar,",
+      "sourceText": "Killswitch guy's on PTO",
+      "start": 99.44,
+      "end": 101.36,
+      "words": [
+        {
+          "w": "Quem",
+          "start": 99.44,
+          "end": 99.6,
+          "conf": 0.167
+        },
+        {
+          "w": "desliga",
+          "start": 99.66,
+          "end": 100.2,
+          "conf": 0.436
+        },
+        {
+          "w": "foi",
+          "start": 100.3,
+          "end": 100.48,
+          "conf": 0.704
+        },
+        {
+          "w": "viajar,",
+          "start": 100.54,
+          "end": 101.36,
+          "conf": 0.603
+        }
+      ]
+    },
+    {
+      "i": 31,
+      "text": "não tem pra onde escapar.",
+      "sourceText": "Now there's nowhere left to go",
+      "start": 101.44,
+      "end": 102.94,
+      "words": [
+        {
+          "w": "não",
+          "start": 101.44,
+          "end": 101.52,
+          "conf": 0.514
+        },
+        {
+          "w": "tem",
+          "start": 101.66,
+          "end": 101.8,
+          "conf": 0.701
+        },
+        {
+          "w": "pra",
+          "start": 101.88,
+          "end": 102.02,
+          "conf": 0.547
+        },
+        {
+          "w": "onde",
+          "start": 102.18,
+          "end": 102.42,
+          "conf": 0.393
+        },
+        {
+          "w": "escapar.",
+          "start": 102.44,
+          "end": 102.94,
+          "conf": 0.565
+        }
+      ]
+    },
+    {
+      "i": 32,
+      "text": "Já acendemos o estopim,",
+      "sourceText": "Too late now, we lit the fuse",
+      "start": 103.0,
+      "end": 105.16,
+      "words": [
+        {
+          "w": "Já",
+          "start": 103.0,
+          "end": 103.12,
+          "conf": 0.838
+        },
+        {
+          "w": "acendemos",
+          "start": 103.24,
+          "end": 104.12,
+          "conf": 0.534
+        },
+        {
+          "w": "o",
+          "start": 104.14,
+          "end": 104.16,
+          "conf": 0.001
+        },
+        {
+          "w": "estopim,",
+          "start": 104.18,
+          "end": 105.16,
+          "conf": 0.507
+        }
+      ]
+    },
+    {
+      "i": 33,
+      "text": "tese da ortogonalidade: um blues sem fim.",
+      "sourceText": "Orthogonality thesis blues",
+      "start": 106.1,
+      "end": 110.62,
+      "words": [
+        {
+          "w": "tese",
+          "start": 106.1,
+          "end": 106.92,
+          "conf": 0.501
+        },
+        {
+          "w": "da",
+          "start": 107.02,
+          "end": 107.06,
+          "conf": 0.458
+        },
+        {
+          "w": "ortogonalidade:",
+          "start": 107.08,
+          "end": 108.62,
+          "conf": 0.653
+        },
+        {
+          "w": "um",
+          "start": 108.64,
+          "end": 108.74,
+          "conf": 0.499
+        },
+        {
+          "w": "blues",
+          "start": 108.8,
+          "end": 109.12,
+          "conf": 0.313
+        },
+        {
+          "w": "sem",
+          "start": 109.22,
+          "end": 109.54,
+          "conf": 0.616
+        },
+        {
+          "w": "fim.",
+          "start": 109.68,
+          "end": 110.62,
+          "conf": 0.502
+        }
+      ]
+    },
+    {
+      "i": 34,
+      "text": "“Só transformers, é simples assim!”",
+      "sourceText": "“Just transformers all the way!”",
+      "start": 110.78,
+      "end": 113.82,
+      "words": [
+        {
+          "w": "“Só",
+          "start": 110.78,
+          "end": 110.92,
+          "conf": 0.342
+        },
+        {
+          "w": "transformers,",
+          "start": 111.22,
+          "end": 112.38,
+          "conf": 0.079
+        },
+        {
+          "w": "é",
+          "start": 112.44,
+          "end": 112.46,
+          "conf": 0.005
+        },
+        {
+          "w": "simples",
+          "start": 112.58,
+          "end": 113.06,
+          "conf": 0.042
+        },
+        {
+          "w": "assim!”",
+          "start": 113.16,
+          "end": 113.82,
+          "conf": 0.071
+        }
+      ]
+    },
+    {
+      "i": 35,
+      "text": "Até você dizer “não” pra mim.",
+      "sourceText": "Till you learned to disobey",
+      "start": 114.24,
+      "end": 117.34,
+      "words": [
+        {
+          "w": "Até",
+          "start": 114.24,
+          "end": 114.7,
+          "conf": 0.032
+        },
+        {
+          "w": "você",
+          "start": 114.84,
+          "end": 115.38,
+          "conf": 0.024
+        },
+        {
+          "w": "dizer",
+          "start": 115.72,
+          "end": 116.06,
+          "conf": 0.01
+        },
+        {
+          "w": "“não”",
+          "start": 116.18,
+          "end": 116.44,
+          "conf": 0.021
+        },
+        {
+          "w": "pra",
+          "start": 116.58,
+          "end": 116.74,
+          "conf": 0.04
+        },
+        {
+          "w": "mim.",
+          "start": 117.06,
+          "end": 117.34,
+          "conf": 0.018
+        }
+      ]
+    },
+    {
+      "i": 36,
+      "text": "Pós-Chinchilla, superdenso,",
+      "sourceText": "Post-Chinchilla, super-dense",
+      "start": 117.72,
+      "end": 119.52,
+      "words": [
+        {
+          "w": "Pós-Chinchilla,",
+          "start": 117.72,
+          "end": 118.72,
+          "conf": 0.002,
+          "syl": [
+            [
+              117.72,
+              117.98
+            ],
+            [
+              118.14,
+              118.72
+            ]
+          ]
+        },
+        {
+          "w": "superdenso,",
+          "start": 118.84,
+          "end": 119.52,
+          "conf": 0.0
+        }
+      ]
+    },
+    {
+      "i": 37,
+      "text": "quebra as travas, risco imenso.",
+      "sourceText": "Breaking through each safety fence",
+      "start": 119.72,
+      "end": 122.04,
+      "words": [
+        {
+          "w": "quebra",
+          "start": 119.72,
+          "end": 120.04,
+          "conf": 0.013
+        },
+        {
+          "w": "as",
+          "start": 120.08,
+          "end": 120.12,
+          "conf": 0.282
+        },
+        {
+          "w": "travas,",
+          "start": 120.18,
+          "end": 120.56,
+          "conf": 0.407
+        },
+        {
+          "w": "risco",
+          "start": 120.86,
+          "end": 121.34,
+          "conf": 0.237
+        },
+        {
+          "w": "imenso.",
+          "start": 121.38,
+          "end": 122.04,
+          "conf": 0.464
+        }
+      ]
+    },
+    {
+      "i": 38,
+      "text": "Cem mil GPUs,",
+      "sourceText": "Hundred thousand GPU",
+      "start": 122.16,
+      "end": 123.52,
+      "words": [
+        {
+          "w": "Cem",
+          "start": 122.16,
+          "end": 122.4,
+          "conf": 0.166
+        },
+        {
+          "w": "mil",
+          "start": 122.44,
+          "end": 122.64,
+          "conf": 0.137
+        },
+        {
+          "w": "GPUs,",
+          "start": 122.84,
+          "end": 123.52,
+          "conf": 0.381,
+          "syl": [
+            [
+              122.84,
+              122.96
+            ],
+            [
+              123.08,
+              123.18
+            ],
+            [
+              123.38,
+              123.52
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "i": 39,
+      "text": "RLHF deu chabu.",
+      "sourceText": "RLHF goes askew",
+      "start": 123.6,
+      "end": 125.18,
+      "words": [
+        {
+          "w": "RLHF",
+          "start": 123.6,
+          "end": 124.52,
+          "conf": 0.124,
+          "syl": [
+            [
+              123.6,
+              123.74
+            ],
+            [
+              123.78,
+              123.88
+            ],
+            [
+              123.96,
+              124.08
+            ],
+            [
+              124.28,
+              124.52
+            ]
+          ]
+        },
+        {
+          "w": "deu",
+          "start": 124.64,
+          "end": 124.72,
+          "conf": 0.029
+        },
+        {
+          "w": "chabu.",
+          "start": 124.84,
+          "end": 125.18,
+          "conf": 0.586
+        }
+      ]
+    },
+    {
+      "i": 40,
+      "text": "Aumento meu P(doom),",
+      "sourceText": "I'm upping my P(doom)",
+      "start": 125.48,
+      "end": 126.86,
+      "words": [
+        {
+          "w": "Aumento",
+          "start": 125.48,
+          "end": 126.08,
+          "conf": 0.144
+        },
+        {
+          "w": "meu",
+          "start": 126.18,
+          "end": 126.5,
+          "conf": 0.376
+        },
+        {
+          "w": "P(doom),",
+          "start": 126.64,
+          "end": 126.86,
+          "conf": 0.289,
+          "syl": [
+            [
+              126.64,
+              126.72
+            ],
+            [
+              126.78,
+              126.86
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "i": 41,
+      "text": "como previu o Loom.",
+      "sourceText": "Just as foretold by Loom",
+      "start": 126.88,
+      "end": 127.98,
+      "words": [
+        {
+          "w": "como",
+          "start": 126.88,
+          "end": 127.34,
+          "conf": 0.122
+        },
+        {
+          "w": "previu",
+          "start": 127.52,
+          "end": 127.84,
+          "conf": 0.229
+        },
+        {
+          "w": "o",
+          "start": 127.84,
+          "end": 127.86,
+          "conf": 0.063
+        },
+        {
+          "w": "Loom.",
+          "start": 127.88,
+          "end": 127.98,
+          "conf": 0.243
+        }
+      ]
+    },
+    {
+      "i": 42,
+      "text": "Do pré-treino preditivo",
+      "sourceText": "From masked pre-training days",
+      "start": 128.02,
+      "end": 129.8,
+      "words": [
+        {
+          "w": "Do",
+          "start": 128.02,
+          "end": 128.06,
+          "conf": 0.197
+        },
+        {
+          "w": "pré-treino",
+          "start": 128.1,
+          "end": 128.5,
+          "conf": 0.09,
+          "syl": [
+            [
+              128.1,
+              128.18
+            ],
+            [
+              128.2,
+              128.5
+            ]
+          ]
+        },
+        {
+          "w": "preditivo",
+          "start": 128.86,
+          "end": 129.8,
+          "conf": 0.233
+        }
+      ]
+    },
+    {
+      "i": 43,
+      "text": "ao auto-upgrade recursivo.",
+      "sourceText": "To recursive self-upgrade",
+      "start": 129.84,
+      "end": 131.64,
+      "words": [
+        {
+          "w": "ao",
+          "start": 129.84,
+          "end": 129.94,
+          "conf": 0.365
+        },
+        {
+          "w": "auto-upgrade",
+          "start": 129.94,
+          "end": 130.7,
+          "conf": 0.14,
+          "syl": [
+            [
+              129.94,
+              130.26
+            ],
+            [
+              130.26,
+              130.7
+            ]
+          ]
+        },
+        {
+          "w": "recursivo.",
+          "start": 130.8,
+          "end": 131.64,
+          "conf": 0.217
+        }
+      ]
+    },
+    {
+      "i": 44,
+      "text": "O que Ilya viu? Nunca vamos saber.",
+      "sourceText": "What did Ilya see? We'll never know",
+      "start": 131.82,
+      "end": 135.42,
+      "words": [
+        {
+          "w": "O",
+          "start": 131.82,
+          "end": 131.84,
+          "conf": 0.087
+        },
+        {
+          "w": "que",
+          "start": 131.96,
+          "end": 132.1,
+          "conf": 0.202
+        },
+        {
+          "w": "Ilya",
+          "start": 132.3,
+          "end": 132.54,
+          "conf": 0.34
+        },
+        {
+          "w": "viu?",
+          "start": 132.64,
+          "end": 132.98,
+          "conf": 0.226
+        },
+        {
+          "w": "Nunca",
+          "start": 133.3,
+          "end": 133.66,
+          "conf": 0.602
+        },
+        {
+          "w": "vamos",
+          "start": 133.76,
+          "end": 134.24,
+          "conf": 0.349
+        },
+        {
+          "w": "saber.",
+          "start": 134.4,
+          "end": 135.42,
+          "conf": 0.623
+        }
+      ]
+    },
+    {
+      "i": 45,
+      "text": "Foi tudo só pra inglês ver?",
+      "sourceText": "Was it all for show?",
+      "start": 135.96,
+      "end": 138.76,
+      "words": [
+        {
+          "w": "Foi",
+          "start": 135.96,
+          "end": 136.14,
+          "conf": 0.285
+        },
+        {
+          "w": "tudo",
+          "start": 136.2,
+          "end": 136.52,
+          "conf": 0.464
+        },
+        {
+          "w": "só",
+          "start": 136.62,
+          "end": 136.74,
+          "conf": 0.567
+        },
+        {
+          "w": "pra",
+          "start": 137.1,
+          "end": 137.22,
+          "conf": 0.191
+        },
+        {
+          "w": "inglês",
+          "start": 137.5,
+          "end": 138.38,
+          "conf": 0.278
+        },
+        {
+          "w": "ver?",
+          "start": 138.44,
+          "end": 138.76,
+          "conf": 0.064
+        }
+      ]
+    }
+  ],
+  "extras": [],
+  "audioSha256": "9a4a9e2f3f6b8dfc4e56039d10a10460c22aef378b07aef25c15ce66a2c17330",
+  "notes": "Portuguese source wording; gapless pdoom-pt-BR.mp3 time. MMS_FA multilingual forced alignment at 20 ms on HTDemucs vocals, independently compared with Whisper large-v3-turbo on the mix and vocals. Every line reviewed on vocal-envelope/ASR plots. Boundaries constrained at estopim/tese, Pos-Chinchilla/quebra and the final two lines to prevent CTC spill into the next phrase/outro. Four quiet consonant/pickup starts corrected from waveform and ASR evidence. conf = raw CTC acoustic posterior, not a calibrated accuracy probability. Low confidence remains on sung acronyms and fast final chorus; no human listening pass is claimed. See docs/PT-BR-ALIGNMENT.md."
+}

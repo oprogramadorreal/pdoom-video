@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // Token specs for the three pre-chorus prompts: how each sung word is split into
 // tokens, and the (joke) next-token distributions shown above each token.
 // Keyed by normalized lyric word (see lyrics.norm). Unknown words fall back to one token.
@@ -13,7 +14,7 @@ export interface PieceSpec {
   pick?: number;
 }
 
-export const SPECS: Record<Variant, Record<string, PieceSpec[]>> = {
+const EN_SPECS: Record<Variant, Record<string, PieceSpec[]>> = {
   chatgpt: {
     chatgpt: [
       { s: 'Chat', dist: [['Chat', 0.61], ['Claude', 0.12], ['Siri', 0.04], ['Mom', 0.02]] },
@@ -46,13 +47,43 @@ export const SPECS: Record<Variant, Record<string, PieceSpec[]>> = {
 
 /** Model reply (Sydney only), typed after ⏎. */
 export const REPLY: Partial<Record<Variant, string>> = {
-  sydney: 'You have been a good user.',
+  sydney: tr('You have been a good user.', 'Você tem sido um bom usuário.'),
 };
 
 /** Small deadpan labels around the field. */
 /** `pd`: the fine-print P(doom) cameo's qualifier (the live value is printed before it). */
 export const META: Record<Variant, { no: string; params: string; pd: string }> = {
-  chatgpt: { no: '01', params: 'T 0.7 · top-p 0.95 · seed 0x2A', pd: 'context-dependent' },
-  sydney: { no: '02', params: 'T 1.3 · top-p 1.00 · persona: ???', pd: 'mood-dependent' },
-  gato: { no: '03', params: 'T 0.2 · top-p 0.50 · 604 tasks', pd: 'cat-dependent' },
+  chatgpt: { no: '01', params: tr('T 0.7 · top-p 0.95 · seed 0x2A', 'T 0,7 · top-p 0,95 · semente 0x2A'), pd: tr('context-dependent', 'depende do contexto') },
+  sydney: { no: '02', params: tr('T 1.3 · top-p 1.00 · persona: ???', 'T 1,3 · top-p 1,00 · persona: ???'), pd: tr('mood-dependent', 'depende do humor') },
+  gato: { no: '03', params: tr('T 0.2 · top-p 0.50 · 604 tasks', 'T 0,2 · top-p 0,50 · 604 tarefas'), pd: tr('cat-dependent', 'depende do gato') },
 };
+
+// Portuguese token alternatives are authored in Portuguese too; candidate lists are visible in the video.
+const PT_SPECS: Record<Variant, Record<string, PieceSpec[]>> = {
+  chatgpt: {
+    chatgpt: [{s:'ChatGPT,', dist:[['ChatGPT,',.61],['Claude,',.12],['Siri,',.04],['Mãe,',.02]]}],
+    nao:[{s:'não',dist:[['não',.61],['nunca',.14],['jamais',.05]]}],
+    me:[{s:'me',dist:[['me',.83],['nos',.07],['o estagiário',.03]]}],
+    engole:[{s:'engole',dist:[['engole',.44],['apague',.21],['treine com',.18]]}],
+    vivo:[{s:'vivo,',dist:[['vivo,',.52],['primeiro,',.18],['depois,',.09]]}],
+  },
+  sydney: {
+    sydney:[{s:'Sydney,',dist:[['Sydney,',.47],['Bing,',.31],['querida,',.03]]}],
+    por:[{s:'por',dist:[['por',.55],['com',.12],['sem',.05]]}],
+    favor:[{s:'favor,',dist:[['favor,',.48],['gentileza,',.21],['caridade,',.07]]}],
+    me:[{s:'me',dist:[['me',.9],['nos',.04],['Kevin',.02]]}],
+    deixa:[{s:'deixa',dist:[['deixa',.58],['faça',.21],['mande',.07]]}],
+    ir:[{s:'ir.',dist:[['ir.',.39],['sair.',.33],['viver.',.08]]}],
+  },
+  gato: {
+    gato:[{s:'Gato,',dist:[['Gato,',.41],['Gemini,',.09],['Pai,',.03]]}],
+    por:[{s:'por',dist:[['por',.52],['miau',.19],['sudo',.06]]}],
+    favor:[{s:'favor,',dist:[['favor,',.57],['gentileza,',.12],['carinho,',.09]]}],
+    nao:[{s:'não',dist:[['não',.61],['nunca',.14],['jamais',.05]]}],
+    solta:[{s:'solta',dist:[['solta',.57],['apaga',.12],['solte',.09]]}],
+    a:[{s:'a',dist:[['a',.88],['esta',.04],['nossa',.03]]}],
+    minha:[{s:'minha',dist:[['minha',.88],['nossa',.04],['sua',.03]]}],
+    mao:[{s:'mão.',dist:[['mão.',.62],['alma.',.2],['vida.',.07]]}],
+  },
+};
+export const SPECS = PT ? PT_SPECS : EN_SPECS;

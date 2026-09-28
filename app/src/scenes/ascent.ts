@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // FIG. 6 — "Ascent (log scale)". Chorus 2 after the hook, four quick movements:
 //  A. "I hear the basilisk boom": an engraved serpent eye snaps open (shockwave, shake).
 //  B. "NVDA to the moon": the slit pupil match-cuts to a candle; the price (the spark) goes
@@ -21,7 +22,8 @@ import { PDoom, formatPDoom } from '../engine/hud';
 type Mv = 'A' | 'B' | 'C' | 'D';
 
 function wordOf(l: Line, s: string): Word {
-  const q = norm(s);
+  const aliases: Record<string,string> = { boom: 'BUM', moon: 'Lua', second: 'segundo', to: 'pra', omega: 'Ômega', thirty: 'trinta' };
+  const q = norm(PT ? aliases[s] ?? s : s);
   return l.words.find((w) => norm(w.w).includes(q)) ?? l.words[0]!;
 }
 
@@ -61,8 +63,8 @@ export default class Ascent extends Scene {
     T.second = wordOf(T.l4, 'second').start;
     T.cutB = this.snap(T.nvda);
     // NVDA lettering outlines (banknote-style hatched letters)
-    const fam = F.archivo(125, 900), size = 196, track = 10;
-    const lay = layout('NVDA', fam, size, track);
+    const fam = F.archivo(125, 900), size = PT ? 150 : 196, track = 10;
+    const lay = layout(tr('NVDA', 'NVIDIA'), fam, size, track);
     this.nvdaPaths = lay.glyphs.map((g) => ({ p: textPath2D(g.ch, fam, size, 0, 0), x: g.x, w: g.w }));
     const rnd = mulberry32(606);
     for (let i = 0; i < 900; i++) {
@@ -106,7 +108,7 @@ export default class Ascent extends Scene {
     const T = this.T, s0 = this.ctx.start;
     const tb = T.boom;
     // the camera steps in on each sung word (and leans, alternating), then slams on "boom"
-    const ws = T.l1.words.filter((w) => norm(w.w) !== 'boom');
+    const ws = T.l1.words.filter((w) => norm(w.w) !== (PT ? 'bum' : 'boom'));
     let zoom = 0.68 * (1 + 0.015 * prog(t, s0, tb));
     const leans = [-0.07, -0.03, -0.055, -0.015, 0.02];
     let rot = leans[0]!;
@@ -169,7 +171,7 @@ export default class Ascent extends Scene {
     // ---- lyric: "I HEAR THE BASILISK" set on the eyelid seam, split open by "boom"
     const L = this.L1; L.clear(); const c = L.ctx;
     const line = T.l1;
-    const words = line.words.filter((w) => norm(w.w) !== 'boom');
+    const words = line.words.filter((w) => norm(w.w) !== (PT ? 'bum' : 'boom'));
     const fam = F.archivo(125, 700), size = Math.round(54 * Math.min(1, cam.zoom / 0.95)), track = 16;
     const txt = words.map((w) => w.w.toUpperCase()).join(' ');
     const lay = layout(txt, fam, size, track);
@@ -217,7 +219,7 @@ export default class Ascent extends Scene {
         }
       }
     }
-    // ---- "BOOM": the word rides the shockwave rings, repeated around each ring
+    // ---- BOOM / BUM!: the word rides the shockwave rings, repeated around each ring
     const boomW = wordOf(line, 'boom');
     if (t >= boomW.start) {
       const bf = F.archivo(125, 900);
@@ -228,7 +230,7 @@ export default class Ascent extends Scene {
         const Rpx = (0.68 + 0.07 * prog(e, 0, 0.5, ease.outCubic) + (i === 0 ? 0 : e * 1.2)) * cam.zoom * (H / 2);
         const a = (i === 0 ? 1 - prog(e, 0.35, 0.55) : Math.exp(-e / 0.25) * 0.7) * prog(e, 0, 0.03);
         const sz = 96 * (1 + e * 0.15) * (i === 0 ? 1 + 0.25 * pulse(e, 0, 0.06) : 1);
-        this.textOnArc(c, 'BOOM', ctr.x, ctr.y, Rpx, true, bf, sz, i === 0 ? rgba('bone', a) : rgba('signal', a), i === 0);
+        this.textOnArc(c, tr('BOOM', "BUM!"), ctr.x, ctr.y, Rpx, true, bf, sz, i === 0 ? rgba('bone', a) : rgba('signal', a), i === 0);
       }
     }
     comp.draw(renderer, L.upload(), out);
@@ -426,26 +428,26 @@ export default class Ascent extends Scene {
         c.font = font(F.mono(400, true), 20 * z); c.fillStyle = rgba('graphite', 0.9 * gridFade(y)); c.fillText(s, p.x, p.y);
         c.font = font(F.mono(500), lsz);
       };
-      note(12, '← still log scale');
-      note(19, '← yes, still log scale');
-      note(24, '← analysts: “fair value”');
-      note(27, '← we checked the axis');
+      note(12, tr('← still log scale', "← ainda em escala log"));
+      note(19, tr('← yes, still log scale', "← sim, ainda escala log"));
+      note(24, tr('← analysts: “fair value”', "← analistas: “preço justo”"));
+      note(27, tr('← we checked the axis', "← conferimos o eixo"));
       const tt = S(-1640, 6.4 * DEC);
       c.font = font(F.mono(600), 26 * z); c.fillStyle = rgba('ink', 0.85);
       c.fillText('NVDA · 1D · LOG', tt.x, tt.y);
       c.font = font(F.mono(400), 19 * z); c.fillStyle = rgba('graphite', 1);
-      c.fillText('O 1.2   H ∞   L 1.1   C ↑', tt.x, tt.y + 32 * z);
+      c.fillText(tr('O 1.2   H ∞   L 1.1   C ↑', 'A 1,2   Máx ∞   Mín 1,1   F ↑'), tt.x, tt.y + 32 * z);
     }
     // note lettering (world-fixed)
     if (Math.abs(cam.y - MOON.y) < 1400) {
       const mc = S(MOON.x, MOON.y);
       c.save();
       c.fillStyle = rgba('ink', 0.92);
-      this.arcText(c, 'LUNAR RESERVE NOTE', mc.x, mc.y, (MOON.r * 1.8) * z, F.serif(600), 34 * z, 0.2);
+      this.arcText(c, tr('LUNAR RESERVE NOTE', "NOTA DA RESERVA LUNAR"), mc.x, mc.y, (MOON.r * 1.8) * z, F.serif(600), 34 * z, 0.2);
       c.font = font(F.serif(400, true), 20 * z);
       c.textAlign = 'center';
       const mp = S(MOON.x, MOON.y - MOON.r * 1.9);
-      c.fillText('In Scaling We Trust', mp.x, mp.y);
+      c.fillText(tr('In Scaling We Trust', "No escalonamento confiamos"), mp.x, mp.y);
       // corner numerals and serials
       const cn = (x: number, y: number, al: CanvasTextAlign) => {
         const p = S(x, y);
@@ -517,13 +519,13 @@ export default class Ascent extends Scene {
     const nv = T.l2.words[0]!;
     const syl = this.nvSyl();
     const X0 = 150, Y0 = 600;
-    for (let i = 0; i < 4; i++) {
-      const ts = syl[i]!;
+    for (let i = 0; i < this.nvdaPaths.length; i++) {
+      const ts = PT ? nv.start + (i / this.nvdaPaths.length) * (nv.end - nv.start) : syl[i]!;
       if (t < ts) continue;
       const P = this.nvdaPaths[i]!;
       const e = t - ts;
       const sc = 1 + 0.35 * Math.exp(-e / 0.05);
-      const hot = i === 3 ? t < nv.end + 0.12 : t < (syl[i + 1] ?? nv.end);
+      const hot = PT ? t < nv.end + 0.12 : i === 3 ? t < nv.end + 0.12 : t < (syl[i + 1] ?? nv.end);
       c.save();
       c.translate(X0 + P.x + P.w / 2, Y0 - 80);
       c.scale(sc, sc);
@@ -786,7 +788,7 @@ export default class Ascent extends Scene {
     }
     // notation: 1 E 30 FLOP /s  (one token per sung word)
     const l4 = T.l4;
-    const tok: [string, string][] = [['1', 'one'], ['E', 'E'], ['30', 'thirty'], ['FLOP', 'flops'], ['/s', 'a second']];
+    const tok: [string, string][] = [['1', tr('one', 'Um')], ['E', 'E'], ['30', tr('thirty', 'trinta')], ['FLOP', tr('flops', 'FLOPs')], ['/s', tr('a second', 'por segundo')]];
     const wds = l4.words;
     const tokWords: Word[][] = [[wds[0]!], [wds[1]!], [wds[2]!], [wds[3]!], wds.slice(4)];
     const nf = F.archivo(100, 900), ns = 150;
@@ -829,16 +831,16 @@ export default class Ascent extends Scene {
     // footnote marker + footnote typed after the lock
     if (t > tL) {
       c.font = font(nf, 60); c.fillStyle = rgba('signal', 1); c.fillText('¹', x - 8, yN - 80);
-      const fn = '¹ One nonillion floating-point operations per second. Rounded down, for safety.';
+      const fn = tr('¹ One nonillion floating-point operations per second. Rounded down, for safety.', "¹ Um nonilhão de operações de ponto flutuante por segundo. Arredondado para baixo, por segurança.");
       const n = Math.floor(fn.length * prog(t, tL + 0.3, tL + 1.05));
-      c.font = font(F.mono(400), 20);
+      c.font = font(F.mono(400), PT ? 17 : 20);
       c.fillStyle = rgba('ash', 0.95);
       c.fillText(fn.slice(0, n), 150, 842);
       if (n > 0 && n < fn.length && Math.floor(t * 8) % 2 === 0) c.fillRect(150 + c.measureText(fn.slice(0, n)).width + 3, 826, 11, 20);
       c.fillStyle = rgba('graphite', 0.9);
       c.fillRect(150, 812, 220, 1);
       // P(doom) cameo: a second footnote, same rounding policy
-      const fn2 = `² P(doom): ${formatPDoom(this.pd.value(t))}. Also rounded down.`;
+      const fn2 = `² P(doom): ${formatPDoom(this.pd.value(t))}. ${tr('Also rounded down.', 'Também arredondado para baixo.')}`;
       const n2 = Math.floor(fn2.length * prog(t, tL + 1.15, tL + 1.55));
       c.fillStyle = rgba('ash', 0.95);
       c.fillText(fn2.slice(0, n2), 150, 874);

@@ -1,4 +1,5 @@
 // Music analysis (data/audio.json) sampled at arbitrary song time.
+import { AUDIO_DATA_URLS } from '../locale';
 
 export interface AudioJSON {
   duration: number;
@@ -18,7 +19,7 @@ export interface AudioSample {
   kick: number; snare: number; hat: number; vonset: number;
 }
 
-const FEATURES = ['rms', 'low', 'mid', 'high', 'vocal', 'drums', 'bass', 'other'] as const;
+const FEATURES = ['rms', 'low', 'mid', 'high', 'vocal', 'drums', 'bass', 'other', 'pitchMidi'] as const;
 
 export class AudioData {
   duration: number;
@@ -43,7 +44,7 @@ export class AudioData {
   }
 
   static async load(): Promise<AudioData> {
-    for (const url of ['data/audio.json', 'data/audio.approx.json']) {
+    for (const url of AUDIO_DATA_URLS) {
       const r = await fetch(url);
       if (r.ok && (r.headers.get('content-type') ?? '').includes('json')) return new AudioData(await r.json());
     }

@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // FIG. 9 — "Paperclips, filling a room" (chorus 3, the quiet breakdown).
 //  A  "as paperclips fill the room": the spark's line bends into one Gem clip (top-down, engraved),
 //     which cools into steel and replicates on 8th notes (1 → 64), then the lattice floods the plane.
@@ -86,7 +87,7 @@ export default class Paperclips extends Scene {
     this.L3 = ly.get('nowhere left');
     this.pdoom = new PDoom(ly);
     // the clip cools into steel on the first beat at/after "paperclips"; it replicates on the 8ths after
-    const bB1 = Math.ceil(au.beatAt(this.L1.words[1]!.start - 0.06));
+    const bB1 = Math.ceil(au.beatAt(this.L1.words[PT ? 0 : 1]!.start - 0.06));
     const db1 = au.timeOfBeat(bB1);
     const splits = Array.from({ length: 6 }, (_, k) => au.timeOfBeat(bB1 + 1 + 0.5 * k));
     const tilt0 = au.timeOfBeat(bB1 + 4);
@@ -355,17 +356,17 @@ export default class Paperclips extends Scene {
     c.font = font(F.mono(500), 13);
     c.letterSpacing = '3px';
     c.fillStyle = rgba('ash', 0.9);
-    c.fillText('↩  AUTOMATIC REPLY', pad, 40);
+    c.fillText(tr("↩  AUTOMATIC REPLY", "↩  RESPOSTA AUTOMÁTICA"), pad, 40);
     c.textAlign = 'right';
     c.fillStyle = rgba('graphite', 1);
-    c.fillText('DO NOT REPLY', cw - pad, 40);
+    c.fillText(tr("DO NOT REPLY", "NÃO RESPONDA"), cw - pad, 40);
     c.textAlign = 'left';
     c.letterSpacing = '0px';
     c.font = font(F.mono(400), 15);
     c.fillStyle = rgba('graphite', 1);
-    c.fillText('Subject', pad, 80);
+    c.fillText(tr("Subject", "Assunto"), pad, 80);
     // the lyric, typed as sung
-    const size = 40;
+    const size = PT ? 34 : 40;
     c.font = font(F.mono(500), size);
     // typed as sung: a word's first key lands on its first syllable. A typed subject line in mono
     // UI text: typewriter apostrophe (guy's), like the body's I'm
@@ -393,12 +394,12 @@ export default class Paperclips extends Scene {
     c.fillRect(pad, 156, cw - pad * 2, 1);
     c.font = font(F.mono(400), 19);
     c.fillStyle = rgba('bone', 0.74);
-    const body = ["I'm out of office with limited access to", 'the killswitch. For urgent matters,', 'please contact —'];
+    const body = PT ? ['Estou fora, com acesso limitado ao', 'botão de desligar. Em caso de urgência,', 'entre em contato com —'] : ["I'm out of office with limited access to", 'the killswitch. For urgent matters,', 'please contact —'];
     body.forEach((s, i) => c.fillText(s, pad, 194 + i * 29));
     c.font = font(F.mono(400), 13);
     c.fillStyle = rgba('graphite', 1);
-    c.fillText('Returning: TBD', pad, ch - 44);
-    c.fillText(`Current P(doom): ${formatPDoom(this.pdoom.value(t))} (this message was sent automatically)`, pad, ch - 22);
+    c.fillText(tr("Returning: TBD", "Retorno: a definir"), pad, ch - 44);
+    c.fillText(PT ? `P(doom) atual: ${formatPDoom(this.pdoom.value(t))} (mensagem enviada automaticamente)` : `Current P(doom): ${formatPDoom(this.pdoom.value(t))} (this message was sent automatically)`, pad, ch - 22);
     c.restore();
   }
 
