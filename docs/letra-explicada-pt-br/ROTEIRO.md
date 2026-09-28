@@ -1,20 +1,20 @@
-# Narração da letra — roteiro
+# A letra explicada — roteiro
 
 Extensão do vídeo em português: depois da música, uma narração explica as referências da letra.
-Os arquivos `.txt` desta pasta são o texto exato de cada geração no ElevenLabs, um arquivo por pedido.
+Os arquivos de `tts/` são o texto exato de cada geração no ElevenLabs, um arquivo por pedido.
 Este roteiro liga cada parágrafo a um trecho da música e a uma imagem.
 
 ## Arquivos
 
 | Arquivo | Capítulo | Palavras | Caracteres |
 |---|---|---:|---:|
-| `00-abertura.txt` | Espera | 170 | 978 |
-| `01-faiscas.txt` | P(doom) 0,02 · Faíscas | 151 | 861 |
-| `02-o-que-tem-dentro.txt` | 0,15 · O que tem lá dentro | 271 | 1.547 |
-| `03-poder-demais.txt` | 0,42 · Poder demais | 301 | 1.672 |
-| `04-clipes-de-papel.txt` | 0,81 · Clipes de papel | 281 | 1.615 |
-| `05-o-que-ilya-viu.txt` | 0,99 · O que Ilya viu | 245 | 1.415 |
-| `06-final.txt` | NaN · E o seu P(doom)? | 93 | 504 |
+| `tts/00-abertura.txt` | Espera | 170 | 978 |
+| `tts/01-faiscas.txt` | P(doom) 0,02 · Faíscas | 151 | 861 |
+| `tts/02-o-que-tem-dentro.txt` | 0,15 · O que tem lá dentro | 271 | 1.547 |
+| `tts/03-poder-demais.txt` | 0,42 · Poder demais | 301 | 1.672 |
+| `tts/04-clipes-de-papel.txt` | 0,81 · Clipes de papel | 281 | 1.615 |
+| `tts/05-o-que-ilya-viu.txt` | 0,99 · O que Ilya viu | 245 | 1.415 |
+| `tts/06-final.txt` | NaN · E o seu P(doom)? | 93 | 504 |
 
 São cerca de 1.500 palavras, entre 9 e 10 minutos de voz, mais uns 90 segundos de trechos da música.
 
@@ -22,7 +22,7 @@ São cerca de 1.500 palavras, entre 9 e 10 minutos de voz, mais uns 90 segundos 
 
 - Gere um arquivo por vez. O maior tem menos de 1.700 caracteres, abaixo dos limites do Eleven v3
   (5.000 por pedido) e do Multilingual v2 (10.000).
-- Use a mesma voz e as mesmas configurações em todos. Aprove a voz com `00-abertura.txt` antes de gerar o resto.
+- Use a mesma voz e as mesmas configurações em todos. Aprove a voz com `tts/00-abertura.txt` antes de gerar o resto.
 - O texto não tem marcações, então funciona em qualquer modelo. No v3, dá para acrescentar tags como
   `[excited]` ou `[pause]`; ele não aceita `<break>`. No Multilingual v2, `<break time="1.0s" />`
   (até 3 s) funciona, mas as tags do v3 não.
@@ -61,7 +61,7 @@ O `outro` termina com o cursor clicando em "↻ Gerar novamente" e rebobinando t
 Na versão estendida, o cursor para sobre o botão sem clicar, e a narração começa com "Espera".
 O clique acontece em "Vamos rebobinar". O rebobinamento, a partir daí, é a passagem entre capítulos:
 cada capítulo abre no refrão correspondente, com o contador saltando para o novo valor.
-Na última frase de `06-final.txt`, o cursor clica e o vídeo volta ao primeiro quadro da música, como no loop original.
+Na última frase de `tts/06-final.txt`, o cursor clica e o vídeo volta ao primeiro quadro da música, como no loop original.
 
 ## Roteiro por bloco
 
@@ -172,7 +172,7 @@ Os tempos dependem da duração final do áudio. A música termina em 2:35,6.
 
 ## Fontes dos fatos novos
 
-Os demais fatos seguem o [guia da letra](../GUIA-DA-LETRA-PT-BR.md).
+Os demais fatos seguem o [guia da letra](GUIA-DA-LETRA.md).
 
 - Pesquisa com 2.778 pesquisadores, outubro de 2023; medianas de 5% ou 10% nas perguntas sobre extinção:
   [Grace et al., *Thousands of AI Authors on the Future of AI*](https://arxiv.org/abs/2401.02843).
