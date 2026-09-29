@@ -15,7 +15,7 @@ a música de novo. O rebobinamento só avisa que vamos voltar ao clipe. Daí em 
 quadros do clipe quando eles já mostram o que a narração diz, e remonta, desmonta ou troca por animação nova quando
 não mostram (ver "A segunda passada"). No fim, a régua dá play e a música recomeça.
 
-Três promessas, todas feitas nos primeiros 40 segundos:
+Três promessas, todas feitas nos primeiros 45 segundos:
 
 1. **"Tudo que você viu no vídeo é código… No final, eu te mostro melhor."** A promessa do título. Volta em 02.5
    (o monstro é uma fórmula) e se cumpre em `06-bastidores`.
@@ -170,25 +170,25 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
   e volta no verso seguinte. Aparece em 00.1 e some em 06.7. Em 04.3, a régua inteira acende como estopim.
 - **Código**: em 00.2, 02.5 e 06.2–06.3, trechos reais de `app/src`, em Plex Mono, ligados à cena que desenham.
 
-## Duração estimada
+## Duração
 
-Voz estimada pelo ritmo das gravações anteriores (~16,8 caracteres/s). Trechos da música pelos tempos de
-`data/lyrics.pt-br.json`, com 0,4 s de margem cada; respiro de 0,4 s entre blocos.
+Voz medida nas gravações atuais. Trechos da música pelos tempos de `data/lyrics.pt-br.json`, com 0,4 s de margem
+cada; respiro de 0,4 s entre blocos.
 
 | Arquivo | Capítulo | Blocos | Caracteres | Voz | Trechos | Total |
 |---|---|---:|---:|---:|---:|---:|
-| `00-abertura` | Tudo é código | 6 | 1.165 | 69 s | — | ~1:12 |
-| `01-faiscas` | P(doom) 0,02 · Faíscas | 4 | 1.066 | 63 s | 16 s | ~1:21 |
-| `02-o-que-tem-dentro` | 0,15 · O que tem lá dentro | 7 | 1.539 | 91 s | 25 s | ~1:59 |
-| `03-poder-demais` | 0,42 · Poder demais | 7 | 1.502 | 89 s | 34 s | ~2:06 |
-| `04-clipes-de-papel` | 0,81 · Clipes de papel | 6 | 1.557 | 92 s | 30 s | ~2:05 |
-| `05-o-que-ilya-viu` | 0,99 · O que Ilya viu | 5 | 1.111 | 66 s | 15 s | ~1:23 |
-| `06-bastidores` | Como uma IA fez este vídeo | 7 | 1.222 | 73 s | ~8 s | ~1:23 |
-| | **Total** | **42** | **9.162** | **~9:04** | **~2:08** | **~11:29** |
+| `00-abertura` | Tudo é código | 6 | 1.165 | 72,7 s | — | ~1:15 |
+| `01-faiscas` | P(doom) 0,02 · Faíscas | 4 | 1.066 | 68,4 s | 16 s | ~1:26 |
+| `02-o-que-tem-dentro` | 0,15 · O que tem lá dentro | 7 | 1.539 | 99,3 s | 25 s | ~2:07 |
+| `03-poder-demais` | 0,42 · Poder demais | 7 | 1.502 | 95,3 s | 34 s | ~2:12 |
+| `04-clipes-de-papel` | 0,81 · Clipes de papel | 6 | 1.557 | 99,3 s | 30 s | ~2:12 |
+| `05-o-que-ilya-viu` | 0,99 · O que Ilya viu | 5 | 1.111 | 68,8 s | 15 s | ~1:26 |
+| `06-bastidores` | Como uma IA fez este vídeo | 7 | 1.222 | 75,7 s | ~8 s | ~1:27 |
+| | **Total** | **42** | **9.162** | **9:39,5** | **~2:08** | **~12:05** |
 
-Com a música (2:35), o vídeo completo fica com cerca de **14 min**. A voz tem meio minuto a mais que o primeiro
-rascunho; o que mais cresceu foram os trechos da música, que são o formato. Mais cortes, se precisar, devem sair da primeira
-montagem (ver "Cortes possíveis").
+Com a música (2:35), o vídeo completo fica com cerca de **14:40**. A voz saiu mais lenta que a estimativa feita pelo
+texto: 15,8 caracteres por segundo (159 a 181 palavras por minuto), contra 16,8 nas gravações anteriores. Se a primeira
+montagem parecer longa, os cortes estão em "Cortes possíveis".
 
 ## Arquivos
 
@@ -198,24 +198,27 @@ montagem (ver "Cortes possíveis").
 - `audio/letra-explicada-pt-br/NN-nome.mp3`: a voz de cada arquivo, com o mesmo nome.
 - `audio/letra-explicada-pt-br/trilha-de-fundo.mp3`: trilha do Suno (204,8 s), tocada em loop sob a voz.
 - `audio/pdoom-pt-BR.mp3`: a fonte dos trechos da música.
+- `audio/letra-explicada-pt-br/mixagem.mp3`: prévia da narração inteira sobre a trilha, sem os trechos da música.
+  Serve para ouvir o texto de ponta a ponta e é a referência de níveis para a mixagem final (ver "Como montar").
 
-**Estado atual:** os MP3 de voz e `mixagem.mp3` no repositório são do texto anterior
-(sete arquivos, `00` a `06-final`). Todos precisam ser gerados de novo. Agora são sete arquivos, `00` a
-`06-bastidores`. A mixagem não é mais feita à mão: um script a monta a partir dos blocos e dos trechos
-(ver "Como montar").
+**Estado atual:** os sete MP3 de voz, `00-abertura` a `06-bastidores`, foram gerados a partir do texto atual,
+conferidos por transcrição (todos batem com `tts/`) e aprovados na escuta. A `mixagem.mp3` foi refeita com eles: 9:41,5, os capítulos em
+sequência, sem pausas extras, começando em 0:00, 1:12,7, 2:21,0, 4:00,4, 5:35,7, 7:15,0 e 8:23,8.
+A mixagem final do vídeo, com os trechos da música entre os blocos, será montada por script (ver "Como montar").
 
 ## Geração no ElevenLabs
 
 - Mesma voz e mesmas configurações em todos os arquivos. Aprove a voz com `00-abertura` antes de gerar o resto.
 - O maior arquivo tem ~1.600 caracteres, abaixo dos limites do Eleven v3 (5.000) e do Multilingual v2 (10.000).
-- O texto não tem marcações e funciona em qualquer modelo. Mantenha as linhas em branco entre parágrafos:
-  a pausa maior entre eles ajuda a cortar os blocos.
+- O texto não tem marcações e funciona em qualquer modelo. Mantenha as linhas em branco entre parágrafos, mesmo que
+  a voz não faça pausa maior neles: nas gravações atuais, a pausa entre parágrafos tem de 0,24 a 0,8 s (mediana
+  0,28 s), igual à pausa entre frases. Há sempre um silêncio onde cortar o bloco; o respiro vem da montagem.
 - A primeira frase, "Você acabou de ouvir uma música de amor sobre o fim do mundo.", entra depois de um silêncio
   e dá o tom da explicação: calma, com um sorriso no fim. Gere algumas vezes e escolha a que soar mais natural.
 - Em 06.5, "E esta voz, que você está ouvindo esse tempo todo? Também é I-Á. Loucura, né?" é a revelação do vídeo:
   a pergunta um pouco mais lenta, uma pausa curta antes de "Também é I-Á", e "Loucura, né?" rindo de leve.
   Vale gerar esse arquivo mais vezes que os outros até o final soar espontâneo.
-- Ritmo: as gravações anteriores saíram a ~172 palavras por minuto, quase sem pausas. A montagem põe o respiro
+- Ritmo: as gravações atuais saíram de 159 a 181 palavras por minuto, quase sem pausas. A montagem põe o respiro
   entre blocos, então o ritmo pode ficar.
 
 ### Grafia para a voz
@@ -236,9 +239,6 @@ O texto escreve algumas palavras do jeito que devem soar. Na tela, use a grafia 
 As outras siglas (AGI, GPT-4, ChatGPT, MLP, CDR, RLHF, GLSL) ficam escritas como na tela: o ElevenLabs as lê melhor assim
 do que soletradas. "Um ê trinta" e "pê dum" continuam escritos como soam, porque "1E30" pode sair "mil e trinta"
 e os parênteses de "P(doom)" atrapalham a leitura; "o tê do GPT" e "o pê do GPT" nomeiam letras soltas.
-
-A transcrição das gravações anteriores (faster-whisper) mostrou que "Ilya" saiu uma vez como "Ilha" (agora "Ília")
-e que "o fum do começo" soava como "o fundo começo" (reescrito).
 
 Ouça estes nomes antes de aprovar cada arquivo: Clód (se soar estranho, tente "Claude"), After Effects, TypeScript,
 John Searle, Lovecraft, shoggoth, Death Note, Sydney, New York Times, Roko, von Neumann, Lisp, DeepMind, OpenAI,
@@ -366,10 +366,12 @@ e o depoimento.
 
 Um esboço para a fase de código, para as decisões ficarem registradas.
 
-- **Tempos da narração.** Alinhar cada MP3 de voz ao texto conhecido (faster-whisper com carimbo de tempo
-  por palavra, como em `analysis/pt_br.py`) e gravar `data/narracao.pt-br.json`: blocos e palavras com início e fim.
-  Assim como as cenas acham versos por conteúdo, as mudanças de imagem acham palavras da narração
-  ("Bajulação", "Claude") em vez de tempos fixos.
+- **Tempos da narração.** Alinhar cada MP3 de voz ao texto conhecido com alinhamento forçado CTC (torchaudio
+  `MMS_FA`, como `analysis/pt_br.py` faz com a letra) e gravar `data/narracao.pt-br.json`: blocos e palavras com
+  início e fim. O Whisper serve para conferir o texto, não para os tempos: nas gravações atuais, ele marca o início
+  das palavras 0,2 a 0,3 s antes do som. Assim como as cenas acham versos por conteúdo, as mudanças de imagem acham
+  palavras da narração ("Bajulação", "Claude") em vez de tempos fixos. O corte entre blocos cai no silêncio entre
+  a última palavra de um parágrafo e a primeira do seguinte.
 - **Cenas do clipe.** Reaproveitar um trecho como ele é basta renderizar a cena num tempo da música escolhido,
   com zoom, câmera lenta ou volta por cima. Para remontar, as cenas ganham parâmetros opcionais (câmera, tempo
   da música, partes visíveis), com padrões que reproduzem o clipe como é hoje. A explicação é uma sequência de cenas
@@ -382,6 +384,14 @@ Um esboço para a fase de código, para as decisões ficarem registradas.
   blocos cortados dos MP3 de voz, trilha de fundo sob a voz, baixando sob a fala e saindo nos trechos,
   e 0,35–0,6 s de respiro entre blocos. A voz pode entrar ~0,3 s antes do fim do trecho.
   Como imagem e som saem da mesma lista, não há como dessincronizar.
+- **Níveis de referência** (os da `mixagem.mp3`, iguais aos da prévia anterior, que foi aprovada):
+  - Voz a −21 LUFS. As gravações atuais saem do ElevenLabs a ~−20,3 LUFS.
+  - Trilha 13,5 dB abaixo do arquivo original sob a fala, subindo 6 dB nas pausas. A voz fica ~11,5 dB acima dela.
+  - O resultado dá −17,9 LUFS, com pico de −2,2 dBFS.
+  - A trilha tem 137,2 BPM, uma introdução de ~10 s e um final que some a partir de ~185 s. A introdução toca uma vez,
+    e daí em diante o laço repete só a parte estável, de 12,427 a 174,880 s: 23 frases de 4 compassos, cruzadas em
+    2 s na batida. Emendar o arquivo inteiro põe o fim que some colado na introdução, e a trilha quase desaparece
+    por ~30 s a cada volta. A trilha tem uma parte mais baixa entre ~150 e 160 s, que se repete a cada laço.
 - **Render.** O vídeo estendido é o clipe inteiro (0–155,6 s, sem nenhuma mudança) seguido da explicação.
   O último quadro do clipe é o primeiro da explicação. `bun scripts/render.ts video --lang pt-BR` continua gerando
   o clipe sozinho.
