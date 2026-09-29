@@ -105,7 +105,7 @@ a trilha, então ela entra 0,6 s depois do fim da música, em 156,2 s do vídeo.
 | Tempo | Imagem | Som | Voz |
 |---|---|---|---|
 | 0,0–0,6 s | O primeiro quadro, parado: preto, com as marcas de corte. | Silêncio: a cauda da música já sumiu no fade. | — |
-| 0,6–3,9 s | A régua se desenha no pé do quadro, da esquerda para a direita, por dentro das marcas de corte, em ~1,5 s: uma linha fina, um tique por verso, "0:00" e "2:35" nas pontas, os valores do P(doom) sobre os refrões. A faísca acende em 0:00 como cursor, com o símbolo de pausa ao lado. Sem nenhuma palavra, a imagem diz: é a música, parada no começo. | A mixagem começa: a trilha entra baixa, sob a voz. | 00.1 "Você acabou de ouvir uma música de amor sobre o fim do mundo." |
+| 0,6–3,9 s | A régua se desenha no pé do quadro, da esquerda para a direita, por dentro das marcas de corte, em ~1,5 s: uma linha fina, um tique por verso, os valores do P(doom) sobre os refrões (0,02 no começo, NaN no final) e, embaixo da ponta esquerda, "▮▮ 0:00 / 2:35", como num player. A faísca acende em 0:00 como cursor. Sem nenhuma palavra, a imagem diz: é a música, parada no começo. | A mixagem começa: a trilha entra baixa, sob a voz. | 00.1 "Você acabou de ouvir uma música de amor sobre o fim do mundo." |
 | 3,9–4,3 s | Parado. | Trilha. | — |
 | 4,3 s | Começa 00.2; em "é código", a faixa de raio X atravessa o quadro e o transforma em código. | Trilha sob a voz. | 00.2 "E tudo que você viu no vídeo é código…" |
 
@@ -185,6 +185,13 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
   marcados com o valor do P(doom). O cursor é a faísca, com um símbolo de pausa ao lado enquanto a narração fala.
   Com tanta imagem nova, é a âncora: diz em que ponto da música estamos. Pode sair de cena em momentos de tela cheia
   e volta no verso seguinte. Aparece em 00.1 e some em 06.7. Em 04.3, a régua inteira acende como estopim.
+  *Como ficou:* a régua é desenhada na camada do HUD (a das marcas de corte), então o tremor, os zooms, a inversão e as
+  franjas de cor das cenas não a atingem; um degradê de tinta suave por baixo a mantém legível sobre qualquer imagem.
+  A parte já tocada da linha fica laranja. Embaixo da ponta esquerda, "▮▮ 0:23 / 2:35". Sobre o cursor pode aparecer
+  uma etiqueta curta ("cap. 02 · Sydney") e uma posição pode piscar na régua (o fim, em 00.2; cada refrão, em 00.6).
+- **Verso na régua**: em todo bloco que tem verso, o verso entra logo acima da régua, à esquerda, em Archivo, em até
+  ~0,4 s, com a palavra explicada em laranja, e fica ali durante o bloco, como o "tocando agora" de um player. É a
+  forma fixa de o verso estar sempre na tela; a cena, quando é a do clipe no tempo do verso, também o mostra no estilo dela.
 - **Código**: em 00.2, 02.5 e 06.2–06.3, trechos reais de `app/src`, em Plex Mono, ligados à cena que desenham.
 
 ## Duração
@@ -276,12 +283,12 @@ animação nova.
 
 | Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
-| 00.1 | o fim do clipe (ver "A transição") | "Você acabou de ouvir uma música de amor sobre o fim do mundo." | O primeiro quadro; a régua se desenha e a faísca acende em 0:00, pausada. |
-| 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | A faixa de raio X do `shoggoth` atravessa a tela e, por onde passa, a imagem vira o próprio código-fonte (arquivo e linha reais, rolando na velocidade da faixa). Primeiro sobre o quadro parado; depois, a cada batida da trilha, sobre quatro cenas do clipe: a caneta plotando o unicórnio, a explosão do FOOM, o shoggoth girando, a treliça de clipes. Em "nada de After Effects": uma linha de formulário do `bureau`, "programa de edição: nenhum", recebe um carimbo. Em "TypeScript e GLSL": os dois nomes rotulam o código que rola (`.ts` e os blocos `/* glsl */`); em "página web", o código recua até caber num retângulo de linha fina com `localhost:5173` no alto. Em "vinte mil linhas": o odômetro do `ascent` rola até 22.608. Em "Clód Opus cinco ponto cinco": o nome em Archivo, grande, escrito pela faísca. **Novo.** |
-| 00.3 | — | "Mas antes, a letra… acabar com a humanidade." | A faísca corre a régua e acende os tiques das referências, um a um, com um contador que chega a ~30. Uma cena nova de ~1 s para cada isca: as grades do `prompt` sydney fechando na cara da câmera; a máscara se virando para a câmera e sorrindo; a tarja REDIGIDO carimbando a tela inteira; um clipe se duplicando até encher o quadro. |
-| 00.4 | — | "Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe." | Uma lente macro passeia, fora de foco, por detalhes que ainda vão aparecer (um token com probabilidade, uma etiqueta, um adesivo), sem deixar ler nenhum. A lente se afasta até a régua, com a faísca em 0:00. |
-| 00.5 | — | "Primeiro, o título… com essa chance de cair?" | *P*(doom) se monta como no cartão final; o P e o doom se afastam e cada um ganha sua chamada (probabilidade, ruína). Em "quase três mil pesquisadores": um campo de 2.778 pontos cai no quadro, como a grade de GPUs do `dense`; em "Metade", metade deles acende em laranja: "≥ 5%". "Grace et al., out. 2023". No avião: o campo encolhe até 20 pontos, um laranja. **Novo.** |
-| 00.6 | — | "No vídeo, esse número sobe… Vamos subir junto." | A faísca pula de refrão em refrão na régua, e o mostrador do P(doom) rola 0,02 → 0,15 → 0,42 → 0,81 → 0,99 a cada pulo, depois volta a 0,02. |
+| 00.1 | o fim do clipe (ver "A transição") | "Você acabou de ouvir uma música de amor sobre o fim do mundo." | O primeiro quadro, parado, com as marcas de corte; quando a mixagem começa, a régua se desenha em 1,5 s e a faísca acende em 0:00, pausada. |
+| 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | Em "tudo que você viu", o clipe passa em flashes, um quadro por batida (o unicórnio, o FOOM, os olhos do shoggoth, os clipes se multiplicando). Em "é código", a faixa de raio X do `shoggoth` atravessa o último e o deixa desenhado pelo próprio código-fonte (`paperclips-glsl.ts`, rolando), com a imagem acesa nos caracteres; as marcas de corte saem. Uma **ficha técnica** em papel osso, no estilo do `bureau`, entra pela esquerda e é preenchida pela voz: "quadros desenhados à mão: 0", "filmados: 0", "gerados por IA de vídeo: 0"; em "After Effects", o carimbo "NENHUM · NEM AFTER EFFECTS" no campo "programa de edição". Atrás da ficha, a cada tempo forte, outra cena vista como código (`open.ts`, `room.ts`, `shoggoth-glsl.ts`). Em "vinte mil linhas": um voo por toda a listagem do clipe, arquivo por arquivo, enquanto o odômetro do `ascent` rola até a contagem real de linhas (medida no próprio código). O voo pousa em `open.ts`: em "TypeScript" e "GLSL", chamadas saem do fim das linhas, com colchetes na margem (o TypeScript em osso, o bloco `/* glsl */` em laranja); em "shaders", a câmera se aproxima do bloco GLSL e, ao lado, abre-se uma janela com o que ele desenha (a folha quadriculada do começo). Em "página web", tudo encolhe numa janela com `localhost:5173/?lang=pt-BR` e o clipe rodando dentro. Em "Escritas por", a janela se afasta e `// escrito por` é digitado; em "Clód Opus cinco ponto cinco", a faísca traça "Claude Opus 5.5" em Archivo, e o nome se preenche. Em "No final", a faísca sai do nome e corre até o fim da régua, que pisca. |
+| 00.3 | — | "Mas antes, a letra… acabar com a humanidade." | A letra inteira, os 46 versos em três colunas, com o tempo de cada um. Em "esconde umas trinta referências", a faísca corre a régua de 0:00 a 2:35; cada verso por que ela passa acende, com a referência sublinhada em laranja, e um contador chega a 30 (as referências do guia da letra). Depois, um trecho do clipe para cada isca, e o cursor pula para onde ela está na música, com a etiqueta do capítulo que a explica: as grades do `prompt` Sydney fechando ("cap. 02 · Sydney"); a máscara, e a faixa de raio X revelando o monstro atrás do sorriso ("cap. 02 · shoggoth"); o laptop com a tela CENSURADO ("cap. 05 · Ilya"); um clipe que se duplica e, em "que poderia acabar com a humanidade", a treliça fechando em "NÃO TEM PRA ONDE ESCAPAR" ("cap. 04 · clipes"). |
+| 00.4 | — | "Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe." | O cursor volta a 0:00. Uma lente macro passeia, fora de foco, por detalhes que ainda vão aparecer, um por batida: a distribuição com "Claude, 0,12", uma etiqueta dos olhos do shoggoth, os adesivos do laptop. Em "quase ninguém percebe", a imagem encolhe até sumir na faísca em 0:00. |
+| 00.5 | — | "Primeiro, o título… com essa chance de cair?" | *P*(doom) composto como no cartão final do `outro` e traçado pela faísca; em "Pê" e "dum", cada parte acende; em "probabilidade" e "ruína", uma chamada sob cada parte. Em "A chance…", a equação sobe e o mostrador de P(doom) do clipe aparece embaixo, sem conseguir parar num valor ("?", os dígitos correndo em "catástrofe"). Em "dois mil e vinte e três": "PESQUISA · OUT. 2023"; em "quase três mil pesquisadores", 2.778 pontos caem na tela, fileira por fileira, com o contador; em "pergunta parecida", a pergunta, citada em Cormorant. Em "Metade", metade dos pontos acende em laranja: "≥ 5%". Em "avião", os pontos voam para os 20 assentos de um avião pequeno, visto de cima, um deles laranja: "1 em 20 · 5% de chance de cair". Fonte na tela: Grace et al., 2024. |
+| 00.6 | — | "No vídeo, esse número sobe… Vamos subir junto." | O mostrador de P(doom) do clipe, grande, em 0,02. Em "sobe a cada refrão", a faísca pula de refrão em refrão na régua, um por batida, e cada pulo mostra o número como o clipe o exibe (0,15, 0,42, 0,81, 0,999…). Em "junto", de volta a 0,02 e a 0:00. |
 
 ### 01 · P(doom) 0,02 · Faíscas
 
@@ -351,6 +358,32 @@ no fim de 06.1 (abaixo).
 | 06.5 | — | "E tem uma ironia aqui… Loucura, né?" | A máscara, sorrindo, de frente. Em "inclusive o do monstro": ela gira e mostra, no verso, o código do shoggoth. Em "E o roteiro": o texto deste arquivo, `06-bastidores.txt`, rola em Plex Mono; em "Inclusive esta frase", a frase acende palavra por palavra enquanto é dita. Em "E esta voz": a forma de onda desta própria fala, desenhada pela faísca, com a etiqueta "voz sintética"; em "Loucura, né?", a onda se curva no sorriso da máscara. **Novo.** |
 | 06.6 | — | "Talvez o fim do mundo que a música canta… E o porquê." | O campo de prompt do vídeo, vazio. Digita-se "Meu P(doom) é ", e o cursor pisca sob uma distribuição de próximos tokens: "5%", "50%", "depende", "???". |
 | 06.7 | — | "E agora, ouve de novo…" | O primeiro quadro; em "ouve de novo", a faísca volta a 0:00. Quando a mixagem acaba, a pausa vira play, a régua se apaga e o clipe recomeça com a música, sob a tela final do YouTube (ver "Como a explicação termina"). |
+
+## Decisões de montagem
+
+O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem o vídeo montado).
+
+**Geral**
+
+- A régua é desenhada no HUD, não na cena: fica firme sob os tremores, zooms e franjas de cor das cenas do clipe.
+- O tempo da música aparece como "▮▮ 0:00 / 2:35" embaixo da ponta esquerda, em vez de "0:00" e "2:35" nas pontas: na ponta esquerda, os dois rótulos e a pausa se amontoavam sobre o cursor.
+- O verso de cada bloco fica acima da régua, à esquerda, durante o bloco inteiro: é a âncora fixa de "onde estamos na música", mesmo quando a imagem é nova.
+- Os cortes entre blocos caem na primeira batida da trilha dentro do silêncio entre os parágrafos; sem batida no silêncio, num golpe forte da percussão; sem os dois, a 40% do silêncio.
+- A grade de batidas vem das batidas rastreadas da trilha, não de um andamento fixo: a trilha do Suno oscila até ~70 ms contra uma grade rígida.
+
+**00 · Tudo é código**
+
+- 00.2: em "tudo que você viu", flashes do clipe no lugar do quadro parado — ilustram a frase e evitam 2 s de preto.
+- 00.2: o raio X deixa a imagem feita do próprio código (os caracteres acesos pela imagem), em vez de trocá-la pelo código — a cena continua reconhecível.
+- 00.2: as negações ("desenhado à mão, filmado, gerado") viraram uma ficha técnica preenchida pela voz, e o carimbo do "After Effects" vai nela — um objeto só, no lugar de uma linha solta de formulário.
+- 00.2: o odômetro conta todas as linhas do clipe (`app/src` sem a pasta da explicação), medidas no próprio código; o voo pela listagem mostra as linhas passando.
+- 00.2: o GLSL aparece ao lado do que desenha (a folha quadriculada), e a "página web" é uma janela com o endereço do servidor de desenvolvimento e o clipe rodando dentro.
+- 00.2: "No final, eu te mostro melhor": a faísca corre do nome até o fim da régua — o "final" é o fim da explicação.
+- 00.3: as ~30 referências são as do guia da letra, sublinhadas numa folha com a letra inteira enquanto a faísca varre a régua; as iscas são trechos do clipe remontados, cada um com o cursor no seu verso e a etiqueta do capítulo — mostram onde cada isca vai ser paga.
+- 00.4: sem a pausa de meio segundo depois de "Claude, 0,12" (fica para 01.4); a lente termina encolhendo a imagem até a faísca em 0:00.
+- 00.5: em "A chance de a IA causar uma catástrofe", o mostrador de P(doom) do clipe sem conseguir parar num valor — a definição vira imagem, sem repetir a frase na tela.
+- 00.5: o avião é um mapa de 20 assentos visto de cima, um laranja ("1 em 20") — 5% vira algo que se enxerga.
+- 00.6: os números de cada refrão aparecem como o clipe os mostra (quadros das cenas `hook`), um por batida, com o cursor pulando.
 
 ## Cortes possíveis
 
@@ -468,5 +501,5 @@ Os demais fatos seguem o [guia da letra](GUIA-DA-LETRA.md).
 - Depoimento de Sutskever no processo Musk v. Altman (1º de outubro de 2025, divulgado em novembro de 2025):
   memorando de 52 páginas aos conselheiros independentes com queixas sobre a conduta de Altman, baseado
   sobretudo em informações de Mira Murati: [Decrypt](https://decrypt.co/347349/inside-deposition-showed-openai-nearly-destroyed-itself).
-- Linhas de código: `app/src` tem 57 arquivos `.ts` e 22.608 linhas; `shoggoth.ts` + `shoggoth-glsl.ts`, 1.303.
+- Linhas de código: medidas no próprio código pelo vídeo (o odômetro de 00.2 conta `app/src` sem a pasta `letra/`, a da explicação): hoje 57 arquivos `.ts` e 22.714 linhas; `shoggoth.ts` + `shoggoth-glsl.ts`, 1.303.
   Refaça a contagem antes de publicar.

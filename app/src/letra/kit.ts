@@ -5,54 +5,111 @@ import * as THREE from 'three';
 import { FSPass, Layer2D, W, H, makeRT } from '../engine/gl';
 import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
-import { F, font, layout } from '../engine/type';
+import { F, font, layout, textPathCommands } from '../engine/type';
 import { clamp, ease, lerp, prog } from '../engine/util';
 import type { Lyrics, Line } from '../engine/lyrics';
 import type { Narration } from './narration';
 import { MONTAGE, verseLines, type BlockSpec } from './montage';
 import { blockCuts } from './timeline';
 import { CLIP_END } from './soundtrack';
+import { Sheet } from './paper';
 
 // ---------------------------------------------------------------- shared scratch resources
+const VIEW = /* glsl */ `
+  uniform sampler2D tex; uniform vec4 cam; uniform vec4 rect; uniform float dim, duo, satur, alpha, blur, fit, feather; uniform vec3 tint;
+  vec3 grade(vec3 c) {
+    float l = luma(c);
+    vec3 d = mix(C_INK, C_SIGNAL * 1.2, smoothstep(0.02, 0.35, l));
+    d = mix(d, C_BONE, smoothstep(0.35, 0.8, l));
+    c = mix(c, d, duo);
+    return mix(vec3(l), c, satur) * tint * dim;
+  }
+  vec3 tap(vec2 p) {
+    vec2 uv = vec2(p.x / ${W.toFixed(1)}, 1.0 - p.y / ${H.toFixed(1)});
+    float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
+    return texture(tex, uv).rgb * inside;
+  }
+  void main() {
+    vec2 sp = vec2(vUv.x * ${W.toFixed(1)}, (1.0 - vUv.y) * ${H.toFixed(1)});
+    // the view fills rect (screen px); inside it, a camera looks at source point cam.xy with zoom and roll
+    vec2 rs = rect.zw - rect.xy;
+    vec2 q = fit > 0.5 ? (sp - rect.xy) / rs * vec2(${W.toFixed(1)}, ${H.toFixed(1)}) : sp;
+    vec2 d = (q - 0.5 * vec2(${W.toFixed(1)}, ${H.toFixed(1)})) / cam.z;
+    float cr = cos(cam.w), sr = sin(cam.w);
+    vec2 p = vec2(cr * d.x + sr * d.y, -sr * d.x + cr * d.y) + cam.xy;
+    vec3 c;
+    if (blur < 0.5) c = tap(p);
+    else {
+      // defocus: a 16-tap Vogel disk
+      c = vec3(0.0);
+      for (int i = 0; i < 16; i++) {
+        float r = sqrt((float(i) + 0.5) / 16.0) * blur, a = float(i) * 2.39996;
+        c += tap(p + vec2(cos(a), sin(a)) * r / cam.z);
+      }
+      c /= 16.0;
+    }
+    vec2 e = min(sp - rect.xy, rect.zw - sp);
+    float a = alpha * clamp((min(e.x, e.y) + 0.5) / max(feather, 1.0), 0.0, 1.0);
+    fragColor = vec4(grade(c) * a, a);
+  }`;
+const viewUniforms = () => ({
+  tex: { value: null }, cam: { value: new THREE.Vector4(W / 2, H / 2, 1, 0) }, rect: { value: new THREE.Vector4(0, 0, W, H) },
+  dim: { value: 1 }, duo: { value: 0 }, satur: { value: 1 }, alpha: { value: 1 }, blur: { value: 0 }, fit: { value: 1 }, feather: { value: 1 }, tint: { value: new THREE.Vector3(1, 1, 1) },
+});
+
 class Shared {
   rt = [makeRT(), makeRT(), makeRT(), makeRT()];
   ui = new Layer2D();
   ui2 = new Layer2D();
   lines = new LineBatch(80000, { blend: 'add' });
-  hudLines = new LineBatch(4000, { blend: 'add' });
-  cam = new FSPass(/* glsl */ `
-    uniform sampler2D tex; uniform vec4 cam; uniform float dim, duo, satur, alpha; uniform vec3 tint;
-    void main() {
-      // cam: centre of the view in source px (x right, y down), zoom, roll
-      vec2 p = (vUv - 0.5) * vec2(${W.toFixed(1)}, ${H.toFixed(1)});
-      p.y = -p.y;
-      p = rot2(-cam.w) * p / cam.z + cam.xy;
-      vec2 uv = vec2(p.x / ${W.toFixed(1)}, 1.0 - p.y / ${H.toFixed(1)});
-      float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
-      vec3 c = texture(tex, uv).rgb * inside;
-      float l = luma(c);
-      vec3 d = mix(C_INK, C_SIGNAL * 1.2, smoothstep(0.02, 0.35, l));
-      d = mix(d, C_BONE, smoothstep(0.35, 0.8, l));
-      c = mix(c, d, duo);
-      c = mix(vec3(l), c, satur) * tint;
-      fragColor = vec4(c * dim, alpha);
-    }`, {
-    tex: { value: null }, cam: { value: new THREE.Vector4(W / 2, H / 2, 1, 0) }, dim: { value: 1 }, duo: { value: 0 }, satur: { value: 1 },
-    alpha: { value: 1 }, tint: { value: new THREE.Vector3(1, 1, 1) },
-  });
+  view = new FSPass(VIEW, viewUniforms());
+  viewOver = new FSPass(VIEW, viewUniforms(), { blending: THREE.CustomBlending, transparent: true });
+  private sheetInst: Sheet | null = null;
+  get sheet() { return (this.sheetInst ??= new Sheet()); }
+  constructor() {
+    const m = this.viewOver.mat;
+    m.blendEquation = THREE.AddEquation; m.blendSrc = THREE.OneFactor; m.blendDst = THREE.OneMinusSrcAlphaFactor;
+    m.blendSrcAlpha = THREE.OneFactor; m.blendDstAlpha = THREE.OneMinusSrcAlphaFactor;
+  }
 }
 let shared: Shared | null = null;
 export const S = () => (shared ??= new Shared());
 
-export interface Cam { x?: number; y?: number; zoom?: number; roll?: number; dim?: number; duo?: number; sat?: number; tint?: [number, number, number] }
-/** Draw `tex` (a full frame) into `out` through a 2D camera: centre (source px), zoom, roll; grading. */
-export function camPass(renderer: THREE.WebGLRenderer, tex: THREE.Texture, out: THREE.WebGLRenderTarget, c: Cam = {}) {
-  const p = S().cam, u = p.u;
+export interface Cam {
+  /** Source point at the centre of the view (px), zoom, roll (radians, clockwise). */
+  x?: number; y?: number; zoom?: number; roll?: number;
+  /** Grading: brightness, duotone (the outro plates' ink → signal → bone), saturation, tint. */
+  dim?: number; duo?: number; sat?: number; tint?: [number, number, number];
+  /** Defocus radius (source px). */
+  blur?: number;
+  /** Where the view sits on screen (default: the whole frame), and its opacity when drawn over. */
+  rect?: [number, number, number, number]; alpha?: number;
+  /** The rect only masks (the view is not squeezed into it): a window cut out of the full-frame view. */
+  mask?: boolean;
+  /** Soft edges of the rect (px). */
+  feather?: number;
+}
+/**
+ * Draw `tex` (a full frame) into `out` through a 2D camera. `over`: composite over what `out` holds (only
+ * inside the rect, with the alpha); otherwise replace the whole target (black outside the rect).
+ */
+export function camPass(renderer: THREE.WebGLRenderer, tex: THREE.Texture, out: THREE.WebGLRenderTarget, c: Cam = {}, over = false) {
+  const p = over ? S().viewOver : S().view, u = p.u;
   u.tex!.value = tex;
   (u.cam!.value as THREE.Vector4).set(c.x ?? W / 2, c.y ?? H / 2, c.zoom ?? 1, c.roll ?? 0);
-  u.dim!.value = c.dim ?? 1; u.duo!.value = c.duo ?? 0; u.satur!.value = c.sat ?? 1; u.alpha!.value = 1;
+  (u.rect!.value as THREE.Vector4).set(...(c.rect ?? [0, 0, W, H]));
+  u.dim!.value = c.dim ?? 1; u.duo!.value = c.duo ?? 0; u.satur!.value = c.sat ?? 1; u.alpha!.value = c.alpha ?? 1; u.blur!.value = c.blur ?? 0; u.fit!.value = c.mask ? 0 : 1; u.feather!.value = c.feather ?? 1;
   (u.tint!.value as THREE.Vector3).set(...(c.tint ?? [1, 1, 1]));
   p.render(renderer, out);
+}
+
+/** Where a source point lands on screen through a camera (inverse of the view pass). */
+export function camToScreen(c: Cam, x: number, y: number) {
+  const z = c.zoom ?? 1, r = c.roll ?? 0, rc = c.rect && !c.mask ? c.rect : [0, 0, W, H];
+  const dx = (x - (c.x ?? W / 2)) * z, dy = (y - (c.y ?? H / 2)) * z;
+  const cr = Math.cos(r), sr = Math.sin(r);
+  const qx = cr * dx - sr * dy + W / 2, qy = sr * dx + cr * dy + H / 2;
+  return { x: rc[0] + (qx / W) * (rc[2] - rc[0]), y: rc[1] + (qy / H) * (rc[3] - rc[1]) };
 }
 
 /** "m:ss" of a song time. */
@@ -78,6 +135,10 @@ export interface ReguaState {
   paper: number;
   /** 0..1 the whole ruler burning as a fuse (04.3). */
   fuse: number;
+  /** A song position flashed on the ruler (a tick and a glow), with its strength 0..1. */
+  mark?: [number, number];
+  /** A short tag over the cursor ("cap. 02 · Sydney"), with its opacity. */
+  label?: [string, number];
 }
 
 /** Montage-level ruler data: the verse ticks, the choruses and their values, the cursor over the whole explainer. */
@@ -141,6 +202,12 @@ export class Regua {
     const xEnd = lerp(RX0, RX1, ease.inOutCubic(clamp(st.draw)));
     const xc = Math.min(rulerX(st.pos), xEnd);
     c.save();
+    // a soft ink gradient under the player keeps it legible over any image (not on paper: ink on bone reads)
+    if (!ink) {
+      const g = c.createLinearGradient(0, H - 190, 0, H);
+      g.addColorStop(0, rgba('ink', 0)); g.addColorStop(0.55, rgba('ink', 0.5 * st.alpha)); g.addColorStop(1, rgba('ink', 0.72 * st.alpha));
+      c.fillStyle = g; c.fillRect(0, H - 190, W, 190);
+    }
     c.globalAlpha = st.alpha;
     c.fillStyle = col(0.3);
     c.fillRect(RX0, RY, xEnd - RX0, 1);
@@ -166,7 +233,27 @@ export class Regua {
       c.fillStyle = lit > 0 ? mixRgba(col(0.5), rgba('signal', 1), lit) : col(0.5);
       c.fillRect(x, RY - 12, 1, 12);
       const tw = c.measureText(h.v).width;
-      c.fillText(h.v, Math.max(RX0 + tw / 2, x), RY - 19);
+      c.fillText(h.v, Math.max(RX0 + tw / 2, x), RY - 22);
+    }
+    if (st.mark && st.mark[1] > 0) {
+      const x = Math.round(Math.min(rulerX(st.mark[0]), xEnd));
+      c.save();
+      c.globalAlpha = st.alpha * st.mark[1];
+      c.fillStyle = rgba('signal');
+      c.fillRect(x - 1, RY - 16, 3, 22);
+      hudSpark(c, x, RY + 0.5, t, 0.8);
+      c.restore();
+    }
+    if (st.label && st.label[1] > 0) {
+      c.save();
+      c.globalAlpha = st.alpha * st.label[1];
+      c.font = font(F.mono(500), 15); c.letterSpacing = '1px'; c.textAlign = 'left';
+      const tw = c.measureText(st.label[0]).width;
+      const lx = clamp(xc - tw / 2, RX0, RX1 - tw);
+      c.fillStyle = rgba('signal');
+      c.fillText(st.label[0], lx, RY - 44);
+      c.fillRect(Math.round(xc), RY - 38, 1, 30);
+      c.restore();
     }
     // under the left end: pause (or play) and the song position
     const ua = clamp(st.draw * 3 - 1.2);

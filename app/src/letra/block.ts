@@ -49,12 +49,22 @@ export abstract class Block {
   /** The block's first and last words. */
   protected get w0() { return this.e.b.words[0]!; }
   protected get wN() { return this.e.b.words[this.e.b.words.length - 1]!; }
-  /** A word of this block by content (see Narration.word). */
-  protected w(q: string, nth = 0): NWord { return this.n.word(this.e.b.id, q, nth); }
+  /**
+   * A word of this block by content (see Narration.word). Without `nth`, the query must match once in the
+   * block (accents and case fold together: "é" also matches "E"), so a cue never lands on the wrong word.
+   */
+  protected w(q: string, nth?: number): NWord {
+    if (nth === undefined) {
+      let count = 0;
+      try { for (;;) { this.n.word(this.e.b.id, q, count); count++; } } catch { /* no more matches */ }
+      if (count > 1) throw new Error(`block ${this.e.b.id}: "${q}" matches ${count} times; give more words or nth`);
+    }
+    return this.n.word(this.e.b.id, q, nth ?? 0);
+  }
   /** When a word of this block starts. */
-  protected at(q: string, nth = 0) { return this.w(q, nth).start; }
+  protected at(q: string, nth?: number) { return this.w(q, nth).start; }
   /** When a phrase of this block ends (its last word's end). */
-  protected endOf(q: string, nth = 0) { return this.n.wordEnd(this.e.b.id, q, nth).end; }
+  protected endOf(q: string, nth?: number) { this.w(q, nth); return this.n.wordEnd(this.e.b.id, q, nth ?? 0).end; }
   /** The beat of the track nearest a time (cuts land on it). */
   protected beat(t: number) { return this.n.nearestBeat(t); }
 }
