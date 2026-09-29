@@ -150,6 +150,7 @@ export default class Shoggoth extends Scene {
   private maskW = v3(0, 0, 0);
   private capK = 0.72;
   private bandX = -1000; private bandW = 130; private bandOn = 0; private trailK = 0;
+  private hideMask = false;
 
   override async init() {
     this.textL.texture.colorSpace = THREE.NoColorSpace;
@@ -407,7 +408,9 @@ export default class Shoggoth extends Scene {
     cu.txXray!.value = t < this.tBack ? 1 : 0;
     cu.xrayAll!.value = 0;
     cu.ghostK!.value = 0;
-    cu.mVis!.value = 1;
+    // (pt-BR explainer, opt-in: the mask taken out of the scene)
+    this.hideMask = !!f.remix?.hideMask;
+    cu.mVis!.value = this.hideMask ? 0 : 1;
     const reveal = prog(t, this.tBack, this.tBack + 0.5);
     cu.outsideK!.value = t < this.tSee ? 0.07 : lerp(0.14, 1, reveal);
     cu.fogNear!.value = this.cam.pos.length() - 0.9;
@@ -560,7 +563,7 @@ export default class Shoggoth extends Scene {
   private drawPolite(c: CanvasRenderingContext2D, t: number) {
     const words = this.L1.words.slice(0, this.iShog);
     const out = prog(t, this.tWith - 0.02, this.tWith + 0.2);
-    if (out >= 1 || t < this.tSee - 0.4) return;
+    if (out >= 1 || t < this.tSee - 0.4 || this.hideMask) return;
     const cu = this.comp.u;
     const mC = cu.mC!.value as V3, mRt = cu.mRt!.value as V3, mUp = cu.mUp!.value as V3;
     const fam = F.archivo(112.5, 300);
@@ -713,7 +716,7 @@ export default class Shoggoth extends Scene {
       c.letterSpacing = '0px';
     }
     // the mask, once revealed as small: an "assistant" detection
-    if (t > this.tBack + 0.55 && t < this.tWith) {
+    if (t > this.tBack + 0.55 && t < this.tWith && !this.hideMask) {
       const s = this.project(this.maskW, 1);
       const r = MASK_R * s.s;
       this.box(c, t, s.x, s.y, r * 1.25, r * 1.25, tr('ASSISTANT', "ASSISTENTE"), 0.99, tr('FRIENDLY · HELPFUL · FINE', "AMIGÁVEL · PRESTATIVO · OK"), this.tBack + 0.55, -1);

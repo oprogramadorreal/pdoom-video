@@ -13,6 +13,7 @@ import { MONTAGE, verseLines, type BlockSpec } from './montage';
 import { blockCuts } from './timeline';
 import { CLIP_END } from './soundtrack';
 import { Sheet } from './paper';
+import { drawMask2D } from '../scenes/_motifs';
 
 // ---------------------------------------------------------------- shared scratch resources
 const VIEW = /* glsl */ `
@@ -153,6 +154,8 @@ export class Regua {
   specs: BlockSpec[];
   verses: (Line[] | null)[];
   pos: number[];
+  /** "Guarda essa máscara" (02.3): the mask waits in the ruler's corner until RLHF takes it back (04.6). */
+  mask: [number, number];
   constructor(public ly: Lyrics, public n: Narration) {
     this.ticks = ly.lines.map((l) => l.start);
     this.cuts = blockCuts(n);
@@ -173,7 +176,10 @@ export class Regua {
       ...['0,15', '0,42', '0,81', '0,99'].map((v, i) => ({ s: hookLines[i]!, v, lit: at(`0${i + 2}.1`) })),
       { s: ly.get('Was it all for show').end, v: 'NaN', lit: at('06.1') + 7.5 },
     ];
+    this.mask = [n.word('02.3', 'Guarda').start + 0.62, at('04.6') + 0.6];
   }
+  /** Where the kept mask sits (screen px) and its radius. */
+  static readonly MASK_AT = { x: RX1 + 52, y: RY - 4, r: 15 };
   /** Index of the block on screen at video time t. */
   blockAt(t: number) {
     let i = 0;
@@ -270,6 +276,14 @@ export class Regua {
       c.textAlign = 'left';
       c.fillStyle = col(0.72);
       c.fillText(`${fmtTime(st.pos)} / ${fmtTime(SONG)}`, RX0 + 22, y);
+    }
+    // the kept mask, in the ruler's corner
+    if (t >= this.mask[0] && t < this.mask[1]) {
+      const m = Regua.MASK_AT;
+      c.save();
+      c.globalAlpha = st.alpha * prog(t, this.mask[0], this.mask[0] + 0.12);
+      drawMask2D(c, m.x, m.y, m.r * (1 + 0.25 * Math.max(0, 1 - (t - this.mask[0]) / 0.25)), 0, { face: ink ? rgba('ink', 0.85) : rgba('bone', 0.95), ink: ink ? rgba('bone') : rgba('ink') });
+      c.restore();
     }
     // the cursor: the spark
     const sa = clamp(st.draw * 5);
