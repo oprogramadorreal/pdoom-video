@@ -48,6 +48,8 @@ export class Schedule {
   }
   X(t: number) { return GANTT.GX + (t - this.T.t0) * GANTT.V; }
   get slot() { return { x: this.X(this.T.cdr.start), y: GANTT.GL }; }
+  /** Left edge of the column beside the slot: the big CDR, its status and footnote. */
+  get noteX() { return this.slot.x + GANTT.DS + 44; }
 
   /** Playhead x: song time, held at the empty slot, then a zip to LAUNCH. */
   playX(t: number) {
@@ -116,14 +118,20 @@ export class Schedule {
       const la = prog(t, T.LAUNCH + 0.05, T.LAUNCH + 0.25);
       if (la > 0) {
         c.globalAlpha = A * la;
-        const lx = this.X(T.t0), ly = L + 150;
+        c.font = font(F.mono(400), 24);
+        const txt = `P(doom) ${this.pdoom} · ${tr('within tolerance (±1.00)', 'dentro da tolerância (±1,00)')}`;
+        // shares a line with the slot's footnote: if it would run into it (the longer Portuguese does),
+        // pull it back to the sheet's margin
+        let lx = this.X(T.t0);
+        if (lx + 44 + c.measureText(txt).width > this.noteX - 48) lx = x0;
+        const ly = L + 150;
         c.strokeStyle = rgba('ash', 1); c.lineWidth = 2 * px;
         c.strokeRect(lx, ly - 22, 26, 26);
         c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = 3.5 * px;
         c.beginPath(); c.moveTo(lx + 6, ly - 9); c.lineTo(lx + 11, ly - 3); c.lineTo(lx + 21, ly - 17); c.stroke();
         c.lineCap = 'butt';
-        c.font = font(F.mono(400), 24); c.fillStyle = rgba('ash', 1); c.textAlign = 'left';
-        c.fillText(`P(doom) ${this.pdoom} · ${tr('within tolerance (±1.00)', 'dentro da tolerância (±1,00)')}`, lx + 44, ly);
+        c.fillStyle = rgba('ash', 1); c.textAlign = 'left';
+        c.fillText(txt, lx + 44, ly);
       }
     }
     c.globalAlpha = o.alpha;
@@ -312,7 +320,7 @@ export class Schedule {
       const size = 150;
       c.font = font(F.mono(700), size);
       const wch = c.measureText('C').width;
-      const lx = x + r + 44, base = y + size * 0.36;
+      const lx = this.noteX, base = y + size * 0.36;
       c.textAlign = 'center';
       ['C', 'D', 'R'].forEach((ch, k) => {
         const ts = T.syl[k]!;
