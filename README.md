@@ -1,18 +1,28 @@
 # I'm Upping My P(doom) — music video
 
+> **This is a copy of [mexicat/pdoom-video](https://github.com/mexicat/pdoom-video) by Giacomo Magnanini**, who made the original video and the code behind it. I cloned it into this account to add a Brazilian Portuguese edition and a narrated pt-BR explainer of the lyrics. It is not a GitHub fork, so GitHub does not show the link to the original. [About this copy](#about-this-copy) lists what is original and what was added.
+
 A generative, code-rendered music video with word-synced karaoke typography. Every frame is a deterministic function of song time, so the live preview in the browser and the offline 1080p60 (or 4K60) export are identical.
 
-**Watch it in 4K on YouTube:** https://www.youtube.com/watch?v=5EoO5413dBY
+**Watch the original video in 4K on YouTube:** https://www.youtube.com/watch?v=5EoO5413dBY
 
 The YouTube upload is an earlier render: it averages only 4 sub-frames per frame for motion blur, so fast motion shows stepped copies, and YouTube's compression smears the film grain. For the best version, render it locally (see [Render the video](#render-the-video)): the current code picks up to 324 sub-frames per frame where the motion needs them.
 
-The video was made with Claude (Opus 5.5) in Claude Code: the concept and treatment, the lyric alignment and audio analysis, the renderer, every scene and the renders were all worked out in conversation with Claude.
+The original video was made with Claude (Opus 5.5) in Claude Code: the concept and treatment, the lyric alignment and audio analysis, the renderer, every scene and the renders were all worked out in conversation with Claude.
 
 The song is not ours: see [Credits](#credits) for who wrote and made it.
 
 The concept, style bible and plate-by-plate treatment are in [`docs/TREATMENT.md`](docs/TREATMENT.md). The engine and scene API are documented in [`docs/ENGINE.md`](docs/ENGINE.md).
 
 There is also a Brazilian Portuguese edition, with its own recording, timing data and translated artwork, and a narrated extension for it that explains the lyrics: see [Brazilian Portuguese](#brazilian-portuguese).
+
+## About this copy
+
+- **Original:** [mexicat/pdoom-video](https://github.com/mexicat/pdoom-video), by Giacomo Magnanini and contributors. Everything up to commit [`bdbad53`](https://github.com/mexicat/pdoom-video/commit/bdbad537a7b7af3213475651774030c47568c181) (28 September 2026) comes from there, with its git history: the English video, the renderer, the scenes, the analysis tools and the docs.
+- **Added here:** the Brazilian Portuguese edition (recording, lyrics, timing data, translated scene artwork, and a `--lang pt-BR` option in the preview and the renderer) and the narrated pt-BR lyrics explainer. To switch languages, the scenes and the render script were changed; the English edit is still the default. `git log bdbad53..` lists every change.
+- **This README** is the original one, extended to cover the additions.
+- **Videos:** the YouTube video linked above is the original. My pt-BR video and its explainer will be posted on my own YouTube channel, with a link back to this repository.
+- **License:** the original [MIT License](LICENSE) and its copyright notice are kept unchanged.
 
 ## Layout
 
@@ -119,6 +129,7 @@ The models download about 4 GB of weights into `analysis/.cache/`; delete that f
 
 ## Credits
 
+- **Video and code:** Giacomo Magnanini ([mexicat/pdoom-video](https://github.com/mexicat/pdoom-video)), with fixes from Anwin Sharon and HEOJUNFO. See [About this copy](#about-this-copy).
 - **Song:** "I'm Upping My P(doom)". The lyrics are by [osmarks](https://docs.osmarks.net/hypha/p%28doom%29_song_objectively_correct_interpretation), built on an opening verse and chorus by [MusicPerson](https://www.udio.com/creators/MusicPerson), with lines suggested on the EleutherAI Discord and help from Claude on the outro and final chorus. The original was generated with Udio and released in November 2024 ([YouTube](https://www.youtube.com/watch?v=uEB5E67vcPA)). This video uses the "Claude-Pop" version made with Suno, posted by [deckard (@slimer48484)](https://x.com/slimer48484/status/2097752569212756134) in September 2026.
 - **Brazilian Portuguese edition:** a Portuguese version of the lyrics, recorded with Suno (`audio/pdoom-pt-BR.mp3`).
 - **Lyrics explainer (pt-BR):** the narration script was written with Claude from the Portuguese lyrics guide, starting from a first draft generated with GPT-6 Astra. The voice was generated with ElevenLabs, and the background track was made with Suno.
