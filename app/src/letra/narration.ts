@@ -33,6 +33,18 @@ export class Narration {
     this.beats = j.grid.beats.filter((b: number) => b > 0.05).map(at);
     this.downbeats = j.grid.downbeats.filter((b: number) => b > 0.05).map(at);
     this.hits = j.grid.hits.map(([t, s]: [number, number]) => [at(t), s]);
+    const ev: string = j.env?.voice ?? '';
+    this.envFps = j.env?.fps ?? 50;
+    this.env = Float32Array.from({ length: ev.length >> 1 }, (_, i) => +ev.slice(2 * i, 2 * i + 2) / 99);
+  }
+  /** The voice's loudness (0..1) at 50 fps, from the voice MP3s (no music), in mix time. */
+  env: Float32Array;
+  envFps: number;
+  /** The voice's loudness at video time t. */
+  voice(t: number) {
+    const x = (t - MIX_AT) * this.envFps, i = Math.floor(x);
+    if (i < 0 || i >= this.env.length - 1) return 0;
+    return this.env[i]! + (this.env[i + 1]! - this.env[i]!) * (x - i);
   }
 
   static async load(url = 'data/narracao.pt-br.json'): Promise<Narration> {

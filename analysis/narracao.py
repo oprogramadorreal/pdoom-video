@@ -251,9 +251,24 @@ def beats(args):
                 loop=dict(steadyStart=STEADY_START, length=round(loop, 4), passes=passes))
 
 
+def envelope(args):
+    """The voice's loudness at 50 fps (0..99), from the voice MP3s (no music), in mix time: for images that
+    follow the voice itself (the waveform in 06.5)."""
+    fps, parts = 50, []
+    for stem, _ in CHAPTERS:
+        y, sr = load(AUDIO_DIR / f"{stem}.mp3", 16000)
+        hop = sr // fps
+        n = len(y) // hop
+        parts.append(np.sqrt(np.mean(y[:n * hop].reshape(n, hop) ** 2, axis=1)))
+    v = np.concatenate(parts)
+    v = np.clip(v / np.percentile(v, 99.5), 0, 1)
+    # two digits per frame, one string (a list would put 29 000 lines in the JSON)
+    return dict(fps=fps, voice=''.join(f'{int(round(x * 99)):02d}' for x in v))
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("phase", choices=["align", "beats", "all"])
+    ap.add_argument("phase", choices=["align", "beats", "env", "all"])
     args = ap.parse_args()
     doc = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
     if args.phase in ("align", "all"):
@@ -261,15 +276,17 @@ def main():
         doc.update(chapters=chapters, blocks=blocks)
     if args.phase in ("beats", "all"):
         doc.update(grid=beats(args))
+    if args.phase in ("env", "all"):
+        doc.update(env=envelope(args))
     import soundfile as sf
     info = sf.info(MIX)
     doc["mix"] = dict(file="audio/letra-explicada-pt-br/mixagem.mp3", duration=round(info.frames / info.samplerate, 4), sha256=sha256(MIX))
     doc["notes"] = ("Times in seconds of the gapless mixagem.mp3 decode. Words: MMS_FA CTC forced alignment of each chapter's "
                     "voice MP3 to its tts/ text (one block per paragraph), shifted by the chapter's start in the mix "
                     "(running sum of the voice durations, confirmed by cross-correlation). Grid: the background track's "
-                    "constant-tempo beat grid mapped through the loop passes measured by cross-correlation. "
+                    "beat grid mapped through the loop passes measured by cross-correlation. Env: the voice's loudness at 50 fps, two digits (00-99) per frame. "
                     "Regenerate with analysis/narracao.py.")
-    order = ["mix", "chapters", "grid", "blocks", "notes"]
+    order = ["mix", "chapters", "grid", "blocks", "env", "notes"]
     doc = {k: doc[k] for k in order if k in doc}
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"wrote {OUT}")

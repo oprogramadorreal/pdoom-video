@@ -8,5 +8,6 @@ import { C02B } from './c02b';
 import { C03 } from './c03';
 import { C04 } from './c04';
 import { C05 } from './c05';
+import { C06 } from './c06';
 
-export const BLOCKS: Record<string, BlockFactory> = { ...C00, ...C00B, ...C01, ...C02, ...C02B, ...C03, ...C04, ...C05 };
+export const BLOCKS: Record<string, BlockFactory> = { ...C00, ...C00B, ...C01, ...C02, ...C02B, ...C03, ...C04, ...C05, ...C06 };
