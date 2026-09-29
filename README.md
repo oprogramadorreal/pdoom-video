@@ -35,10 +35,12 @@ There is also a Brazilian Portuguese edition, with its own recording, timing dat
 - `data/audio.json` — tempo (132.007 BPM), beats, downbeats, sections, drum/vocal onsets and loudness envelopes.
 - `lyrics/lyrics.src.pt-br.js`, `data/lyrics.pt-br.json`, `data/audio.pt-br.json` — the same for the Brazilian Portuguese recording.
 - `docs/letra-explicada-pt-br/` — the pt-BR lyrics explainer: lyrics guide, narration script and storyboard.
+- `data/narracao.pt-br.json` — the explainer's narration (blocks and word timings), the background track's beats and the voice's loudness.
 - `app/` — the renderer: TypeScript + three.js, bun + Vite.
   - `src/engine/` — renderer core: timeline playback, post-processing (bloom, halation, grain), typography (Archivo, IBM Plex Mono, Cormorant Garamond, single-stroke plotter fonts), GPU line batches, HUD.
   - `src/scenes/` — one module per plate (`open`, `loss`, `prompt`, `hook`, `room`, `shoggoth`, `spacetime`, `ascent`, `bureau`, `leftturn`, `paperclips`, `fuse`, `stack`, `dense`, `loom`, `ilya`, `outro`) plus shared motifs.
   - `src/timeline.ts` — the edit: scene windows anchored to lyric lines and snapped to the beat grid.
+  - `src/letra/` — the pt-BR lyrics explainer: its timeline, the ruler, the blocks (`c00.ts` … `c06.ts`) and the spliced soundtrack.
   - `scripts/render.ts` — offline renderer (headless Chrome → raw frames over WebSocket → ffmpeg).
 - `out/` — renders (not in the repo).
 
@@ -74,8 +76,34 @@ All rendering modes accept `--lang pt-BR`, including `stills`, `sheet`, `plates`
 After changing translated scenes, run `bun run plates:pt-br` to regenerate the Portuguese rewind images.
 See [the pt-BR guide](docs/PT-BR.md) for generation, validation, terminology and draft-render commands.
 
-The pt-BR edition is getting a narrated extension that explains the lyrics. Its script, storyboard and audio
-are described in [`docs/letra-explicada-pt-br/`](docs/letra-explicada-pt-br/).
+#### The lyrics explainer (pt-BR)
+
+The full pt-BR video adds a narrated explainer after the clip: the clip plays unchanged (0–155.6 s), rewinds to its
+first frame, and a ~9:40 narration goes back through the song verse by verse, a player's ruler at the foot of the
+frame, the clip's scenes re-rendered at any song time (slowed down, reframed, remixed) and new diagrams in the same
+style; at the end the song restarts with the clip under the YouTube end screen. The whole video is 12:37.7.
+Its script, storyboard and every editing decision are in
+[`docs/letra-explicada-pt-br/ROTEIRO.md`](docs/letra-explicada-pt-br/ROTEIRO.md); the code is in `app/src/letra/`.
+
+It exists only with `--lang pt-BR --full` (`?lang=pt-BR&full=1` in the preview). Without `--full`, `--lang pt-BR` is
+the clip alone, and without `--lang` the English clip, exactly as before.
+
+```sh
+cd app
+bun run dev    # preview: http://localhost:5173/?lang=pt-BR&full=1  (add &t=300 to start at 5:00)
+bun scripts/render.ts verify --lang pt-BR --full
+bun scripts/render.ts sheet --lang pt-BR --full --from 296 --to 306 --n 16 --out ../out/sheet.png
+# draft (about half an hour on a laptop GPU)
+bun scripts/render.ts video --lang pt-BR --full --fps 30 --samples 1 --preset veryfast --crf 24 --out ../out/pdoom-pt-BR-letra-explicada-draft.mp4
+# final (1080p60, adaptive motion blur)
+bun scripts/render.ts video --lang pt-BR --full --samples auto --shutter 0.2 --out ../out/pdoom-pt-BR-letra-explicada.mp4
+```
+
+The explainer's sound is `audio/letra-explicada-pt-br/mixagem.mp3`, used as it is: the render splices the song,
+0.6 s of silence, the mix and the song again with ffmpeg (no remixing). The narration's word timings and the
+background track's beats are in `data/narracao.pt-br.json`, made by `analysis/narracao.py`
+(`analysis/.venv/Scripts/python.exe analysis/narracao.py all`, see [the pt-BR alignment guide](docs/PT-BR-ALIGNMENT.md)
+for the environment).
 
 | Key | Action |
 |---|---|

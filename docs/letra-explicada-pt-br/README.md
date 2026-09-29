@@ -10,4 +10,9 @@ com narração e animações novas feitas com as peças do próprio clipe, e ter
 | [`GUIA-DA-LETRA.md`](GUIA-DA-LETRA.md) | Referências e conceitos da letra, com links. É a base da narração. |
 | [`audio/letra-explicada-pt-br/`](../../audio/letra-explicada-pt-br/) | Voz de cada capítulo, trilha de fundo e `mixagem.mp3`, o som final da explicação. Todos gerados a partir do texto atual de `tts/`. |
 
+A explicação está montada: o código fica em [`app/src/letra/`](../../app/src/letra/), os tempos da narração e as
+batidas em [`data/narracao.pt-br.json`](../../data/narracao.pt-br.json). Para ver a prévia, abra
+`http://localhost:5173/?lang=pt-BR&full=1`; para renderizar, use `--lang pt-BR --full` (ver "Prévia e renderização"
+no [`ROTEIRO.md`](ROTEIRO.md)).
+
 A adaptação do vídeo para o português está documentada em [`../PT-BR.md`](../PT-BR.md).

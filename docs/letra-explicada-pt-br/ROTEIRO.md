@@ -127,6 +127,9 @@ com o clipe, do primeiro quadro, o mesmo em que a explicação começou. Ela toc
 que ocupa os últimos 5 a 20 s. A música entra depois da mixagem, emendada, sem sobreposição: é o único som
 da explicação que não vem da mixagem.
 
+*Como ficou:* o recomeço dura 20 s (o máximo da tela final do YouTube): o `open` do clipe, de 0:00 a 0:20,
+com a música; a imagem e o som somem juntos nos últimos 2,5 s. O vídeo termina em 757,7 s.
+
 ## A segunda passada
 
 Na primeira vez, o espectador viu o clipe. Na segunda, a música é a mesma, mas a imagem serve à explicação.
@@ -147,7 +150,7 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
 - **A cena vira a explicação.** Em vez de pôr um diagrama por cima da cena, os elementos da cena se reorganizam
   no diagrama: os traços do unicórnio viram circuitos, as barras de probabilidade viram os galhos do Loom,
   a máscara ganha sorriso a cada recompensa.
-- **Cortes na batida.** Cortes e mudanças grandes caem nas batidas da trilha de fundo (ver "Batidas" em "Como montar").
+- **Cortes na batida.** Cortes e mudanças grandes caem nas batidas da trilha de fundo (ver "Batidas" em "Como foi montado").
 - **Variar.** Dois blocos seguidos não têm a mesma cara: alternar escala (macro de um detalhe, plano aberto,
   tela cheia de tipografia), fundo (tinta, papel osso) e velocidade (câmera lenta, whip, time-lapse).
 
@@ -210,8 +213,8 @@ Medida na `mixagem.mp3`: cada capítulo começa onde o anterior termina, e a dur
 | | **Total** | **42** | **9.162** | | **9:39,5** |
 
 A mixagem tem 9:41,5: a voz, mais ~2 s de trilha sumindo depois da última palavra. O vídeo completo tem o clipe
-(155,6 s), 0,6 s de quadro parado, a mixagem (581,5 s) e a música recomeçando sob a tela final (5 a 20 s):
-de **12:23 a 12:38**. A voz fala a 15,8 caracteres por segundo (159 a 181 palavras por minuto).
+(155,6 s), 0,6 s de quadro parado, a mixagem (581,5 s) e a música recomeçando sob a tela final (20 s):
+**12:37,7** (757,7 s). A voz fala a 15,8 caracteres por segundo (159 a 181 palavras por minuto).
 
 ## Arquivos
 
@@ -221,12 +224,16 @@ de **12:23 a 12:38**. A voz fala a 15,8 caracteres por segundo (159 a 181 palavr
 - `audio/letra-explicada-pt-br/mixagem.mp3`: **o som da explicação**, pronto: a narração inteira sobre a trilha,
   581,5 s. O vídeo usa o arquivo como ele é.
 - `audio/letra-explicada-pt-br/NN-nome.mp3`: a voz de cada arquivo, com o mesmo nome, sem trilha. Já está dentro
-  da mixagem; serve para achar os tempos das palavras (ver "Como montar").
+  da mixagem; serve para achar os tempos das palavras (ver "Como foi montado").
 - `audio/letra-explicada-pt-br/trilha-de-fundo.mp3`: trilha do Suno (204,8 s), em loop sob a voz. Também já está
   dentro da mixagem; serve para achar as batidas.
 - `audio/pdoom-pt-BR.mp3`: a música, que toca no clipe e recomeça no fim da explicação.
+- `data/narracao.pt-br.json`: blocos e palavras da narração, a grade de batidas da trilha e o volume da voz, em tempo
+  da mixagem (ver "Como foi montado"). Gerado por `analysis/narracao.py`.
+- `app/src/letra/`: o código da explicação.
 
-**Estado atual:** os sete MP3 de voz, `00-abertura` a `06-bastidores`, foram gerados a partir do texto atual,
+**Estado atual:** o vídeo completo está montado, os 42 blocos (ver "Roteiro por bloco" e "Decisões de montagem").
+Fica de fora só a figura do GPT-4 (ver "Imagens de fora"). Os sete MP3 de voz, `00-abertura` a `06-bastidores`, foram gerados a partir do texto atual,
 conferidos por transcrição (todos batem com `tts/`) e aprovados na escuta. A `mixagem.mp3` foi refeita com eles
 e é o som final da explicação: 9:41,5, os capítulos em sequência, sem pausas extras, começando em 0:00, 1:12,7,
 2:21,0, 4:00,4, 5:35,7, 7:15,0 e 8:23,7. Não há outra mixagem a montar. Como a mixagem é fixa, o texto de `tts/`
@@ -483,43 +490,67 @@ Vai no tratamento duotônico das pranchas do `outro` (tinta → laranja → osso
 O resto é refeito em tipografia: primeiras páginas de estudos, a manchete do NYT, o anúncio satírico
 e o depoimento.
 
-## Como montar
+## Como foi montado
 
-Um esboço para a fase de código, para as decisões ficarem registradas.
+O código da explicação está em `app/src/letra/`; o clipe continua em `app/src/scenes/` e só ganhou parâmetros
+opcionais (abaixo). Para ver e renderizar, ver "Prévia e renderização".
 
-- **Som.** A explicação toca a `mixagem.mp3` como ela é, a partir de 156,2 s do vídeo (0,6 s depois do fim do clipe).
-  Quando ela acaba, `audio/pdoom-pt-BR.mp3` recomeça do 0:00, emendada, sob a tela final. O áudio do vídeo inteiro
-  é uma emenda, sem mixagem nova: a música do clipe, 0,6 s de silêncio, a mixagem e a música de novo.
-- **Tempos da narração.** Alinhar cada MP3 de voz (sem trilha por baixo, o que ajuda o alinhamento) ao texto de `tts/`
-  com alinhamento forçado CTC (torchaudio `MMS_FA`, como `analysis/pt_br.py` faz com a letra) e somar o início
-  do capítulo na mixagem: 0; 72,673; 141,035; 240,353; 335,674; 434,991 e 503,745 s. Essa é a soma das durações dos MP3,
-  e a posição de `06-bastidores` foi conferida por correlação (503,745 s). Gravar `data/narracao.pt-br.json`: blocos
-  e palavras com início e fim, em tempo da mixagem. O Whisper serve para conferir o texto, não para os tempos:
-  nas gravações atuais, ele marca o início das palavras 0,2 a 0,3 s antes do som. Assim como as cenas acham versos
-  por conteúdo, as mudanças de imagem acham palavras da narração ("Bajulação", "Claude") em vez de tempos fixos.
-  A troca de bloco cai no silêncio entre a última palavra de um parágrafo e a primeira do seguinte.
-- **Batidas.** A trilha começa junto com a mixagem: o 0 s da trilha é o 0 s da mixagem (conferido por correlação
-  em 20, 100 e 150 s). Ela tem 137,2 BPM, uma introdução de ~10 s e um final que some a partir de ~185 s.
-  A introdução toca uma vez, e daí em diante o laço repete só a parte estável, de 12,427 a 174,880 s: 23 frases
-  de 4 compassos, cruzadas em 2 s na batida. A grade de batidas da mixagem sai da análise da trilha, repetida
-  a cada laço; confira nas emendas. A trilha tem uma parte mais baixa entre ~150 e 160 s, que se repete a cada laço.
-- **Cenas do clipe.** Reaproveitar um trecho como ele é basta renderizar a cena num tempo da música escolhido,
-  com zoom, câmera lenta ou volta por cima. Para remontar, as cenas ganham parâmetros opcionais (câmera, tempo
-  da música, partes visíveis), com padrões que reproduzem o clipe como é hoje. A explicação é uma sequência de cenas
-  novas que usam essas cenas e as peças delas (shaders, geometrias, `_motifs.ts`). Depois de mexer numa cena do clipe, confirme que o clipe
-  não mudou (`bun scripts/render.ts sheet --lang pt-BR --cuts` antes e depois).
-- **Lista de montagem.** Uma sequência de blocos: `{bloco: '02.2', verso: 'Preso no quarto chinês', cena,
-  mudanças por palavra, legendas}`. A duração de cada bloco vem dos tempos da narração: do silêncio antes
-  da primeira palavra ao silêncio depois da última. O som não sai da lista: é a mixagem, então a imagem se ajusta a ela.
+- **Som.** O áudio do vídeo inteiro é uma emenda, sem mixagem nova (`soundtrack.ts`): a música do clipe (0–155,6 s,
+  com o mesmo fade de 1,25 s do clipe), 0,6 s de silêncio, a `mixagem.mp3` como ela é, a partir de 156,2 s, e a música
+  de novo do 0:00, por 20 s, sumindo nos últimos 2,5 s. A prévia toca os três trechos em sequência; o render monta a
+  emenda com `atrim` e `concat` do ffmpeg (conferido: a mixagem começa em 156,2 s com erro de 0 ms).
+- **Tempos da narração** (`analysis/narracao.py`, gravados em `data/narracao.pt-br.json`). Cada MP3 de voz foi alinhado
+  ao texto de `tts/` com CTC `MMS_FA`, num único Viterbi por capítulo (o mesmo `ctcalign.py` da letra), com a pronúncia
+  das siglas escrita como soa ("AGI" → "a ge i"). O início de cada capítulo na mixagem é a soma das durações dos MP3,
+  e foi conferido por correlação da voz com a mixagem: diferença de 0,0 a 0,1 ms nos sete capítulos. Os blocos
+  e as palavras estão em tempo da mixagem; `narration.ts` os converte para o tempo do vídeo. Os números por extenso
+  ("dois mil e vinte e três") e "cinco ponto cinco" têm confiança baixa no CTC, mas caem no lugar certo na forma de
+  onda; nenhuma mudança de imagem depende da sílaba exata deles. O arquivo guarda também o volume da voz a 50 quadros
+  por segundo (`env`), usado em 06.5.
+- **Batidas.** A correlação da mixagem com a trilha mostra a introdução uma vez e depois o laço da parte estável
+  (12,427–174,880 s) a cada 162,453 s: as emendas estão em 174,88, 337,33 e 499,79 s da mixagem. O laço tem exatamente
+  368 batidas (23 frases de 4 compassos) a 135,9 BPM. A trilha do Suno oscila até ~70 ms contra uma grade rígida,
+  então as batidas vêm do rastreamento (librosa) da parte percussiva, repetido a cada passagem do laço; os golpes
+  fortes (`hits`) também ficam no arquivo.
+- **Lista de montagem** (`montage.ts`): um bloco por parágrafo, com o verso (por conteúdo, como `lyrics.get()`)
+  e a palavra em destaque. A linha do tempo (`timeline.ts`) corta na primeira batida dentro do silêncio entre dois
+  parágrafos. Cada bloco é uma classe nos módulos `c00.ts` … `c06.ts`, que acha as suas deixas pelas palavras da
+  narração (`this.at('Bajulação')`) e recusa uma palavra ambígua sem dizer qual ocorrência é.
+- **Cenas do clipe** (`clips.ts`): cada entrada da linha do tempo do clipe pode ser renderizada em qualquer tempo da
+  música, com câmera 2D, zoom, desfoque ou recorte (`kit.ts`), e o tempo remapeado (câmera lenta, time-lapse, pausa).
+  Parâmetros opcionais acrescentados às cenas (`Frame.remix`; sem eles, a cena é exatamente a do clipe): outra câmera
+  para `open` e `loss` (`remix.cam`), a coluna da letra do `open` desligada (`remix.lyrics = false`) e a máscara do
+  `shoggoth` tirada da cena (`remix.hideMask`). O clipe em inglês e em português foi conferido quadro a quadro contra
+  as referências (`sheet --cuts` e um quadro a cada 0,5 s) depois de cada capítulo: diferença máxima de 7/255 em
+  poucos pixels, a mesma de duas renderizações iguais.
+- **Motor** (mudanças opcionais): uma duração maior que a da música (`Engine.durationOverride`), a régua desenhada na
+  camada do HUD (`PostParams.hudDraw`) e o campo `Frame.remix`. Nada disso muda o clipe.
+- **Peças novas**: o papel do `bureau` como folha reutilizável (`paper.ts`), o próprio código-fonte do vídeo como
+  texto (`code.ts`, que lê `app/src` pelo Vite e conta as linhas), a faixa de raio X que deixa a imagem feita de código
+  (`xray.ts`), chamadas, contornos traçados pela faísca e texto datilografado (`draw.ts`), e o mosaico do clipe inteiro
+  (`mosaic.ts`).
 - **Níveis da mixagem** (já aplicados; servem só de referência): voz a −21 LUFS; trilha 13,5 dB abaixo do arquivo
   original sob a fala, subindo 6 dB nas pausas; resultado de −17,9 LUFS, com pico de −2,2 dBFS.
-- **Render.** O vídeo estendido é o clipe inteiro (0–155,6 s, sem nenhuma mudança), seguido da explicação
-  (até o fim da mixagem, em 737,7 s) e do recomeço do clipe com a música sob a tela final. O último quadro do clipe
-  é o primeiro da explicação. `bun scripts/render.ts video --lang pt-BR` continua gerando o clipe sozinho.
+
+## Prévia e renderização
+
+Os comandos partem da pasta `app`.
+
+```sh
+bun run dev                     # prévia: http://localhost:5173/?lang=pt-BR&full=1  (&t=300 para começar em 5:00)
+bun scripts/render.ts sheet --lang pt-BR --full --from 296 --to 306 --n 16      # folha de contato de um trecho
+bun scripts/render.ts verify --lang pt-BR --full                                  # confere o vídeo inteiro
+bun scripts/render.ts video --lang pt-BR --full --fps 30 --samples 1 --preset veryfast --crf 24   # rascunho
+bun scripts/render.ts video --lang pt-BR --full --samples auto --shutter 0.2      # final
+```
+
+`--full` vale para todos os modos. Sem ele, `--lang pt-BR` continua sendo o clipe sozinho, e sem `--lang` o clipe
+em inglês. A saída padrão do vídeo completo é `out/pdoom-pt-BR-letra-explicada.mp4`.
 
 ## Capítulos do YouTube
 
-Tempos calculados com a mixagem começando em 156,2 s. Se esse início mudar na montagem, refaça a conta.
+Tempos de corte da montagem (o início do primeiro bloco de cada capítulo, com a mixagem começando em 156,2 s);
+não mudaram em relação à conta do roteiro.
 
 ```
 0:00 Aumento meu P(doom)

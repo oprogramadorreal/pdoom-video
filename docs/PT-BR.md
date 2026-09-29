@@ -26,6 +26,14 @@ bun scripts/render.ts video --lang pt-BR --fps 24 --samples 1 --preset veryfast 
 ```
 
 Use `--scale 2` para 4K. Para um trecho, acrescente `--from 60 --to 70`.
+
+O vídeo completo, com a letra explicada depois do clipe, usa `--full` em qualquer modo (`?full=1` na prévia):
+
+```sh
+bun scripts/render.ts video --lang pt-BR --full --samples auto --shutter 0.2 --out ../out/pdoom-pt-BR-letra-explicada.mp4
+```
+
+Ver [`letra-explicada-pt-br/ROTEIRO.md`](letra-explicada-pt-br/ROTEIRO.md), "Prévia e renderização".
 Se Bun não estiver no PATH do PowerShell, invoque-o pelo caminho da instalação, por exemplo
 `& "$env:USERPROFILE/.bun/bin/bun.exe" scripts/render.ts ...`.
 
