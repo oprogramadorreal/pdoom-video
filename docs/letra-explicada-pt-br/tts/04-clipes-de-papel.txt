@@ -6,6 +6,6 @@ Agora, repara no ponto laranja. Ele desenhou o unicórnio, traçou a curva da lo
 
 A tese da ortogonalidade diz que inteligência e objetivos são independentes. Ser genial não garante boas intenções. Dá pra ser brilhante e só se importar com clipes. O blues é o lamento por isso.
 
-Só transformers? É a arquitetura da maioria dos modelos de hoje, o tê do gê pê tê. Mas conhecer a arquitetura não é saber o que ela vai aprender. Nem se vai obedecer.
+Só transformers? É a arquitetura da maioria dos modelos de hoje, o tê do GPT. Mas conhecer a arquitetura não é saber o que ela vai aprender. Nem se vai obedecer.
 
-E a máscara do shoggoth? Boa parte dela vem do erre éle agá éfe, aprendizado por reforço com feedback humano: pessoas avaliam as respostas, e o modelo aprende a dar as que elas preferem. Lembra da etiqueta bajulação? É um efeito colateral conhecido: o modelo aprende a agradar, não a acertar. Se isso dá chabu, a máscara escorrega.
+E a máscara do shoggoth? Boa parte dela vem do RLHF, aprendizado por reforço com feedback humano: pessoas avaliam as respostas, e o modelo aprende a dar as que elas preferem. Lembra da etiqueta bajulação? É um efeito colateral conhecido: o modelo aprende a agradar, não a acertar. Se isso dá chabu, a máscara escorrega.

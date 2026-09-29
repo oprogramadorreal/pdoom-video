@@ -1,7 +1,7 @@
-O faiscar vem de um estudo da Microsoft de dois mil e vinte e três: Faíscas de Inteligência Artificial Geral. A gê i é uma máquina capaz de fazer quase qualquer tarefa intelectual tão bem quanto uma pessoa. E os autores viam no gê pê tê quatro os primeiros sinais dela. Um dos testes: desenhar um unicórnio usando só código. Saiu isto. Três anos depois, uma i á desenhou com código um clipe inteiro.
+O faiscar vem de um estudo da Microsoft de dois mil e vinte e três: Faíscas de Inteligência Artificial Geral. A AGI é uma máquina capaz de fazer quase qualquer tarefa intelectual tão bem quanto uma pessoa. E os autores viam no GPT-4 os primeiros sinais dela. Um dos testes: desenhar um unicórnio usando só código. Saiu isto. Três anos depois, uma I-Á desenhou com código um clipe inteiro.
 
 Circuitos também é termo técnico: conexões dentro da rede que, juntas, fazem uma tarefa. Mapear isso é o trabalho da interpretabilidade. Porque a gente sabe treinar essas máquinas muito melhor do que sabe explicar como elas funcionam.
 
 E a loss é o erro do modelo no treino. Às vezes ela fica parada por muito tempo e, de repente, despenca: sinal de que o modelo aprendeu algo novo de uma vez. Sem aviso.
 
-Aí chega o Chat gê pê tê. Repare nos números em cima de cada palavra: é assim que um modelo de linguagem escreve. Uma palavra por vez, sorteada entre candidatas. Engole, quarenta e quatro por cento. Treine com, dezoito. E olha quem aparece em segundo lugar logo na primeira palavra.
+Aí chega o ChatGPT. Repare nos números em cima de cada palavra: é assim que um modelo de linguagem escreve. Uma palavra por vez, sorteada entre candidatas. Engole, quarenta e quatro por cento. Treine com, dezoito. E olha quem aparece em segundo lugar logo na primeira palavra.

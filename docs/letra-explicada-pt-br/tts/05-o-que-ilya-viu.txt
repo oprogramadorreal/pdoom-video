@@ -1,6 +1,6 @@
 Lembra dos números em cima das palavras? O Lum é uma ferramenta que mostra as outras escolhas: várias continuações pro mesmo texto, como galhos de uma árvore. Com ela, alguém que assina como Janus escreveu profecias sobre o futuro.
 
-No pré-treino, o pê do gê pê tê, o modelo só aprende a adivinhar a próxima palavra. Bilhões de vezes. O verso imagina o passo seguinte: a máquina melhorando a si mesma. A explosão de inteligência, de volta.
+No pré-treino, o pê do GPT, o modelo só aprende a adivinhar a próxima palavra. Bilhões de vezes. O verso imagina o passo seguinte: a máquina melhorando a si mesma. A explosão de inteligência, de volta.
 
 Ília Sutskever, um dos fundadores da OpenAI, participou da decisão de demitir Sam Altman, o chefe da empresa, em dois mil e vinte e três. Dias depois, Altman estava de volta. E a internet perguntou: o que o Ília viu? Uma superinteligência escondida?
 

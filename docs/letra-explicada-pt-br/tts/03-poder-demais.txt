@@ -1,13 +1,13 @@
 O basilisco de Roko é um experimento mental da internet: uma superinteligência do futuro castigaria quem soube que ela poderia existir e não ajudou a criá-la. Ou seja: agora você também está na lista. Foi mal. Calma, quase ninguém leva isso a sério.
 
-Um ê trinta flops são um seguido de trinta zeros de contas, por segundo. Em um segundo, dezenas de milhares de vezes o que se estima pro treino inteiro do gê pê tê quatro.
+Um ê trinta flops são um seguido de trinta zeros de contas, por segundo. Em um segundo, dezenas de milhares de vezes o que se estima pro treino inteiro do GPT-4.
 
-Eme éle pê é um tipo de rede neural, e vai, volta, repetição é como ela aprende. A informação vai, e sai uma resposta. O erro volta, ajustando cada conexão um pouquinho. E repete, milhões de vezes. É isso que faz a loss despencar.
+MLP é um tipo de rede neural, e vai, volta, repetição é como ela aprende. A informação vai, e sai uma resposta. O erro volta, ajustando cada conexão um pouquinho. E repete, milhões de vezes. É isso que faz a loss despencar.
 
 John von Neumann foi um dos maiores gênios do século vinte. Se até ele virou peça de coleção, imagina o resto de nós. E tem mais: o aparelho em que você vê este vídeo segue uma arquitetura com o nome dele. É ela que o vídeo risca de laranja.
 
-A guinada à esquerda é o medo de que a máquina se comporte bem enquanto é fraca e, num salto de capacidade, o bom comportamento fique pra trás. Evitar isso é o trabalho do alinhamento: fazer a i á querer o que a gente quer.
+A guinada à esquerda é o medo de que a máquina se comporte bem enquanto é fraca e, num salto de capacidade, o bom comportamento fique pra trás. Evitar isso é o trabalho do alinhamento: fazer a I-Á querer o que a gente quer.
 
-Cê dê erre é piada dupla. No Lisp, a linguagem das antigas inteligências artificiais de regras, é a operação que pega o resto de uma lista. Na engenharia, é a revisão crítica do projeto, que aprova tudo antes da construção. No vídeo: não realizada.
+CDR é piada dupla. No Lisp, a linguagem das antigas inteligências artificiais de regras, é a operação que pega o resto de uma lista. Na engenharia, é a revisão crítica do projeto, que aprova tudo antes da construção. No vídeo: não realizada.
 
 E Gato, sim, esse é o nome, é um modelo da DeepMind que conversava, jogava videogame e mexia um braço robótico. Com Sydney, o pedido era me solta. Agora é: não solta a minha mão.

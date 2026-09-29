@@ -1,8 +1,8 @@
 Você acabou de ouvir uma música de amor sobre o fim do mundo.
 
-E tudo que você viu no vídeo é código. Nenhum quadro foi desenhado à mão, filmado ou gerado por uma i á de vídeo. Nem programa de edição teve, nada de After Effects. São mais de vinte mil linhas de TypeScript e de gê éle ésse éle, a linguagem dos shaders da placa de vídeo, rodando numa página web. Escritas por uma inteligência artificial: o Clód Opus cinco ponto cinco. No final, eu te mostro melhor.
+E tudo que você viu no vídeo é código. Nenhum quadro foi desenhado à mão, filmado ou gerado por uma I-Á de vídeo. Nem programa de edição teve, nada de After Effects. São mais de vinte mil linhas de TypeScript e de GLSL, a linguagem dos shaders da placa de vídeo, rodando numa página web. Escritas por uma inteligência artificial: o Clód Opus cinco ponto cinco. No final, eu te mostro melhor.
 
-Mas antes, a letra. Ela esconde umas trinta referências. Uma i á que se declarou para um jornalista. Um monstro escondido atrás de um sorriso. Uma demissão que virou mistério. E uma fábrica de clipes de papel que poderia acabar com a humanidade.
+Mas antes, a letra. Ela esconde umas trinta referências. Uma I-Á que se declarou para um jornalista. Um monstro escondido atrás de um sorriso. Uma demissão que virou mistério. E uma fábrica de clipes de papel que poderia acabar com a humanidade.
 
 Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe.
 

@@ -54,7 +54,7 @@ Chinchilla, as cercas, as cem mil GPUs e os adesivos do laptop. Nada que o públ
 | 02.6 a frase vira um clipe | 04.1, só na imagem |
 | 02.7 Sydney: "me solta" | 03.7 Gato: "não solta a minha mão" |
 | o ponto laranja em quase todas as cenas | 04.3, o estopim |
-| a própria voz que narra, desde 00.1 | 06.5 "E esta voz… Também é i á." |
+| a própria voz que narra, desde 00.1 | 06.5 "E esta voz… Também é I-Á." |
 | 00.1 "uma música de amor sobre o fim do mundo" | 06.6 "Talvez o fim do mundo que a música canta nunca aconteça." |
 | 04.5 o T do GPT | 05.2 o P do GPT |
 
@@ -212,8 +212,8 @@ montagem (ver "Cortes possíveis").
   a pausa maior entre eles ajuda a cortar os blocos.
 - A primeira frase, "Você acabou de ouvir uma música de amor sobre o fim do mundo.", entra depois de um silêncio
   e dá o tom da explicação: calma, com um sorriso no fim. Gere algumas vezes e escolha a que soar mais natural.
-- Em 06.5, "E esta voz, que você está ouvindo esse tempo todo? Também é i á. Loucura, né?" é a revelação do vídeo:
-  a pergunta um pouco mais lenta, uma pausa curta antes de "Também é i á", e "Loucura, né?" rindo de leve.
+- Em 06.5, "E esta voz, que você está ouvindo esse tempo todo? Também é I-Á. Loucura, né?" é a revelação do vídeo:
+  a pergunta um pouco mais lenta, uma pausa curta antes de "Também é I-Á", e "Loucura, né?" rindo de leve.
   Vale gerar esse arquivo mais vezes que os outros até o final soar espontâneo.
 - Ritmo: as gravações anteriores saíram a ~172 palavras por minuto, quase sem pausas. A montagem põe o respiro
   entre blocos, então o ritmo pode ficar.
@@ -227,17 +227,15 @@ O texto escreve algumas palavras do jeito que devem soar. Na tela, use a grafia 
 | pê dum, dum | P(doom), doom |
 | fum | FOOM |
 | Lum | Loom |
-| a gê i | AGI |
-| i á | IA |
-| Chat gê pê tê, gê pê tê quatro | ChatGPT, GPT-4 |
-| eme éle pê | MLP |
-| cê dê erre | CDR, `cdr` |
-| erre éle agá éfe | RLHF |
+| I-Á | IA |
 | um ê trinta | 1E30 |
 | Ília | Ilya |
 | Clód | Claude |
 | Opus cinco ponto cinco | Opus 5.5 |
-| gê éle ésse éle | GLSL |
+
+As outras siglas (AGI, GPT-4, ChatGPT, MLP, CDR, RLHF, GLSL) ficam escritas como na tela: o ElevenLabs as lê melhor assim
+do que soletradas. "Um ê trinta" e "pê dum" continuam escritos como soam, porque "1E30" pode sair "mil e trinta"
+e os parênteses de "P(doom)" atrapalham a leitura; "o tê do GPT" e "o pê do GPT" nomeiam letras soltas.
 
 A transcrição das gravações anteriores (faster-whisper) mostrou que "Ilya" saiu uma vez como "Ilha" (agora "Ília")
 e que "o fum do começo" soava como "o fundo começo" (reescrito).
@@ -259,7 +257,7 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 | Bloco | Trecho | Narração | Imagem |
 |---|---|---|---|
 | 00.1 | o fim do clipe (ver "A transição") | "Você acabou de ouvir uma música de amor sobre o fim do mundo." | O primeiro quadro; a régua se desenha e a faísca acende em 0:00, pausada. |
-| 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | A faixa de raio X do `shoggoth` atravessa a tela e, por onde passa, a imagem vira o próprio código-fonte (arquivo e linha reais, rolando na velocidade da faixa). Primeiro sobre o quadro parado; depois, a cada batida da trilha, sobre quatro cenas do clipe: a caneta plotando o unicórnio, a explosão do FOOM, o shoggoth girando, a treliça de clipes. Em "nada de After Effects": uma linha de formulário do `bureau`, "programa de edição: nenhum", recebe um carimbo. Em "TypeScript e gê éle ésse éle": os dois nomes rotulam o código que rola (`.ts` e os blocos `/* glsl */`); em "página web", o código recua até caber num retângulo de linha fina com `localhost:5173` no alto. Em "vinte mil linhas": o odômetro do `ascent` rola até 22.608. Em "Clód Opus cinco ponto cinco": o nome em Archivo, grande, escrito pela faísca. **Novo.** |
+| 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | A faixa de raio X do `shoggoth` atravessa a tela e, por onde passa, a imagem vira o próprio código-fonte (arquivo e linha reais, rolando na velocidade da faixa). Primeiro sobre o quadro parado; depois, a cada batida da trilha, sobre quatro cenas do clipe: a caneta plotando o unicórnio, a explosão do FOOM, o shoggoth girando, a treliça de clipes. Em "nada de After Effects": uma linha de formulário do `bureau`, "programa de edição: nenhum", recebe um carimbo. Em "TypeScript e GLSL": os dois nomes rotulam o código que rola (`.ts` e os blocos `/* glsl */`); em "página web", o código recua até caber num retângulo de linha fina com `localhost:5173` no alto. Em "vinte mil linhas": o odômetro do `ascent` rola até 22.608. Em "Clód Opus cinco ponto cinco": o nome em Archivo, grande, escrito pela faísca. **Novo.** |
 | 00.3 | — | "Mas antes, a letra… acabar com a humanidade." | A faísca corre a régua e acende os tiques das referências, um a um, com um contador que chega a ~30. Uma cena nova de ~1 s para cada isca: as grades do `prompt` sydney fechando na cara da câmera; a máscara se virando para a câmera e sorrindo; a tarja REDIGIDO carimbando a tela inteira; um clipe se duplicando até encher o quadro. |
 | 00.4 | — | "Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe." | Uma lente macro passeia, fora de foco, por detalhes que ainda vão aparecer (um token com probabilidade, uma etiqueta, um adesivo), sem deixar ler nenhum. A lente se afasta até a régua, com a faísca em 0:00. |
 | 00.5 | — | "Primeiro, o título… com essa chance de cair?" | *P*(doom) se monta como no cartão final; o P e o doom se afastam e cada um ganha sua chamada (probabilidade, ruína). Em "quase três mil pesquisadores": um campo de 2.778 pontos cai no quadro, como a grade de GPUs do `dense`; em "Metade", metade deles acende em laranja: "≥ 5%". "Grace et al., out. 2023". No avião: o campo encolhe até 20 pontos, um laranja. **Novo.** |
@@ -272,7 +270,7 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 | 01.1 | "Vejo AGI faiscar no teu olhar," (a folha TikZ num plano mais aberto) | "O faiscar vem de um estudo… um clipe inteiro." | O estudo entra como folha de papel osso deslizando sobre a folha TikZ, com o título se datilografando: *Sparks of Artificial General Intelligence*, Microsoft Research, mar. 2023; chamada "AGI = inteligência artificial geral". Em "Saiu isto": os unicórnios do GPT-4 (figura 1.3), revelados traço a traço por uma máscara que segue a linha. **Externa.** Em "Três anos depois": tela dividida, 2023 à esquerda e a caneta plotando o nosso unicórnio à direita; a câmera se afasta, e o unicórnio vira um quadradinho num mosaico com quadros do clipe inteiro. |
 | 01.2 | "teus circuitos me dão medo," | "Circuitos também é termo técnico…" | Mergulho nos traços do unicórnio enquanto viram trilhas de circuito; a câmera segue um pulso (a faísca) por uma trilha, que se isola: "circuito". Em "interpretabilidade": uma lente circular passa pelas trilhas e rotula algumas ("detecta curvas", "detecta chifre?"). Em "explicar como elas funcionam": todas as outras etiquetas viram "???". |
 | 01.3 | "Tua loss de treino despencou," | "E a loss é o erro…" | A câmera anda sobre a curva da loss, colada na faísca, como num trilho, com a chamada "loss = erro" presa à curva. Em "fica parada por muito tempo": o platô, longo, com os passos de treino passando no eixo. Em "despenca": o mergulho pelo penhasco até a paisagem de contorno. Em "Sem aviso": o mundo gira 180°, como em "dominou". |
-| 01.4 | "ChatGPT, não me engole vivo, não." | "Aí chega o Chat gê pê tê…" | O campo de prompt em close. Em "números em cima de cada palavra", a distribuição de "engole" cresce até ocupar a tela como gráfico de barras. Em "sorteada": as barras viram uma faixa proporcional, e a faísca cai nela como bolinha de roleta, parando em "engole 0,44"; "treine com 0,18" acende quando é dito. Em "olha quem aparece": corte seco para o primeiro token, "ChatGPT, 0,61", e a faísca circula "Claude, 0,12"; meio segundo de silêncio. |
+| 01.4 | "ChatGPT, não me engole vivo, não." | "Aí chega o ChatGPT…" | O campo de prompt em close. Em "números em cima de cada palavra", a distribuição de "engole" cresce até ocupar a tela como gráfico de barras. Em "sorteada": as barras viram uma faixa proporcional, e a faísca cai nela como bolinha de roleta, parando em "engole 0,44"; "treine com 0,18" acende quando é dito. Em "olha quem aparece": corte seco para o primeiro token, "ChatGPT, 0,61", e a faísca circula "Claude, 0,12"; meio segundo de silêncio. |
 
 ### 02 · 0,15 · O que tem lá dentro
 
@@ -292,10 +290,10 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 |---|---|---|---|
 | 03.1 | "Aumento meu P(doom), / ouço o basilisco: BUM!" (o refrão rola até 0,42) | "O basilisco de Roko…" | Close extremo na pupila da serpente. Refletida nela, uma lista em Plex Mono se datilografa; em "agora você também está na lista", termina com "você", e a pupila se estreita. "LessWrong, 2010". |
 | 03.2 | "NVIDIA pra Lua: ZUM! / Ponto Ômega em três, dois, um. / Um E trinta FLOPs por segundo," (só música) | "Um ê trinta flops…" | No trecho, o clipe como é, com legendas integradas: "NVIDIA · a empresa mais valiosa do mundo", gravada como letra de cédula no gráfico que sobe até a lua, e "Ponto Ômega · Teilhard de Chardin · a evolução rumo a uma consciência suprema", em Cormorant, nas linhas que convergem. No bloco: a câmera viaja por uma régua logarítmica, como a do `outro`, de 10⁰ a 10³⁰, passando por "GPT-4, treino inteiro ≈ 2×10²⁵" até "1 segundo = 10³⁰"; o último salto é marcado "× 50.000". **Novo.** |
-| 03.3 | "MLP: vai, volta, repetição," | "Eme éle pê…" | O diagrama do anexo B do `bureau`, com profundidade: na ida, pulsos laranja atravessam as conexões; na volta, pulsos mais escuros retornam, e as conexões engrossam ou afinam. Uma pequena curva de loss no canto cai um degrau a cada volta. Em "milhões de vezes": o ciclo acelera até virar um borrão, e a curva despenca. |
+| 03.3 | "MLP: vai, volta, repetição," | "MLP…" | O diagrama do anexo B do `bureau`, com profundidade: na ida, pulsos laranja atravessam as conexões; na volta, pulsos mais escuros retornam, e as conexões engrossam ou afinam. Uma pequena curva de loss no canto cai um degrau a cada volta. Em "milhões de vezes": o ciclo acelera até virar um borrão, e a curva despenca. |
 | 03.4 | "von Neumann já virou peça de coleção." | "John von Neumann… risca de laranja." | O apêndice C do `bureau`, como no clipe. Em "Se até ele virou peça de coleção": a folha entra numa vitrine de museu desenhada em linha fina, com a etiqueta "John von Neumann · 1903–1957". Em "o aparelho em que você vê este vídeo": o diagrama sai da vitrine, e as caixas ganham nomes de hoje (processador, memória, entrada e saída); em "risca de laranja": o risco do clipe, reaproveitado. |
 | 03.5 | "Guinada à esquerda, já tá sem freio," | "A guinada à esquerda…" | Vista de cima do mapa do `leftturn`; a faísca anda numa estrada reta rotulada "comportamento desejado", ao lado de um medidor de "capacidade" que sobe. No salto, a faísca vira 90° e sai da estrada, e a câmera faz o whip junto. Em "alinhamento": a estrada ganha uma guia, que acaba logo adiante. |
-| 03.6 | "sem um só CDR no meio." | "Cê dê erre é piada dupla…" | O Gantt do `leftturn`, como no clipe, com o CDR piscando vazio. Em "No Lisp": um terminal de Lisp em Plex Mono, `(cdr '(a b c))` → `(b c)`, e a lista perde a cabeça. **Novo.** Em "Na engenharia": o Gantt de volta, com a chamada "CDR · revisão crítica de projeto"; a faísca passa direto pelo CDR até LANÇAMENTO; em "não realizada", o carimbo do clipe, "SITUAÇÃO: NÃO REALIZADA". |
+| 03.6 | "sem um só CDR no meio." | "CDR é piada dupla…" | O Gantt do `leftturn`, como no clipe, com o CDR piscando vazio. Em "No Lisp": um terminal de Lisp em Plex Mono, `(cdr '(a b c))` → `(b c)`, e a lista perde a cabeça. **Novo.** Em "Na engenharia": o Gantt de volta, com a chamada "CDR · revisão crítica de projeto"; a faísca passa direto pelo CDR até LANÇAMENTO; em "não realizada", o carimbo do clipe, "SITUAÇÃO: NÃO REALIZADA". |
 | 03.7 | "Gato, por favor, não solta a minha mão." | "E Gato, sim, esse é o nome…" | O `prompt` gato, com as letras se afastando. Uma grade de 604 células, com nomes de tarefas em Plex Mono minúsculo ("conversar", "Atari", "braço robótico"…), acende de uma vez: "604 tarefas · uma rede". No fim, tela dividida: as letras de "me solta." se afastando e as de "não solta a minha mão." se segurando juntas. |
 
 ### 04 · 0,81 · Clipes de papel
