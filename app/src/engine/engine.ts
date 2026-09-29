@@ -176,7 +176,9 @@ export class Engine {
     this.lastT = -1;
   }
 
-  get duration() { return this.audio.duration; }
+  /** A timeline longer than the song (the full pt-BR video with its explainer) sets its own length. */
+  durationOverride: number | null = null;
+  get duration() { return this.durationOverride ?? this.audio.duration; }
 
   private frameFor(e: TimelineEntry, t: number, dt: number, seeked: boolean, preroll: boolean, under: THREE.Texture | null, tin: number, tout: number): Frame {
     const beat = this.audio.beatAt(t), bar = this.audio.barAt(t);
@@ -266,7 +268,7 @@ export class Engine {
       outTex = this.avgRT.texture;
     }
     this.lastSamples = n;
-    const hudTex = this.hud.draw(t, { opacity: this.hudOff ? 0 : post.hud, frame: post.frame, readout: post.pdoom, paper: post.paper, pdoomOverride: post.pdoomText, corruption: post.hudCorruption });
+    const hudTex = this.hud.draw(t, { opacity: this.hudOff ? 0 : post.hud, frame: post.frame, readout: post.pdoom, paper: post.paper, pdoomOverride: post.pdoomText, corruption: post.hudCorruption, extra: post.hudDraw });
     this.post.render(r, outTex, hudTex, this.finalRT, post, t);
     this.lastPost = post;
     if (toScreen) {

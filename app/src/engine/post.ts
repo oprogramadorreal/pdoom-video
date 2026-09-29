@@ -39,6 +39,11 @@ export interface PostParams {
   pdoomText?: string;
   /** 0..1 glitch the HUD readout. */
   hudCorruption?: number;
+  /**
+   * Extra HUD drawing (the pt-BR explainer's ruler and verse): drawn over the crop marks in the HUD layer,
+   * so the image's shake, zoom, inversion and colour fringes never reach it. Unused by the clip.
+   */
+  hudDraw?: (c: CanvasRenderingContext2D) => void;
 }
 
 export const DEFAULT_POST: PostParams = {

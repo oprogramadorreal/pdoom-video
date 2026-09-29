@@ -81,6 +81,8 @@ export interface HudState {
   paper: number;
   pdoomOverride?: string; // e.g. 'NaN'
   corruption?: number; // 0..1 glitch the readout
+  /** Extra drawing over the crop marks (PostParams.hudDraw). */
+  extra?: (c: CanvasRenderingContext2D) => void;
 }
 
 export class Hud {
@@ -96,6 +98,7 @@ export class Hud {
     c.globalAlpha = st.opacity;
     this.ink = st.paper > 0.5;
     if (st.frame > 0.001) this.cropMarks(c, st.frame);
+    if (st.extra) { c.save(); st.extra(c); c.restore(); }
     if (st.readout > 0.001) { c.save(); c.globalAlpha *= st.readout; this.readout(c, t, st); c.restore(); }
     this.caption(c, t);
     return L.upload();
