@@ -1,11 +1,16 @@
 # A letra explicada — roteiro
 
 Extensão do vídeo em português, para o YouTube ("Opus 5.5 criou este vídeo"). Depois da música, o vídeo
-volta ao começo e passa pela música de novo, verso por verso: toca o verso e o explica com as cenas do clipe,
+volta ao começo e passa pela música de novo, verso por verso: mostra o verso na tela e o explica com as cenas do clipe,
 reaproveitadas ou remontadas, e com animações novas. No final, mostra como o clipe foi feito.
 
-O texto falado está em [`tts/`](tts/). Este roteiro liga cada parágrafo desses arquivos a um trecho
+O texto falado está em [`tts/`](tts/). Este roteiro liga cada parágrafo desses arquivos a um verso
 da música e a uma imagem, e é a referência para montar o vídeo.
+
+O som da explicação já está pronto: é a [`mixagem.mp3`](../../audio/letra-explicada-pt-br/mixagem.mp3), a narração
+inteira sobre a trilha de fundo. O vídeo usa esse arquivo como ele é, sem cortar, remontar nem mixar de novo,
+e a imagem é montada sobre ele. Por isso, a música não toca durante a explicação: os versos aparecem só na tela.
+A música volta apenas no fim, depois da mixagem (ver "Como a explicação termina").
 
 ## A ideia
 
@@ -24,20 +29,22 @@ Três promessas, todas feitas nos primeiros 45 segundos:
 3. **Quatro iscas**: a IA que se declarou (Sydney), o monstro com sorriso (shoggoth), a demissão que virou
    mistério (Ilya) e a fábrica de clipes. Cada uma é paga num capítulo.
 
-O contador de P(doom) é o esqueleto: cada capítulo abre no refrão que sobe o número
+O contador de P(doom) é o esqueleto: cada capítulo abre com o refrão que sobe o número
 (0,02 → 0,15 → 0,42 → 0,81 → 0,99 → NaN). A régua no pé da tela mostra quanto falta.
 
-A virada de capítulo é feita pela imagem e pela música, não pela voz. O capítulo abre com o trecho do refrão,
-"Aumento meu P(doom)", em que a cena `hook` rola o número novo em tela cheia; ao mesmo tempo, o valor acende
-na régua. A narração começa direto no assunto, sem repetir o número.
+A virada de capítulo é feita só pela imagem. A voz não anuncia o capítulo, e a mixagem não tem pausa extra entre
+capítulos. Nas primeiras palavras do capítulo, a cena `hook` rola o número novo em tela cheia com o verso do refrão,
+"Aumento meu P(doom)", e o valor acende na régua. A narração começa direto no assunto, sem repetir o número.
 
 ### O que fica na voz e o que vai para a legenda
 
 A voz fica com as ideias que ensinam algo e com os ganchos: como um modelo de linguagem escreve,
 interpretabilidade, loss e retropropagação, quarto chinês, alinhamento, ortogonalidade, o botão de desligar,
 RLHF e bajulação, pré-treino, a virada do Ilya, e as duas piadas duplas que o público de programação aproveita:
-von Neumann e CDR. Referências menores passam em trechos da música só com legenda na tela: Ponto Ômega, Nvidia,
-Chinchilla, as cercas, as cem mil GPUs e os adesivos do laptop. Nada que o público brasileiro já sabe ("pra inglês ver") ou que o programador já entende (NaN)
+von Neumann e CDR. Referências menores passam só como legenda na tela: Ponto Ômega, Nvidia,
+Chinchilla, as cercas, as cem mil GPUs e os adesivos do laptop. Como a voz não para, cada legenda é curta e entra
+junto com o verso que abre o bloco, antes de a voz chegar ao assunto principal. A que não couber sem disputar com a voz
+sai da tela e vai para a descrição do vídeo. Nada que o público brasileiro já sabe ("pra inglês ver") ou que o programador já entende (NaN)
 é explicado.
 
 ### Ganchos e retornos
@@ -60,9 +67,11 @@ Chinchilla, as cercas, as cem mil GPUs e os adesivos do laptop. Nada que o públ
 
 ### Ritmo
 
-- Um trecho da música a cada 15–20 s de voz. A música entra com volume cheio, e a voz para.
-- Dois trechos mais longos, só com música e legendas, servem de respiro: Nvidia → FLOPs (03.2)
-  e Chinchilla → RLHF (04.6).
+- A voz não para. A mixagem tem os 42 blocos em sequência, só com a pausa natural entre parágrafos (0,24 a 0,8 s,
+  mediana 0,28 s), sem pausa extra entre blocos nem entre capítulos. O ritmo vem da imagem.
+- Cada bloco abre com o seu verso na tela: é a volta à música, a cada 5 a 25 s de voz.
+- Sem trechos só com música, o respiro também vem da imagem: em cada capítulo, pelo menos um plano longo e calmo,
+  sem anotação nova, que só acompanha a voz (o vórtice de 02.6, o teatro vazio de 05.5).
 - Pontos altos: o unicórnio de 2023 contra o clipe de 2026 (01.1), as etiquetas do monstro (02.4),
   o estopim (04.3, perto dos dois terços, onde a audiência costuma cair), a virada do Ilya (05.4)
   e os bastidores (06).
@@ -90,14 +99,15 @@ O que qualquer pessoa entende nesses dois segundos é o rebobinamento: o vídeo 
 
 ### Como a explicação começa
 
-Tempos a partir do fim da música (155,6 s).
+Tempos a partir do fim da música (155,6 s). A mixagem começa com a voz já no primeiro instante, junto com
+a trilha, então ela entra 0,6 s depois do fim da música, em 156,2 s do vídeo.
 
 | Tempo | Imagem | Som | Voz |
 |---|---|---|---|
-| 0,0–0,6 s | O primeiro quadro, parado: preto, com as marcas de corte. | A cauda da música some. A trilha de fundo entra baixa, abafada. | — |
-| 0,6–4,0 s | A régua se desenha no pé do quadro, da esquerda para a direita, por dentro das marcas de corte, em ~1,5 s: uma linha fina, um tique por verso, "0:00" e "2:35" nas pontas, os valores do P(doom) sobre os refrões. A faísca acende em 0:00 como cursor, com o símbolo de pausa ao lado. Sem nenhuma palavra, a imagem diz: é a música, parada no começo. | A trilha abre o filtro. | 00.1 "Você acabou de ouvir uma música de amor sobre o fim do mundo." |
-| 4,0–4,5 s | Parado. | Trilha. | — |
-| 4,5 s | Em "é código", começa 00.2: a faixa de raio X atravessa o quadro e o transforma em código. | Trilha. | 00.2 "E tudo que você viu no vídeo é código…" |
+| 0,0–0,6 s | O primeiro quadro, parado: preto, com as marcas de corte. | Silêncio: a cauda da música já sumiu no fade. | — |
+| 0,6–3,9 s | A régua se desenha no pé do quadro, da esquerda para a direita, por dentro das marcas de corte, em ~1,5 s: uma linha fina, um tique por verso, "0:00" e "2:35" nas pontas, os valores do P(doom) sobre os refrões. A faísca acende em 0:00 como cursor, com o símbolo de pausa ao lado. Sem nenhuma palavra, a imagem diz: é a música, parada no começo. | A mixagem começa: a trilha entra baixa, sob a voz. | 00.1 "Você acabou de ouvir uma música de amor sobre o fim do mundo." |
+| 3,9–4,3 s | Parado. | Trilha. | — |
+| 4,3 s | Começa 00.2; em "é código", a faixa de raio X atravessa o quadro e o transforma em código. | Trilha sob a voz. | 00.2 "E tudo que você viu no vídeo é código…" |
 
 Por que assim:
 
@@ -111,14 +121,16 @@ Por que assim:
 
 ### Como a explicação termina
 
-Em 06.7, "E agora, ouve de novo", a faísca volta a 0:00, o símbolo de pausa vira play e a régua se apaga.
-A música recomeça no primeiro quadro, o mesmo em que a explicação começou, e toca sob a tela final do YouTube,
-que ocupa os últimos 5 a 20 s.
+Em 06.7, "E agora, ouve de novo", a faísca volta a 0:00. A mixagem termina ~2 s depois da última palavra,
+com a trilha sumindo. Quando ela acaba, o símbolo de pausa vira play, a régua se apaga e a música recomeça
+com o clipe, do primeiro quadro, o mesmo em que a explicação começou. Ela toca sob a tela final do YouTube,
+que ocupa os últimos 5 a 20 s. A música entra depois da mixagem, emendada, sem sobreposição: é o único som
+da explicação que não vem da mixagem.
 
 ## A segunda passada
 
 Na primeira vez, o espectador viu o clipe. Na segunda, a música é a mesma, mas a imagem serve à explicação.
-O que liga as duas é pouco e fixo: a régua (em que ponto da música estamos), o verso cantado com a letra na tela,
+O que liga as duas é pouco e fixo: a régua (em que ponto da música estamos), o verso com a letra na tela,
 a paleta e as fontes. O resto é livre. Um trecho pode voltar exatamente como no clipe; voltar com outra câmera,
 outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou dar lugar a uma animação nova.
 
@@ -135,19 +147,23 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
 - **A cena vira a explicação.** Em vez de pôr um diagrama por cima da cena, os elementos da cena se reorganizam
   no diagrama: os traços do unicórnio viram circuitos, as barras de probabilidade viram os galhos do Loom,
   a máscara ganha sorriso a cada recompensa.
-- **Cortes na batida.** Cortes e mudanças grandes caem nas batidas da trilha de fundo, ou da música nos trechos.
+- **Cortes na batida.** Cortes e mudanças grandes caem nas batidas da trilha de fundo (ver "Batidas" em "Como montar").
 - **Variar.** Dois blocos seguidos não têm a mesma cara: alternar escala (macro de um detalhe, plano aberto,
   tela cheia de tipografia), fundo (tinta, papel osso) e velocidade (câmera lenta, whip, time-lapse).
 
 ### Cada verso
 
-1. **O verso.** A música toca a linha com volume cheio, e a letra aparece sincronizada palavra a palavra, no estilo
-   da cena, para o espectador saber qual verso é. A imagem pode ser a cena original, uma versão remontada (outro ângulo,
-   já indo para o detalhe que o bloco vai explicar) ou uma animação nova. A trilha de fundo sai.
-2. **A explicação.** A narração do bloco, com a trilha de fundo baixa. A cena continua viva e se transforma
-   na explicação.
-3. **A passagem.** A faísca corre na régua até o próximo verso, e a imagem acompanha com um movimento: whip,
-   corte casado na faísca, mergulho através de um objeto.
+1. **O verso.** No silêncio antes do bloco, o verso aparece na tela, no estilo da cena, para o espectador saber
+   onde estamos na música. A música não toca: a letra entra inteira ou depressa (em até ~0,5 s), sem esperar o tempo
+   do canto, com a palavra que a narração vai explicar em destaque. Quase todo bloco começa nomeando essa palavra
+   ("O faiscar…", "Circuitos…", "E a loss…"), e a voz a encontra já na tela. A imagem pode ser a cena original
+   no tempo do verso (a tipografia do clipe já mostra a letra), uma versão remontada (outro ângulo, já indo para
+   o detalhe que o bloco vai explicar) ou uma animação nova.
+2. **A explicação.** A narração do bloco, com a trilha baixa por baixo, como está na mixagem. A cena continua viva
+   e se transforma na explicação.
+3. **A passagem.** Nas últimas palavras do bloco, a faísca corre na régua até o próximo verso, e a imagem acompanha
+   com um movimento (whip, corte casado na faísca, mergulho através de um objeto) que termina no silêncio entre
+   os blocos.
 
 ### Camadas visuais
 
@@ -159,9 +175,10 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
   o odômetro do `ascent`, a régua logarítmica do `outro`, a faixa de raio X do `shoggoth`.
 - **Anotações**: linhas finas de chamada, rótulos em IBM Plex Mono, o termo em Archivo; círculos e sublinhados
   desenhados pela faísca, que vira a caneta do narrador. Cada anotação entra na palavra falada.
-- **Legendas**: nos trechos só com música, uma ou duas linhas para as referências menores, integradas à cena como
-  o clipe integra a letra (gravadas numa cédula, carimbadas num formulário, escritas no mapa). Ficam na tela tempo
-  suficiente para ler (~250 ms por palavra, no mínimo 1,5 s).
+- **Legendas**: uma ou duas linhas curtas para as referências menores, integradas à cena como o clipe integra
+  a letra (gravadas numa cédula, carimbadas num formulário, escritas no mapa). Entram com o verso que abre o bloco,
+  antes de a voz chegar ao assunto principal, e ficam na tela tempo suficiente para ler (~250 ms por palavra,
+  no mínimo 1,5 s). A que disputar com a voz sai (ver "O que fica na voz e o que vai para a legenda").
 - **Cartões**: documentos em papel osso com tinta, no estilo do `bureau` (estudos, manchetes, o anúncio de vaga,
   o depoimento), e gráficos. Tipografia com a fonte na tela, não capturas de tela.
 - **Régua**: faixa fina no pé da tela, como a de um player: a música de 0:00 a 2:35, um tique por verso e os refrões
@@ -172,39 +189,41 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
 
 ## Duração
 
-Voz medida nas gravações atuais. Trechos da música pelos tempos de `data/lyrics.pt-br.json`, com 0,4 s de margem
-cada; respiro de 0,4 s entre blocos.
+Medida na `mixagem.mp3`: cada capítulo começa onde o anterior termina, e a duração é a do MP3 de voz.
 
-| Arquivo | Capítulo | Blocos | Caracteres | Voz | Trechos | Total |
-|---|---|---:|---:|---:|---:|---:|
-| `00-abertura` | Tudo é código | 6 | 1.165 | 72,7 s | — | ~1:15 |
-| `01-faiscas` | P(doom) 0,02 · Faíscas | 4 | 1.066 | 68,4 s | 16 s | ~1:26 |
-| `02-o-que-tem-dentro` | 0,15 · O que tem lá dentro | 7 | 1.539 | 99,3 s | 25 s | ~2:07 |
-| `03-poder-demais` | 0,42 · Poder demais | 7 | 1.502 | 95,3 s | 34 s | ~2:12 |
-| `04-clipes-de-papel` | 0,81 · Clipes de papel | 6 | 1.557 | 99,3 s | 30 s | ~2:12 |
-| `05-o-que-ilya-viu` | 0,99 · O que Ilya viu | 5 | 1.111 | 68,8 s | 15 s | ~1:26 |
-| `06-bastidores` | Como uma IA fez este vídeo | 7 | 1.222 | 75,7 s | ~8 s | ~1:27 |
-| | **Total** | **42** | **9.162** | **9:39,5** | **~2:08** | **~12:05** |
+| Arquivo | Capítulo | Blocos | Caracteres | Início na mixagem | Duração |
+|---|---|---:|---:|---:|---:|
+| `00-abertura` | Tudo é código | 6 | 1.165 | 0:00,0 | 72,7 s |
+| `01-faiscas` | P(doom) 0,02 · Faíscas | 4 | 1.066 | 1:12,7 | 68,4 s |
+| `02-o-que-tem-dentro` | 0,15 · O que tem lá dentro | 7 | 1.539 | 2:21,0 | 99,3 s |
+| `03-poder-demais` | 0,42 · Poder demais | 7 | 1.502 | 4:00,4 | 95,3 s |
+| `04-clipes-de-papel` | 0,81 · Clipes de papel | 6 | 1.557 | 5:35,7 | 99,3 s |
+| `05-o-que-ilya-viu` | 0,99 · O que Ilya viu | 5 | 1.111 | 7:15,0 | 68,8 s |
+| `06-bastidores` | Como uma IA fez este vídeo | 7 | 1.222 | 8:23,7 | 75,7 s |
+| | **Total** | **42** | **9.162** | | **9:39,5** |
 
-Com a música (2:35), o vídeo completo fica com cerca de **14:40**. A voz saiu mais lenta que a estimativa feita pelo
-texto: 15,8 caracteres por segundo (159 a 181 palavras por minuto), contra 16,8 nas gravações anteriores. Se a primeira
-montagem parecer longa, os cortes estão em "Cortes possíveis".
+A mixagem tem 9:41,5: a voz, mais ~2 s de trilha sumindo depois da última palavra. O vídeo completo tem o clipe
+(155,6 s), 0,6 s de quadro parado, a mixagem (581,5 s) e a música recomeçando sob a tela final (5 a 20 s):
+de **12:23 a 12:38**. A voz fala a 15,8 caracteres por segundo (159 a 181 palavras por minuto).
 
 ## Arquivos
 
 - `tts/NN-nome.txt`: texto exato de uma geração no ElevenLabs. **Cada parágrafo é um bloco**:
   o parágrafo 4 de `02-o-que-tem-dentro.txt` é o bloco 02.4. O vídeo corta entre blocos, então não junte
   nem divida parágrafos sem atualizar as tabelas abaixo.
-- `audio/letra-explicada-pt-br/NN-nome.mp3`: a voz de cada arquivo, com o mesmo nome.
-- `audio/letra-explicada-pt-br/trilha-de-fundo.mp3`: trilha do Suno (204,8 s), tocada em loop sob a voz.
-- `audio/pdoom-pt-BR.mp3`: a fonte dos trechos da música.
-- `audio/letra-explicada-pt-br/mixagem.mp3`: prévia da narração inteira sobre a trilha, sem os trechos da música.
-  Serve para ouvir o texto de ponta a ponta e é a referência de níveis para a mixagem final (ver "Como montar").
+- `audio/letra-explicada-pt-br/mixagem.mp3`: **o som da explicação**, pronto: a narração inteira sobre a trilha,
+  581,5 s. O vídeo usa o arquivo como ele é.
+- `audio/letra-explicada-pt-br/NN-nome.mp3`: a voz de cada arquivo, com o mesmo nome, sem trilha. Já está dentro
+  da mixagem; serve para achar os tempos das palavras (ver "Como montar").
+- `audio/letra-explicada-pt-br/trilha-de-fundo.mp3`: trilha do Suno (204,8 s), em loop sob a voz. Também já está
+  dentro da mixagem; serve para achar as batidas.
+- `audio/pdoom-pt-BR.mp3`: a música, que toca no clipe e recomeça no fim da explicação.
 
 **Estado atual:** os sete MP3 de voz, `00-abertura` a `06-bastidores`, foram gerados a partir do texto atual,
-conferidos por transcrição (todos batem com `tts/`) e aprovados na escuta. A `mixagem.mp3` foi refeita com eles: 9:41,5, os capítulos em
-sequência, sem pausas extras, começando em 0:00, 1:12,7, 2:21,0, 4:00,4, 5:35,7, 7:15,0 e 8:23,8.
-A mixagem final do vídeo, com os trechos da música entre os blocos, será montada por script (ver "Como montar").
+conferidos por transcrição (todos batem com `tts/`) e aprovados na escuta. A `mixagem.mp3` foi refeita com eles
+e é o som final da explicação: 9:41,5, os capítulos em sequência, sem pausas extras, começando em 0:00, 1:12,7,
+2:21,0, 4:00,4, 5:35,7, 7:15,0 e 8:23,7. Não há outra mixagem a montar. Como a mixagem é fixa, o texto de `tts/`
+também é: mudar uma palavra exige gerar a voz e a mixagem de novo.
 
 ## Geração no ElevenLabs
 
@@ -212,14 +231,14 @@ A mixagem final do vídeo, com os trechos da música entre os blocos, será mont
 - O maior arquivo tem ~1.600 caracteres, abaixo dos limites do Eleven v3 (5.000) e do Multilingual v2 (10.000).
 - O texto não tem marcações e funciona em qualquer modelo. Mantenha as linhas em branco entre parágrafos, mesmo que
   a voz não faça pausa maior neles: nas gravações atuais, a pausa entre parágrafos tem de 0,24 a 0,8 s (mediana
-  0,28 s), igual à pausa entre frases. Há sempre um silêncio onde cortar o bloco; o respiro vem da montagem.
+  0,28 s), igual à pausa entre frases. Há sempre um silêncio entre blocos, e é nele que a imagem troca de bloco.
 - A primeira frase, "Você acabou de ouvir uma música de amor sobre o fim do mundo.", entra depois de um silêncio
   e dá o tom da explicação: calma, com um sorriso no fim. Gere algumas vezes e escolha a que soar mais natural.
 - Em 06.5, "E esta voz, que você está ouvindo esse tempo todo? Também é I-Á. Loucura, né?" é a revelação do vídeo:
   a pergunta um pouco mais lenta, uma pausa curta antes de "Também é I-Á", e "Loucura, né?" rindo de leve.
   Vale gerar esse arquivo mais vezes que os outros até o final soar espontâneo.
-- Ritmo: as gravações atuais saíram de 159 a 181 palavras por minuto, quase sem pausas. A montagem põe o respiro
-  entre blocos, então o ritmo pode ficar.
+- Ritmo: as gravações atuais saíram de 159 a 181 palavras por minuto, quase sem pausas, e foram aprovadas assim.
+  A mixagem não acrescenta respiro entre blocos.
 
 ### Grafia para a voz
 
@@ -246,15 +265,16 @@ Nick Bostrom, Janus, Sutskever e Sam Altman.
 
 ## Roteiro por bloco
 
-"Trecho" é o verso que toca **antes** do bloco (por conteúdo, como em `lyrics.get()`), sempre com a letra
-sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão remontada.
+"Verso" é o verso da música que aparece na tela no começo do bloco (por conteúdo, como em `lyrics.get()`),
+sem o som da música (ver "Cada verso"); a imagem do verso pode ser a cena original, uma versão remontada ou uma
+animação nova.
 "Imagem" descreve uma proposta, não uma obrigação: vale trocar por algo melhor, dentro das regras da segunda passada.
 **Novo** marca animações que não saem de nenhuma cena existente. **Externa** marca imagens de fora
 (ver "Imagens de fora").
 
 ### 00 · Tudo é código
 
-| Bloco | Trecho | Narração | Imagem |
+| Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
 | 00.1 | o fim do clipe (ver "A transição") | "Você acabou de ouvir uma música de amor sobre o fim do mundo." | O primeiro quadro; a régua se desenha e a faísca acende em 0:00, pausada. |
 | 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | A faixa de raio X do `shoggoth` atravessa a tela e, por onde passa, a imagem vira o próprio código-fonte (arquivo e linha reais, rolando na velocidade da faixa). Primeiro sobre o quadro parado; depois, a cada batida da trilha, sobre quatro cenas do clipe: a caneta plotando o unicórnio, a explosão do FOOM, o shoggoth girando, a treliça de clipes. Em "nada de After Effects": uma linha de formulário do `bureau`, "programa de edição: nenhum", recebe um carimbo. Em "TypeScript e GLSL": os dois nomes rotulam o código que rola (`.ts` e os blocos `/* glsl */`); em "página web", o código recua até caber num retângulo de linha fina com `localhost:5173` no alto. Em "vinte mil linhas": o odômetro do `ascent` rola até 22.608. Em "Clód Opus cinco ponto cinco": o nome em Archivo, grande, escrito pela faísca. **Novo.** |
@@ -265,7 +285,7 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 
 ### 01 · P(doom) 0,02 · Faíscas
 
-| Bloco | Trecho | Narração | Imagem |
+| Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
 | 01.1 | "Vejo AGI faiscar no teu olhar," (a folha TikZ num plano mais aberto) | "O faiscar vem de um estudo… um clipe inteiro." | O estudo entra como folha de papel osso deslizando sobre a folha TikZ, com o título se datilografando: *Sparks of Artificial General Intelligence*, Microsoft Research, mar. 2023; chamada "AGI = inteligência artificial geral". Em "Saiu isto": os unicórnios do GPT-4 (figura 1.3), revelados traço a traço por uma máscara que segue a linha. **Externa.** Em "Três anos depois": tela dividida, 2023 à esquerda e a caneta plotando o nosso unicórnio à direita; a câmera se afasta, e o unicórnio vira um quadradinho num mosaico com quadros do clipe inteiro. |
 | 01.2 | "teus circuitos me dão medo," | "Circuitos também é termo técnico…" | Mergulho nos traços do unicórnio enquanto viram trilhas de circuito; a câmera segue um pulso (a faísca) por uma trilha, que se isola: "circuito". Em "interpretabilidade": uma lente circular passa pelas trilhas e rotula algumas ("detecta curvas", "detecta chifre?"). Em "explicar como elas funcionam": todas as outras etiquetas viram "???". |
@@ -274,7 +294,7 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 
 ### 02 · 0,15 · O que tem lá dentro
 
-| Bloco | Trecho | Narração | Imagem |
+| Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
 | 02.1 | "Aumento meu P(doom), / pois o futuro faz FOOM." (o refrão rola até 0,15) | "Fum é o som de uma explosão…" | A explosão ramificada do `room` se reorganiza num gráfico: cada galho é uma versão (v1, v2, v3…), e o intervalo entre elas encolhe; a faísca traça a exponencial por cima, rápido demais para a câmera acompanhar. |
 | 02.2 | "Preso no quarto chinês, / cogumelos pra um mês." | "O quarto chinês…" | O quarto visto de cima, em corte, como uma planta: cartões com perguntas entram pela fresta, o livro de regras folheia sozinho, a resposta sai. Do lado de fora, um carimbo: "FLUENTE"; dentro, o cartão vira e mostra "我不懂 = eu não entendo". "John Searle, 1980". Em "cogumelos": dois segundos do acento ácido, e o quadro derrete. |
@@ -286,10 +306,10 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 
 ### 03 · 0,42 · Poder demais
 
-| Bloco | Trecho | Narração | Imagem |
+| Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
 | 03.1 | "Aumento meu P(doom), / ouço o basilisco: BUM!" (o refrão rola até 0,42) | "O basilisco de Roko…" | Close extremo na pupila da serpente. Refletida nela, uma lista em Plex Mono se datilografa com quem ficou sabendo; em "E você acabou de ouvir", a lista ganha mais uma linha, "você", e a pupila se estreita. "LessWrong, 2010". |
-| 03.2 | "NVIDIA pra Lua: ZUM! / Ponto Ômega em três, dois, um. / Um E trinta FLOPs por segundo," (só música) | "Um ê trinta flops…" | No trecho, o clipe como é, com legendas integradas: "NVIDIA · a empresa mais valiosa do mundo", gravada como letra de cédula no gráfico que sobe até a lua, e "Ponto Ômega · Teilhard de Chardin · a evolução rumo a uma consciência suprema", em Cormorant, nas linhas que convergem. No bloco: a câmera viaja por uma régua logarítmica, como a do `outro`, de 10⁰ a 10³⁰, passando por "GPT-4, treino inteiro ≈ 2×10²⁵" até "1 segundo = 10³⁰"; o último salto é marcado "× 50.000". **Novo.** |
+| 03.2 | "NVIDIA pra Lua: ZUM! / Ponto Ômega em três, dois, um. / Um E trinta FLOPs por segundo," | "Um ê trinta flops…" | No verso, em ~2 s e antes de "flops": o clipe acelerado, com legendas curtas integradas: "NVIDIA · a empresa mais valiosa do mundo", gravada como letra de cédula no gráfico que sobe até a lua, e "Ponto Ômega · Teilhard de Chardin", em Cormorant, nas linhas que convergem. Se disputarem com a voz, saem da tela e vão para a descrição. No bloco: a câmera viaja por uma régua logarítmica, como a do `outro`, de 10⁰ a 10³⁰, passando por "GPT-4, treino inteiro ≈ 2×10²⁵" até "1 segundo = 10³⁰"; o último salto é marcado "× 50.000". **Novo.** |
 | 03.3 | "MLP: vai, volta, repetição," | "MLP…" | O diagrama do anexo B do `bureau`, com profundidade: na ida, pulsos laranja atravessam as conexões; na volta, pulsos mais escuros retornam, e as conexões engrossam ou afinam. Uma pequena curva de loss no canto cai um degrau a cada volta. Em "milhões de vezes": o ciclo acelera até virar um borrão, e a curva despenca. |
 | 03.4 | "von Neumann já virou peça de coleção." | "John von Neumann… risca de laranja." | O apêndice C do `bureau`, como no clipe. Em "Se até ele virou peça de coleção": a folha entra numa vitrine de museu desenhada em linha fina, com a etiqueta "John von Neumann · 1903–1957". Em "o aparelho em que você vê este vídeo": o diagrama sai da vitrine, e as caixas ganham nomes de hoje (processador, memória, entrada e saída); em "risca de laranja": o risco do clipe, reaproveitado. |
 | 03.5 | "Guinada à esquerda, já tá sem freio," | "A guinada à esquerda…" | Vista de cima do mapa do `leftturn`; a faísca anda numa estrada reta rotulada "comportamento desejado", ao lado de um medidor de "capacidade" que sobe. No salto, a faísca vira 90° e sai da estrada, e a câmera faz o whip junto. Em "alinhamento": a estrada ganha uma guia, que acaba logo adiante. |
@@ -298,18 +318,18 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 
 ### 04 · 0,81 · Clipes de papel
 
-| Bloco | Trecho | Narração | Imagem |
+| Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
 | 04.1 | "Aumento meu P(doom), / tudo vira clipe, um a um." (o refrão rola até 0,81) | "Chegamos à fábrica de clipes do começo…" | Voo pela treliça de clipes, que cresce. Em "o planeta, e a gente": a treliça se fecha numa esfera gravada, feita de clipes, e o clipe da `spacetime` (02.6) volta num relance. Em "Ela não precisa odiar ninguém": a câmera para num clipe só, parado, indiferente. "Nick Bostrom, 2003". |
 | 04.2 | "Quem desliga foi viajar, / não tem pra onde escapar." | "E o botão de desligar?…" | O anúncio satírico como formulário de vaga do `bureau`, sem logotipo, com o carimbo "SÁTIRA · 2023". Em "Mas a pergunta é séria": um interruptor gravado, grande; o cursor do fim do clipe vai até ele, e o interruptor escorrega para longe a cada tentativa, ao lado de "meta → continuar ligada". Em "foi viajar": a resposta automática do `paperclips` cobre a tela. **Novo.** |
 | 04.3 | "Já acendemos o estopim," | "Agora, repara no ponto laranja…" | Corte casado na faísca: ela fica parada no mesmo ponto da tela enquanto o mundo em volta troca a cada palavra (a caneta do unicórnio, a ponta da curva da loss, o preço no gráfico da bolsa, a dobra do primeiro clipe, o estopim queimando), cada cena com o seu tempo da música num canto. Em "Aceso desde o primeiro segundo", a régua inteira acende como estopim. |
 | 04.4 | "tese da ortogonalidade: um blues sem fim." | "A tese da ortogonalidade…" | O gráfico INTELIGÊNCIA × OBJETIVOS em papel quadriculado; a faísca marca dois pontos com chamadas: "muito inteligente · só quer clipes" e "pouco inteligente · quer ajudar". Em "O blues": a reta vira corda e dobra, com a legenda "a corda segue a afinação real da voz, medida pelo programa". |
 | 04.5 | "“Só transformers, é simples assim!” / Até que aprendeu a dizer “não” pra mim." | "Só transformers?…" | A queda pela pilha para num bloco, que se abre em vista explodida, com as partes rotuladas. "GPT = Generative Pre-trained **Transformer**", com o T aceso. Em "Nem se vai obedecer": o bloco gira e sai do alinhamento, e o NÃO PRA MIM acende ao contrário. |
-| 04.6 | "Pós-Chinchilla, superdenso, / pula a cerca sem bom senso. / Cem mil GPU, / RLHF deu chabu." (só música até "chabu") | "E a máscara do shoggoth?…" | No trecho, remontado: a letra comprimindo, as margens de segurança quebrando, a grade de GPUs, com as legendas "Chinchilla · DeepMind, 2022 · modelo menor + mais dados vence modelo gigante", "as cercas são as margens de segurança da tela" e "100 mil GPUs · recorde em 2024 · hoje, centenas de milhares". No bloco: a máscara sai da régua e volta à mesa inclinada do `dense`. Em "pessoas avaliam": carimbos +1 e −1 caem sobre as respostas, e a cada +1 o sorriso da máscara se abre mais. Em "bajulação": a etiqueta de 02.4 volta num canto. Em "dá chabu": a mesa inclina, a máscara rola e para de ponta-cabeça, e o MODELO DE RECOMPENSA cai. |
+| 04.6 | "Pós-Chinchilla, superdenso, / pula a cerca sem bom senso. / Cem mil GPU, / RLHF deu chabu." | "E a máscara do shoggoth?…" | No verso, remontado em ~2 s: a letra comprimindo, as margens de segurança quebrando, a grade de GPUs, até parar em "RLHF deu chabu". As três legendas ("Chinchilla · modelo menor + mais dados vence modelo gigante", "as cercas são as margens de segurança da tela", "100 mil GPUs · recorde em 2024") não cabem com a voz falando: entra no máximo uma, e o resto vai para a descrição. No bloco: a máscara sai da régua e volta à mesa inclinada do `dense`. Em "pessoas avaliam": carimbos +1 e −1 caem sobre as respostas, e a cada +1 o sorriso da máscara se abre mais. Em "bajulação": a etiqueta de 02.4 volta num canto. Em "dá chabu": a mesa inclina, a máscara rola e para de ponta-cabeça, e o MODELO DE RECOMPENSA cai. |
 
 ### 05 · 0,99 · O que Ilya viu
 
-| Bloco | Trecho | Narração | Imagem |
+| Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
 | 05.1 | "Aumento meu P(doom), / como previu o Loom." (o refrão rola até 0,999…) | "Lembra dos números em cima das palavras?…" | As barras de probabilidade de 01.4 voltam e giram 90°, virando galhos: é a árvore do `loom`, que cresce palavra por palavra até "Loom" ser amostrado. "Loom · Janus, 2021". |
 | 05.2 | "Do pré-treino preditivo / ao auto-upgrade recursivo." | "No pré-treino…" | Uma frase corre na tela com a próxima palavra coberta por um bloco [MASK]; o bloco se abre com o palpite; outra frase, outro palpite, cada vez mais rápido, até virar um borrão em "Bilhões de vezes". "GPT = Generative **Pre-trained** Transformer", com o P aceso. Em "melhorando a si mesma": a recursão de Droste do `loom`, e um segundo da explosão do FOOM. |
@@ -317,32 +337,32 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 | 05.4 | — | "Mas nessa, a letra envelheceu…" | A câmera volta à frente da tela REDIGIDO; as tarjas saem uma a uma e, de trás delas, 52 folhas se abrem em leque: "MEMORANDO · 52 PÁGINAS". Cartão: "Depoimento de Ilya Sutskever · Musk v. Altman · 1º out. 2025 · divulgado em nov. 2025". **Novo.** |
 | 05.5 | "Foi tudo só pra inglês ver?" | "Quanto das promessas…" | O teatro vazio, com o holofote sobre o nada; as cortinas fecham na última palavra. |
 
-Depois de 05.5, só música: o cartão final do `outro`, de "= ∞" até "NaN¹ estimativa não mais definida" (~4 s).
-O contador quebra sem explicação: a imagem basta.
+Depois de 05.5, a mixagem passa direto para 06.1, sem pausa para o cartão final do `outro`. O contador quebra
+no fim de 06.1 (abaixo).
 
 ### 06 · Como uma IA fez este vídeo
 
-| Bloco | Trecho | Narração | Imagem |
+| Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
-| 06.1 | cartão final do `outro` (acima) | "Máquinas que aprendem rápido…" | Quatro cenas de ~1,5 s, uma por trecho da frase, cada uma remontada: a loss despencando, os cartões saindo pela fresta, a máscara sorrindo, o clipe se duplicando. |
+| 06.1 | — | "Máquinas que aprendem rápido…" | Quatro cenas de ~1,5 s, uma por trecho da frase, cada uma remontada: a loss despencando, os cartões saindo pela fresta, a máscara sorrindo, o clipe se duplicando. Em "É disso que a música fala": o cartão final do `outro`, de "= ∞" até "NaN¹ estimativa não mais definida", comprimido em ~2 s. O contador quebra sem explicação: a imagem basta. |
 | 06.2 | — | "E a promessa do começo…" | O `git log` do repositório original rola em Plex Mono, do primeiro commit ("I'm Upping My P(doom): code-rendered music video") em diante, cada linha puxando um quadro da cena correspondente. Crédito na tela: "clipe original: Giacomo Magnanini + Claude Opus 5.5 · github.com/mexicat/pdoom-video". |
 | 06.3 | — | "O truque é que cada quadro é uma função do tempo…" | `quadro = render(t)` em tipografia. A própria régua vira o controle: a faísca arrasta t para a frente e para trás, e a cena acima acompanha; o mesmo t dá o mesmo quadro duas vezes, lado a lado, com um "=" entre eles. Em "desenhar por cima": as camadas desta explicação (anotações, legendas, régua) se separam em 3D, como folhas transparentes sobre a cena. Barras com as linhas de cada arquivo de `app/src`, somando 22.608. **Novo.** |
 | 06.4 | — | "A letra, não…" | Créditos em tipografia: letra original de osmarks, MusicPerson e do Discord da EleutherAI, com o Claude no final; música pela Suno; voz pelo ElevenLabs; versão em português por O Programador Real. |
 | 06.5 | — | "E tem uma ironia aqui… Loucura, né?" | A máscara, sorrindo, de frente. Em "inclusive o do monstro": ela gira e mostra, no verso, o código do shoggoth. Em "E o roteiro": o texto deste arquivo, `06-bastidores.txt`, rola em Plex Mono; em "Inclusive esta frase", a frase acende palavra por palavra enquanto é dita. Em "E esta voz": a forma de onda desta própria fala, desenhada pela faísca, com a etiqueta "voz sintética"; em "Loucura, né?", a onda se curva no sorriso da máscara. **Novo.** |
 | 06.6 | — | "Talvez o fim do mundo que a música canta… E o porquê." | O campo de prompt do vídeo, vazio. Digita-se "Meu P(doom) é ", e o cursor pisca sob uma distribuição de próximos tokens: "5%", "50%", "depende", "???". |
-| 06.7 | — | "E agora, ouve de novo…" | O primeiro quadro, com a faísca em 0:00. Em "ouve de novo", a pausa vira play e a régua se apaga; a música recomeça sob a tela final do YouTube (ver "A transição"). |
+| 06.7 | — | "E agora, ouve de novo…" | O primeiro quadro; em "ouve de novo", a faísca volta a 0:00. Quando a mixagem acaba, a pausa vira play, a régua se apaga e o clipe recomeça com a música, sob a tela final do YouTube (ver "Como a explicação termina"). |
 
 ## Cortes possíveis
 
-Se a primeira montagem ainda parecer longa, estes blocos saem sem quebrar nenhum gancho e sem gerar áudio de novo:
-basta tirar o bloco e o trecho antes dele.
+A mixagem é fixa, então cortar um bloco exige refazê-la (e refazer os tempos da narração). Não é para a primeira
+montagem. Se ainda assim for preciso encurtar, estes blocos saem sem quebrar nenhum gancho:
 
-| Bloco | Voz + trecho | Observação |
-|---|---|---|
-| 02.5 o monstro é uma fórmula | ~9 s | 06.3 e 06.5 ainda cumprem a promessa. |
-| 04.5 transformers | ~16 s | 05.2 funciona sozinho. |
-| 03.2 FLOPs | ~14 s | O trecho para em "três, dois, um"; Nvidia e Ômega ficam só na legenda. |
-| 04.3 o ponto laranja | ~14 s | Último recurso: é o ponto alto da segunda metade. |
+| Bloco | Observação |
+|---|---|
+| 02.5 o monstro é uma fórmula | 06.3 e 06.5 ainda cumprem a promessa. |
+| 04.5 transformers | 05.2 funciona sozinho. |
+| 03.2 FLOPs | Nvidia e Ômega vão para a descrição do vídeo. |
+| 04.3 o ponto laranja | Último recurso: é o ponto alto da segunda metade. |
 
 ## Estilo
 
@@ -366,49 +386,49 @@ e o depoimento.
 
 Um esboço para a fase de código, para as decisões ficarem registradas.
 
-- **Tempos da narração.** Alinhar cada MP3 de voz ao texto conhecido com alinhamento forçado CTC (torchaudio
-  `MMS_FA`, como `analysis/pt_br.py` faz com a letra) e gravar `data/narracao.pt-br.json`: blocos e palavras com
-  início e fim. O Whisper serve para conferir o texto, não para os tempos: nas gravações atuais, ele marca o início
-  das palavras 0,2 a 0,3 s antes do som. Assim como as cenas acham versos por conteúdo, as mudanças de imagem acham
-  palavras da narração ("Bajulação", "Claude") em vez de tempos fixos. O corte entre blocos cai no silêncio entre
-  a última palavra de um parágrafo e a primeira do seguinte.
+- **Som.** A explicação toca a `mixagem.mp3` como ela é, a partir de 156,2 s do vídeo (0,6 s depois do fim do clipe).
+  Quando ela acaba, `audio/pdoom-pt-BR.mp3` recomeça do 0:00, emendada, sob a tela final. O áudio do vídeo inteiro
+  é uma emenda, sem mixagem nova: a música do clipe, 0,6 s de silêncio, a mixagem e a música de novo.
+- **Tempos da narração.** Alinhar cada MP3 de voz (sem trilha por baixo, o que ajuda o alinhamento) ao texto de `tts/`
+  com alinhamento forçado CTC (torchaudio `MMS_FA`, como `analysis/pt_br.py` faz com a letra) e somar o início
+  do capítulo na mixagem: 0; 72,673; 141,035; 240,353; 335,674; 434,991 e 503,745 s. Essa é a soma das durações dos MP3,
+  e a posição de `06-bastidores` foi conferida por correlação (503,745 s). Gravar `data/narracao.pt-br.json`: blocos
+  e palavras com início e fim, em tempo da mixagem. O Whisper serve para conferir o texto, não para os tempos:
+  nas gravações atuais, ele marca o início das palavras 0,2 a 0,3 s antes do som. Assim como as cenas acham versos
+  por conteúdo, as mudanças de imagem acham palavras da narração ("Bajulação", "Claude") em vez de tempos fixos.
+  A troca de bloco cai no silêncio entre a última palavra de um parágrafo e a primeira do seguinte.
+- **Batidas.** A trilha começa junto com a mixagem: o 0 s da trilha é o 0 s da mixagem (conferido por correlação
+  em 20, 100 e 150 s). Ela tem 137,2 BPM, uma introdução de ~10 s e um final que some a partir de ~185 s.
+  A introdução toca uma vez, e daí em diante o laço repete só a parte estável, de 12,427 a 174,880 s: 23 frases
+  de 4 compassos, cruzadas em 2 s na batida. A grade de batidas da mixagem sai da análise da trilha, repetida
+  a cada laço; confira nas emendas. A trilha tem uma parte mais baixa entre ~150 e 160 s, que se repete a cada laço.
 - **Cenas do clipe.** Reaproveitar um trecho como ele é basta renderizar a cena num tempo da música escolhido,
   com zoom, câmera lenta ou volta por cima. Para remontar, as cenas ganham parâmetros opcionais (câmera, tempo
   da música, partes visíveis), com padrões que reproduzem o clipe como é hoje. A explicação é uma sequência de cenas
   novas que usam essas cenas e as peças delas (shaders, geometrias, `_motifs.ts`). Depois de mexer numa cena do clipe, confirme que o clipe
   não mudou (`bun scripts/render.ts sheet --lang pt-BR --cuts` antes e depois).
-- **Lista de montagem.** Uma sequência de segmentos: `{trecho: 'Preso no quarto chinês', cena, legendas}` ou
-  `{bloco: '02.2', cena, mudanças por palavra}`. A duração de cada segmento vem dos dados:
-  trecho = tempos do verso ajustados à batida; bloco = áudio da voz mais o respiro.
-- **Mixagem por script.** O mesmo script lê a lista e monta o áudio: trechos de `audio/pdoom-pt-BR.mp3`,
-  blocos cortados dos MP3 de voz, trilha de fundo sob a voz, baixando sob a fala e saindo nos trechos,
-  e 0,35–0,6 s de respiro entre blocos. A voz pode entrar ~0,3 s antes do fim do trecho.
-  Como imagem e som saem da mesma lista, não há como dessincronizar.
-- **Níveis de referência** (os da `mixagem.mp3`, iguais aos da prévia anterior, que foi aprovada):
-  - Voz a −21 LUFS. As gravações atuais saem do ElevenLabs a ~−20,3 LUFS.
-  - Trilha 13,5 dB abaixo do arquivo original sob a fala, subindo 6 dB nas pausas. A voz fica ~11,5 dB acima dela.
-  - O resultado dá −17,9 LUFS, com pico de −2,2 dBFS.
-  - A trilha tem 137,2 BPM, uma introdução de ~10 s e um final que some a partir de ~185 s. A introdução toca uma vez,
-    e daí em diante o laço repete só a parte estável, de 12,427 a 174,880 s: 23 frases de 4 compassos, cruzadas em
-    2 s na batida. Emendar o arquivo inteiro põe o fim que some colado na introdução, e a trilha quase desaparece
-    por ~30 s a cada volta. A trilha tem uma parte mais baixa entre ~150 e 160 s, que se repete a cada laço.
-- **Render.** O vídeo estendido é o clipe inteiro (0–155,6 s, sem nenhuma mudança) seguido da explicação.
-  O último quadro do clipe é o primeiro da explicação. `bun scripts/render.ts video --lang pt-BR` continua gerando
-  o clipe sozinho.
+- **Lista de montagem.** Uma sequência de blocos: `{bloco: '02.2', verso: 'Preso no quarto chinês', cena,
+  mudanças por palavra, legendas}`. A duração de cada bloco vem dos tempos da narração: do silêncio antes
+  da primeira palavra ao silêncio depois da última. O som não sai da lista: é a mixagem, então a imagem se ajusta a ela.
+- **Níveis da mixagem** (já aplicados; servem só de referência): voz a −21 LUFS; trilha 13,5 dB abaixo do arquivo
+  original sob a fala, subindo 6 dB nas pausas; resultado de −17,9 LUFS, com pico de −2,2 dBFS.
+- **Render.** O vídeo estendido é o clipe inteiro (0–155,6 s, sem nenhuma mudança), seguido da explicação
+  (até o fim da mixagem, em 737,7 s) e do recomeço do clipe com a música sob a tela final. O último quadro do clipe
+  é o primeiro da explicação. `bun scripts/render.ts video --lang pt-BR` continua gerando o clipe sozinho.
 
 ## Capítulos do YouTube
 
-Os tempos saem da mixagem. Nomes:
+Tempos calculados com a mixagem começando em 156,2 s. Se esse início mudar na montagem, refaça a conta.
 
 ```
 0:00 Aumento meu P(doom)
-Tudo que você viu é código
-P(doom) 0,02 · Faíscas
-0,15 · O que tem lá dentro
-0,42 · Poder demais
-0,81 · Clipes de papel
-0,99 · O que Ilya viu
-Como o Opus 5.5 fez este vídeo
+2:35 Tudo que você viu é código
+3:48 P(doom) 0,02 · Faíscas
+4:57 0,15 · O que tem lá dentro
+6:36 0,42 · Poder demais
+8:11 0,81 · Clipes de papel
+9:51 0,99 · O que Ilya viu
+10:59 Como o Opus 5.5 fez este vídeo
 ```
 
 A descrição do vídeo deve trazer os créditos de 06.4, o link do repositório original e as fontes abaixo.
