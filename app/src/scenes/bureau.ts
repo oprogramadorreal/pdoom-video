@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // FIG. 7 `bureau` — "Paperwork". Inverted palette: bone paper, ink, orange accents.
 // One long printed document seen by a restless camera:
 //   A. Form 7-B (safety evaluation): the lyric is typewritten into the fields; SAFE ENOUGH stamp slams on "reckoned".
@@ -253,17 +254,17 @@ export default class Bureau extends Scene {
     this.L1 = lyrics.get('safe enough');
     this.L2 = lyrics.get('Forward MLP');
     this.L3 = lyrics.get('Neumann');
-    this.wEnough = find(this.L1, 'enough');
-    this.wWe = find(this.L1, 'we', 4);
-    this.wReck = find(this.L1, 'reckon');
-    this.wFwd = find(this.L2, 'forward');
+    this.wEnough = find(this.L1, PT ? 'seguro' : 'enough');
+    this.wWe = find(this.L1, PT ? 'seguro' : 'we', PT ? 0 : 4);
+    this.wReck = find(this.L1, PT ? 'seguro' : 'reckon');
+    this.wFwd = find(this.L2, PT ? 'vai' : 'forward');
     this.wMLP = find(this.L2, 'mlp');
-    this.wBack = find(this.L2, 'backward');
-    this.wRep = find(this.L2, 'repeat');
+    this.wBack = find(this.L2, PT ? 'volta' : 'backward');
+    this.wRep = find(this.L2, tr("repeat", "repetição"));
     this.wNow = this.L3.words[0]!;
     this.wVon = find(this.L3, 'von');
     this.wNeu = find(this.L3, 'neumann');
-    this.wObs = find(this.L3, 'obsolete');
+    this.wObs = find(this.L3, PT ? 'peça' : 'obsolete');
     const m = this.wMLP;
     this.syl = m.syl && m.syl.length === 3 ? m.syl.map((s) => [s[0], s[1]] as [number, number]) : [0, 1, 2].map((i) => [lerp(m.start, m.end, i / 3), lerp(m.start, m.end, (i + 1) / 3)] as [number, number]);
 
@@ -276,7 +277,7 @@ export default class Bureau extends Scene {
     this.tEnd = this.ctx.end;
     this.tCR = this.wWe.start - 0.03;
     this.tStamp = this.wReck.start;
-    this.tFwd = this.wFwd.start;
+    this.tFwd = PT ? this.wMLP.start : this.wFwd.start;
     this.tFiled = nextDown(this.tStamp + 1.4);
     if (this.tFiled > this.tFwd - 0.7) this.tFiled = this.tStamp + 1.6;
     this.tSig = nearestBeat(lerp(this.tStamp, this.tFiled, 0.5));
@@ -288,6 +289,7 @@ export default class Bureau extends Scene {
     this.tObs = this.wObs.start;
     this.tStrike2 = this.tObs + Math.min(0.22, this.beatLen * 0.5);
     this.tTear = clamp(nextDown(this.tObs + 0.3), this.tObs + 0.3, this.tEnd - 0.4);
+    if (PT) this.tTear = Math.min(this.L3.end + 0.03, this.tEnd - 0.05);
     this.tReveal = au.downbeats.find((d) => d > this.wVon.end - 0.15 && d < this.tObs - 0.6) ?? lerp(this.wNeu.start, this.tObs, 0.2);
     this.tPunch = nearestBeat(lerp(this.tReveal, this.tObs, 0.5));
 
@@ -324,12 +326,21 @@ export default class Bureau extends Scene {
       });
     }
 
-    this.sig = strokeText('We', 'script', 120);
-    this.obsHand = strokeText('obsolete', 'hscript', 124, 1);
+    this.sig = strokeText(tr("We", "Nós"), 'script', 120);
+    this.obsHand = strokeText(tr("obsolete", "peça de coleção"), 'hscript', PT ? 78 : 124, 1);
     // hand-writing of "obsolete": starts with the word and must be done before the tear
-    const wEnd = Math.min(this.wObs.end, this.tTear + 0.02);
+    const wEnd = Math.min(PT ? this.L3.end : this.wObs.end, this.tTear + 0.02);
     const n = this.obsHand.charRange.length;
     this.obsCharTimes = Array.from({ length: n }, (_, i) => [lerp(this.tObs + 0.03, wEnd, i / n), lerp(this.tObs + 0.03, wEnd, (i + 1) / n)] as [number, number]);
+    if (PT) {
+      const times: [number, number][] = [];
+      this.L3.words.slice(this.L3.words.indexOf(this.wObs)).forEach((w, wi) => {
+        if (wi) times.push([w.start, w.start]);
+        const chars = Array.from(w.w.replace(/[.,!?]/g, ''));
+        chars.forEach((_, i) => times.push([lerp(w.start, w.end, i / chars.length), lerp(w.start, w.end, (i + 1) / chars.length)]));
+      });
+      this.obsCharTimes = times;
+    }
 
     // ---- MLP geometry (relative to B)
     const counts = [4, 6, 6, 3];
@@ -573,17 +584,17 @@ export default class Bureau extends Scene {
     c.globalCompositeOperation = 'difference';
     c.fillStyle = PRINT(1);
     c.font = font(F.archivo(125, 900), 58);
-    c.fillText('FORM 7-B', x0 + 26, y0 + 68);
+    c.fillText(tr("FORM 7-B", "FORM. 7-B"), x0 + 26, y0 + 68);
     c.font = font(F.mono(600), 19);
     c.letterSpacing = '4px';
-    c.fillText('SAFETY EVALUATION OF A FRONTIER SYSTEM', x0 + 470, y0 + 42);
+    c.fillText(tr("SAFETY EVALUATION OF A FRONTIER SYSTEM", "AVALIAÇÃO DE SEGURANÇA DE UM SISTEMA DE FRONTEIRA"), x0 + 470, y0 + 42);
     c.font = font(F.mono(400), 15);
     c.letterSpacing = '3px';
-    c.fillText('ABRIDGED EDITION  ·  PLEASE TYPE OR PRINT CLEARLY', x0 + 470, y0 + 70);
+    c.fillText(tr("ABRIDGED EDITION  ·  PLEASE TYPE OR PRINT CLEARLY", "EDIÇÃO RESUMIDA  ·  PREENCHA DE FORMA LEGÍVEL"), x0 + 470, y0 + 70);
     c.globalCompositeOperation = 'lighter';
 
     // meta row
-    const meta = [['ISSUED BY', 'DEPT. OF REASONABLE ASSURANCES'], ['REF.', '7B-0042/∞'], ['REVIEW TIME', '11 MIN'], ['PAGE', '1 OF 1']];
+    const meta = [[tr("ISSUED BY", "EMITIDO POR"), tr("DEPT. OF REASONABLE ASSURANCES", "DEPTO. DE GARANTIAS RAZOÁVEIS")], ['REF.', '7B-0042/∞'], [tr("REVIEW TIME", "TEMPO DE ANÁLISE"), '11 MIN'], [tr("PAGE", "PÁGINA"), tr("1 OF 1", "1 DE 1")]];
     let mx = x0;
     const mw = [520, 280, 320, 280];
     c.letterSpacing = '2px';
@@ -604,14 +615,14 @@ export default class Bureau extends Scene {
       c.letterSpacing = '0px';
     };
     // 1. FINDINGS (lyric typed here)
-    label('1.', 'FINDINGS', A.y - 210);
+    label('1.', tr("FINDINGS", "RESULTADOS"), A.y - 210);
     c.fillStyle = PRINT(0.3);
     for (let i = 0; i < 2; i++) c.fillRect(x0 + 160, A.y - 105 + i * 64, x1 - x0 - 180, 1.2);
     c.fillStyle = PRINT(0.5); c.font = font(F.mono(400), 13);
-    c.fillText('(describe observed behaviour; attach additional sheets if the system asks you to)', x0 + 160, A.y - 205);
+    c.fillText(tr("(describe observed behaviour; attach additional sheets if the system asks you to)", "(descreva o comportamento; anexe folhas extras se o sistema solicitar)"), x0 + 160, A.y - 205);
     // 2. RISK LEVEL
-    label('2.', 'RISK LEVEL', A.y - 10);
-    const opts = ['LOW', 'MODERATE', 'HIGH', 'SAFE ENOUGH'];
+    label('2.', tr("RISK LEVEL", "NÍVEL DE RISCO"), A.y - 10);
+    const opts = [tr("LOW", "BAIXO"), tr("MODERATE", "MODERADO"), tr("HIGH", "ALTO"), tr("SAFE ENOUGH", "SEGURO O BASTANTE")];
     let ox = x0 + 290;
     c.font = font(F.mono(500), 21);
     c.letterSpacing = '2px';
@@ -631,31 +642,31 @@ export default class Bureau extends Scene {
     });
     c.letterSpacing = '0px';
     // 3. CONCLUSION
-    label('3.', 'CONCLUSION', A.y + 90);
+    label('3.', tr("CONCLUSION", "CONCLUSÃO"), A.y + 90);
     c.fillStyle = PRINT(0.3);
     c.fillRect(x0 + 160, A.y + 155, 760, 1.2);
     // 4. signature
-    label('4.', 'SIGNATURE OF EVALUATOR(S)', A.y + 250);
+    label('4.', tr("SIGNATURE OF EVALUATOR(S)", "ASSINATURA DE QUEM AVALIOU"), A.y + 250);
     c.fillStyle = PRINT(0.6);
     c.fillRect(x0 + 160, A.y + 360, 520, 1.2);
     c.font = font(F.mono(400), 12); c.letterSpacing = '2px';
-    c.fillText('SIGN HERE', x0 + 160, A.y + 380);
+    c.fillText(tr("SIGN HERE", "ASSINE AQUI"), x0 + 160, A.y + 380);
     c.letterSpacing = '0px';
     // footnote
     c.fillStyle = PRINT(0.8); c.fillRect(x0, A.y + 415, x1 - x0, 1);
     c.fillStyle = PRINT(0.75);
     c.font = font(F.mono(400), 14);
-    c.fillText('* “Safe enough” is defined in Form 7-C, which has not been drafted. Do not detach.', x0 + 10, A.y + 445);
+    c.fillText(tr("* “Safe enough” is defined in Form 7-C, which has not been drafted. Do not detach.", "* “Seguro o bastante” é definido no Form. 7-C, que ainda não existe. Não destaque."), x0 + 10, A.y + 445);
     // 5. the P(doom) field, right under where the stamp lands
     {
       const fx = A.x + 230, fy = A.y + 452;
       c.fillStyle = PRINT(1);
       c.font = font(F.mono(700), 16); c.letterSpacing = '3px';
       c.fillText('5.', fx, fy);
-      c.fillText('EST. P(DOOM)', fx + 34, fy);
+      c.fillText(tr("EST. P(DOOM)", "EST. P(DOOM)"), fx + 34, fy);
       c.fillStyle = PRINT(0.55);
       c.font = font(F.mono(400), 12); c.letterSpacing = '2px';
-      c.fillText('(ROUND DOWN)', fx + 34, fy + 22);
+      c.fillText(tr("(ROUND DOWN)", "(ARREDONDE PARA BAIXO)"), fx + 34, fy + 22);
       c.letterSpacing = '0px';
       c.fillStyle = PRINT(0.55);
       c.fillRect(A.x + 470, fy + 12, x1 - 20 - (A.x + 470), 1.2);
@@ -721,13 +732,13 @@ export default class Bureau extends Scene {
     c.fillStyle = ORANGE(1);
     c.textAlign = 'center';
     const fam = F.archivo(75, 900);
-    const size = Math.min(112, (100 * (hw * 2 - 70)) / measure('SAFE ENOUGH', fam, 100));
+    const size = Math.min(112, (100 * (hw * 2 - 70)) / measure(tr("SAFE ENOUGH", "SEGURO O BASTANTE"), fam, 100));
     c.font = font(fam, size);
-    c.fillText('SAFE ENOUGH', 0, size * 0.36);
+    c.fillText(tr("SAFE ENOUGH", "SEGURO O BASTANTE"), 0, size * 0.36);
     c.font = font(F.mono(700), 16);
     c.letterSpacing = '6px';
-    c.fillText('EVALUATED · WE RECKON', 0, -hh + 46);
-    c.fillText('DEPT. OF REASONABLE ASSURANCES', 0, hh - 30);
+    c.fillText(tr("EVALUATED · WE RECKON", "AVALIADO · A GENTE ACHA"), 0, -hh + 46);
+    c.fillText(tr("DEPT. OF REASONABLE ASSURANCES", "DEPTO. DE GARANTIAS RAZOÁVEIS"), 0, hh - 30);
     c.letterSpacing = '0px';
     c.restore();
   }
@@ -741,10 +752,10 @@ export default class Bureau extends Scene {
     const hw = s.hw - 10, hh = s.hh - 10;
     c.beginPath(); c.roundRect(-hw, -hh, hw * 2, hh * 2, 20); c.stroke();
     c.fillStyle = PRINT(1); c.textAlign = 'center';
-    c.font = font(F.archivo(125, 900), 62);
-    c.fillText('FILED', 0, 12);
-    c.font = font(F.mono(600), 13); c.letterSpacing = '4px';
-    c.fillText('NO FURTHER ACTION', 0, hh - 14);
+    c.font = font(F.archivo(125, 900), PT ? 42 : 62);
+    c.fillText(tr("FILED", "ARQUIVADO"), 0, 12);
+    c.font = font(F.mono(600), PT ? 10 : 13); c.letterSpacing = PT ? '2px' : '4px';
+    c.fillText(tr("NO FURTHER ACTION", "NENHUMA AÇÃO NECESSÁRIA"), 0, hh - 14);
     c.letterSpacing = '0px';
     c.restore();
   }
@@ -755,7 +766,7 @@ export default class Bureau extends Scene {
     for (let x = -1400; x < 1400; x += 18) c.fillRect(x, y, 9, 1.4);
     c.font = font(F.mono(500), 13); c.letterSpacing = '4px';
     c.fillStyle = PRINT(0.6);
-    c.fillText('   DETACH HERE — RETAIN LOWER PORTION FOR YOUR RECORDS', -440, y - 12);
+    c.fillText(tr("   DETACH HERE — RETAIN LOWER PORTION FOR YOUR RECORDS", "   DESTAQUE AQUI — GUARDE A PARTE INFERIOR"), -440, y - 12);
     c.letterSpacing = '0px';
     // the scissors (no font here has ✂), drawn in the first cell: two finger rings, crossed blades
     const sx = -440, sy = y - 16.5;
@@ -789,10 +800,10 @@ export default class Bureau extends Scene {
     // headers
     c.fillStyle = PRINT(1);
     c.font = font(F.mono(700), 17); c.letterSpacing = '4px';
-    c.fillText('ANNEX B — TRAINING PROCEDURE', -880, -540);
+    c.fillText(tr("ANNEX B — TRAINING PROCEDURE", "ANEXO B — PROCEDIMENTO DE TREINO"), -880, -540);
     c.font = font(F.mono(400), 13); c.letterSpacing = '2px';
     c.fillStyle = PRINT(0.6);
-    c.fillText('SCHEMATIC · NOT TO SCALE · DO NOT OPERATE UNSUPERVISED', -880, -516);
+    c.fillText(tr("SCHEMATIC · NOT TO SCALE · DO NOT OPERATE UNSUPERVISED", "ESQUEMA · SEM ESCALA · NÃO OPERE SEM SUPERVISÃO"), -880, -516);
     c.letterSpacing = '0px';
     c.fillStyle = PRINT(0.9); c.fillRect(-880, -500, 1760, 1.5);
 
@@ -850,7 +861,7 @@ export default class Bureau extends Scene {
         }
       });
       c.fillStyle = PRINT(0.8); c.font = font(F.mono(500), 14); c.letterSpacing = '3px'; c.textAlign = 'center';
-      c.fillText(['INPUT x', 'HIDDEN h₁', 'HIDDEN h₂', 'OUTPUT ŷ'][k]!, l.x, 262);
+      c.fillText([tr("INPUT x", "ENTRADA x"), tr("HIDDEN h₁", "OCULTA h₁"), tr("HIDDEN h₂", "OCULTA h₂"), tr("OUTPUT ŷ", "SAÍDA ŷ")][k]!, l.x, 262);
       c.textAlign = 'left'; c.letterSpacing = '0px';
     });
     c.fillStyle = PRINT(0.75); c.font = font(F.serif(400, true), 32); c.textAlign = 'center';
@@ -864,9 +875,9 @@ export default class Bureau extends Scene {
 
     c.font = font(F.mono(500), 14); c.letterSpacing = '3px';
     c.fillStyle = PRINT(0.75);
-    c.fillText('FORWARD PASS  →', -470, -226);
+    c.fillText(tr("FORWARD PASS  →", "PASSAGEM DIRETA  →"), -470, -226);
     c.textAlign = 'right';
-    c.fillText('←  BACKWARD PASS  (∂L/∂w)', 860, -160);
+    c.fillText(tr("←  BACKWARD PASS  (∂L/∂w)", "←  RETROPROPAGAÇÃO  (∂L/∂w)"), 860, -160);
     c.textAlign = 'left'; c.letterSpacing = '0px';
 
     // epoch counter
@@ -875,7 +886,7 @@ export default class Bureau extends Scene {
     const loss = big ? 0.0001 : 0.693 * Math.pow(0.9, epoch - 41);
     c.fillStyle = PRINT(0.95); c.font = font(F.mono(500), 18); c.letterSpacing = '2px';
     c.textAlign = 'right';
-    c.fillText(`EPOCH ${big ? '1,000,000' : String(epoch).padStart(6, '0')}`, 860, -236);
+    c.fillText(`${tr('EPOCH', 'ÉPOCA')} ${big ? (PT ? '1.000.000' : '1,000,000') : String(epoch).padStart(6, '0')}`, 860, -236);
     c.fillStyle = PRINT(0.6);
     c.fillText(`LOSS ${loss.toFixed(4)}`, 860, -210);
     c.textAlign = 'left'; c.letterSpacing = '0px';
@@ -885,6 +896,18 @@ export default class Bureau extends Scene {
   }
 
   drawAnnexLyric(c: Ctx2, t: number, loop: number) {
+    if (PT) {
+      // Portuguese puts MLP first; keep the whole supplied line in its spoken order.
+      const fam = F.archivo(87.5, 900), size = 108;
+      c.save(); c.font = font(fam, size); c.textBaseline = 'alphabetic';
+      let x = -measure(this.L2.text, fam, size) / 2;
+      for (const w of this.L2.words) {
+        c.fillStyle = t >= w.start && t < w.end ? ORANGE(1) : PRINT(t >= w.start ? 1 : 0.14);
+        c.fillText(w.w, x, -300);
+        x += measure(w.w + ' ', fam, size);
+      }
+      c.restore(); return;
+    }
     const Ls = this.layers;
     const fam = F.archivo(100, 900), size = 132;
     const yTop = -292;
@@ -892,7 +915,7 @@ export default class Bureau extends Scene {
     c.textBaseline = 'alphabetic';
     c.font = font(fam, size);
     // "Forward" over the input layer, printed L->R within the word
-    const fw = layout('Forward', fam, size);
+    const fw = layout(tr("Forward", "vai"), fam, size);
     const fx0 = Ls[0]!.x - fw.width / 2;
     const per = Math.min(0.06, (this.wFwd.end - this.wFwd.start) / fw.glyphs.length);
     for (const g of fw.glyphs) if (t >= this.wFwd.start + g.i * per) { c.fillStyle = PRINT(1); c.fillText(g.ch, fx0 + g.x, yTop); }
@@ -944,11 +967,11 @@ export default class Bureau extends Scene {
       c.translate(rx + 200, 372);
       c.scale(1 + 0.14 * pop, 1 + 0.14 * pop);
       c.fillStyle = PRINT(1);
-      c.fillText('repeat', -200, 0);
+      c.fillText(tr("repeat", "repetição"), -200, 0);
       c.restore();
       if (loop >= 0 && loop < 3) {
         c.fillStyle = ORANGE(1); c.font = font(F.mono(700), 24); c.letterSpacing = '3px';
-        c.fillText(`×${loop + 1}`, rx + measure('repeat', fam, 116) + 24, 372);
+        c.fillText(`×${loop + 1}`, rx + measure(tr("repeat", "repetição"), fam, 116) + 24, 372);
         c.letterSpacing = '0px';
       }
     }
@@ -961,16 +984,16 @@ export default class Bureau extends Scene {
     c.translate(C.x, C.y);
     c.textBaseline = 'alphabetic';
     c.fillStyle = PRINT(0.7); c.font = font(F.mono(500), 16); c.letterSpacing = '4px';
-    c.fillText('APPENDIX C — LEGACY ARCHITECTURES (FOR REFERENCE ONLY)', -820, -482);
+    c.fillText(tr("APPENDIX C — LEGACY ARCHITECTURES (FOR REFERENCE ONLY)", "APÊNDICE C — ARQUITETURAS ANTIGAS (APENAS PARA CONSULTA)"), -820, -482);
     c.letterSpacing = '0px';
     c.fillStyle = PRINT(0.9); c.fillRect(-820, -467, 1640, 1.5);
     // heading: the lyric, printed word by word
-    const fam = F.archivo(100, 900), size = 112;
+    const fam = F.archivo(100, 900), size = PT ? 88 : 112;
     c.font = font(fam, size);
     const hx = -820;
     const hy = -340;
     // each word printed on its own, at its kerned position in the heading set as one run
-    const hws = [this.wNow, this.wVon, this.wNeu];
+    const hws = PT ? this.L3.words.slice(0, this.L3.words.indexOf(this.wObs)) : [this.wNow, this.wVon, this.wNeu];
     const head = hws.map((w) => w.w).join(' ');
     let gi = 0, extra = 0, prev = '';
     for (const w of hws) {
@@ -1062,31 +1085,31 @@ export default class Bureau extends Scene {
     shadowHatch(cx, cy, cw, ch, 15);
     c.strokeStyle = PRINT(1); c.lineWidth = 3; c.strokeRect(cx, cy, cw, ch);
     c.fillStyle = PRINT(1); c.font = font(F.mono(700), 18); c.letterSpacing = '4px';
-    c.fillText('CENTRAL PROCESSING UNIT', cx + 20, cy + 34);
+    c.fillText(tr("CENTRAL PROCESSING UNIT", "UNIDADE CENTRAL DE PROCESSAMENTO"), cx + 20, cy + 34);
     c.letterSpacing = '0px';
-    box(cx + 40, cy + 70, 270, 100, 'CONTROL UNIT', 'decode', hot(1));
-    box(cx + 350, cy + 70, 270, 100, 'ALU', 'arithmetic / logic', hot(2));
-    box(cx + 40, cy + 200, 580, 90, 'REGISTERS', 'PC · IR · ACC · MAR · MDR', hot(3));
+    box(cx + 40, cy + 70, 270, 100, tr("CONTROL UNIT", "CONTROLE"), tr("decode", "decodificação"), hot(1));
+    box(cx + 350, cy + 70, 270, 100, 'ALU', tr("arithmetic / logic", "aritmética / lógica"), hot(2));
+    box(cx + 40, cy + 200, 580, 90, tr("REGISTERS", "REGISTRADORES"), 'PC · IR · ACC · MAR · MDR', hot(3));
     shadowHatch(-330, 225, 660, 115);
-    box(-330, 225, 660, 115, 'MEMORY UNIT', 'instructions + data, one bus', hot(0));
+    box(-330, 225, 660, 115, tr("MEMORY UNIT", "MEMÓRIA"), tr("instructions + data, one bus", "instruções + dados, um barramento"), hot(0));
     shadowHatch(-790, -135, 260, 150);
-    box(-790, -135, 260, 150, 'INPUT', 'device');
+    box(-790, -135, 260, 150, tr("INPUT", "ENTRADA"), tr("device", "dispositivo"));
     shadowHatch(530, -135, 260, 150);
-    box(530, -135, 260, 150, 'OUTPUT', 'device');
+    box(530, -135, 260, 150, tr("OUTPUT", "SAÍDA"), tr("device", "dispositivo"));
     arrow(-530, -60, cx - 4, -60);
     arrow(cx + cw + 4, -60, 526, -60);
     arrow(-60, cy + ch + 4, -60, 221, true);
     arrow(60, cy + ch + 4, 60, 221, true);
     c.fillStyle = PRINT(0.8); c.font = font(F.serif(400, true), 30);
-    c.fillText('the bottleneck', 100, 180);
+    c.fillText(tr("the bottleneck", "o gargalo"), 100, 180);
     // the instruction token shuttling over the bus, one trip per beat
     const u = bt - Math.floor(bt);
     const up = Math.floor(bt) % 2 === 0;
     const ty = up ? lerp(215, 118, ease.inOutCubic(u)) : lerp(118, 215, ease.inOutCubic(u));
     c.fillStyle = PRINT(1); c.fillRect(up ? -70 : 50, ty - 8, 20, 16);
     c.fillStyle = PRINT(0.85); c.font = font(F.serif(400, true), 30);
-    c.fillText('Fig. C.1 — The stored-program computer (1945).', 372, 262);
-    c.fillText('One memory, one bus, one thing at a time.', 372, 298);
+    c.fillText(tr("Fig. C.1 — The stored-program computer (1945).", "Fig. C.1 — Programa armazenado (1945)."), PT ? -330 : 372, PT ? 405 : 262);
+    c.fillText(tr("One memory, one bus, one thing at a time.", "Uma memória, um barramento, uma coisa por vez."), PT ? -330 : 372, PT ? 441 : 298);
   }
 
   override dispose() {

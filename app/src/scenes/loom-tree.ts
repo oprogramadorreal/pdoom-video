@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // FIG. 13a — the Loom tree: "Just as foretold by Loom" generated token by token along the chosen
 // path, while sibling branches (the continuations not taken) sprout at every node with their tokens
 // and probabilities, and keep branching into the dark. World px, y down; the root sits exactly on
@@ -14,12 +15,12 @@ export type P2 = { x: number; y: number };
 
 /** The continuations that were not sampled, per node (node i replaces word i). Offsets = lanes (world px). */
 const ALTS: { label: string; p: number; off: number }[][] = [
-  [{ label: 'Exactly', p: 0.19, off: -640 }, { label: 'Almost', p: 0.08, off: -712 }, { label: 'Not', p: 0.04, off: 600 }, { label: 'Only', p: 0.03, off: 672 }],
-  [{ label: 'like', p: 0.14, off: -548 }, { label: 'so', p: 0.05, off: 520 }],
-  [{ label: 'predicted', p: 0.21, off: -412 }, { label: 'prophesied', p: 0.09, off: -474 }, { label: 'warned', p: 0.06, off: 376 }, { label: 'priced in', p: 0.04, off: 438 }],
-  [{ label: 'in', p: 0.18, off: -372 }, { label: 'on', p: 0.04, off: 290 }],
-  [{ label: 'Moloch', p: 0.22, off: -196 }, { label: 'the scaling laws', p: 0.17, off: -250 }, { label: 'Nostradamus', p: 0.09, off: -304 },
-    { label: 'nobody, technically', p: 0.08, off: 88 }, { label: 'a Substack post', p: 0.05, off: 142 }, { label: 'the eval suite', p: 0.03, off: 196 }],
+  [{ label: tr("Exactly", "Exatamente"), p: 0.19, off: -640 }, { label: tr("Almost", "Quase"), p: 0.08, off: -712 }, { label: tr("Not", "Não"), p: 0.04, off: 600 }, { label: tr("Only", "Só"), p: 0.03, off: 672 }],
+  [{ label: tr("like", "como"), p: 0.14, off: -548 }, { label: tr("so", "assim"), p: 0.05, off: 520 }],
+  [{ label: tr("predicted", "previu"), p: 0.21, off: -412 }, { label: tr("prophesied", "profetizou"), p: 0.09, off: -474 }, { label: tr("warned", "alertou"), p: 0.06, off: 376 }, { label: tr("priced in", "precificou"), p: 0.04, off: 438 }],
+  [{ label: tr("in", "em"), p: 0.18, off: -372 }, { label: tr("on", "no"), p: 0.04, off: 290 }],
+  [{ label: 'Moloch', p: 0.22, off: -196 }, { label: tr("the scaling laws", "as leis de escala"), p: 0.17, off: -250 }, { label: 'Nostradamus', p: 0.09, off: -304 },
+    { label: tr("nobody, technically", "ninguém, a rigor"), p: 0.08, off: 88 }, { label: tr("a Substack post", "um post no Substack"), p: 0.05, off: 142 }, { label: tr("the eval suite", "a suíte de avaliações"), p: 0.03, off: 196 }],
 ];
 /** Horizontal reach of each node's arcs (world px). */
 const REACH = [640, 540, 440, 330, 250];
@@ -30,7 +31,7 @@ const CHOSEN_P = [0.41, 0.62, 0.38, 0.71, 0.31];
 /** Room for a final candidate's probability and bar, beside its label (world px). */
 const PROB_W = 150;
 /** Second-level continuations of each alternative (tiny, dim). */
-const POOL = ['the', 'as', 'a', 'we', 'in', 'by', 'it', 'so', 'all', 'no', 'then', 'that', 'not', 'of', 'one', 'our', 'you', 'this', 'more', 'was', 'is', 'to', '…'];
+const POOL = PT ? ['o', 'como', 'a', 'nós', 'em', 'por', 'isso', 'assim', 'tudo', 'não', 'então', 'que', 'nem', 'de', 'um', 'nosso', 'você', 'este', 'mais', 'foi', 'é', 'para', '…'] : ['the', 'as', 'a', 'we', 'in', 'by', 'it', 'so', 'all', 'no', 'then', 'that', 'not', 'of', 'one', 'our', 'you', 'this', 'more', 'was', 'is', 'to', '…'];
 
 interface Branch {
   from: P2; to: P2;            // connector (vertical-then-horizontal cubic)
@@ -75,10 +76,11 @@ export class LoomTree {
     const last = words[words.length - 1]!, prev = words[words.length - 2]!;
     this.tSample = lerp(prev.start, last.start, 0.2);
     // alternatives and their descendants
-    ALTS.forEach((alts, i) => {
+    const alternatives = PT ? [ALTS[0]!, ALTS[2]!, ALTS[3]!, ALTS[4]!] : ALTS;
+    alternatives.forEach((alts, i) => {
       const nx = this.nodes[i]!;
       const w = words[i]!;
-      const last = i === ALTS.length - 1;
+      const last = i === alternatives.length - 1;
       const t0 = last ? this.tSample : w.start;
       alts.forEach((a, k) => {
         const size = last ? 40 : 32;
@@ -260,7 +262,7 @@ export class LoomTree {
         c.textBaseline = 'top';
         // the marker is drawn (IBM Plex Mono has no ▸; the fallback glyph came from a system font)
         const pre = `p ${CHOSEN_P[i]!.toFixed(2)}  `, tx = 6 / s, ty = (24 + 12) / s;
-        c.fillText(`${pre}  SAMPLED`, tx, ty);
+        c.fillText(`${pre}  ${tr('SAMPLED', 'AMOSTRADO')}`, tx, ty);
         const cell = c.measureText('M').width - 3, mx = tx + c.measureText(pre).width + cell / 2;
         const cap = c.measureText('S'), my = ty + (cap.actualBoundingBoxDescent - cap.actualBoundingBoxAscent) / 2;
         const th = 0.44 * 17, tw = 0.38 * 17;

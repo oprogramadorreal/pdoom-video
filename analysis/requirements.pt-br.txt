@@ -1,0 +1,13 @@
+# Portable analysis environment; independent from the original macOS MLX stack.
+faster-whisper==1.2.1
+librosa==1.0.0
+numpy==2.5.3
+scipy==1.18.1
+soundfile==0.14.0
+torch==2.14.0
+torchaudio==2.11.0
+demucs==4.1.0
+matplotlib==3.11.2
+transformers==5.17.0
+soxr==1.1.0
+numba==0.67.0

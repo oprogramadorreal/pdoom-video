@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // "Trajectory, revised". Verse 3, part 2. One continuous drawing sheet, the camera never at rest.
 //  1. "Sharp left turn": a top-down engineering roadmap (SRR · PDR · CDR · TRR · LAUNCH); the
 //     spark runs the planned route, lyrics painted on it as road markings; on "left" it swerves
@@ -15,10 +16,10 @@
 //     folds into the orange caret of the next prompt.
 import * as THREE from 'three';
 import { Scene, type Frame, type PostOverrides } from '../engine/scene';
-import { W, H } from '../engine/gl';
+import { W, H, Layer2D } from '../engine/gl';
 import { LineBatch } from '../engine/lines';
 import { rgba } from '../engine/palette';
-import { F, font, layout } from '../engine/type';
+import { F, font, layout, measure } from '../engine/type';
 import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
 import { clamp, ease, keys, lerp, prog, pulse } from '../engine/util';
 import { sparkHead, sparkParticles } from './_motifs';
@@ -27,7 +28,9 @@ import { GANTT, Schedule } from './leftturn-gantt';
 import { PDoom, formatPDoom } from '../engine/hud';
 
 function wordOf(l: Line, s: string): Word {
-  const q = norm(s);
+  if (PT && s === 'left') return { ...l.words[1]!, w: l.words.slice(1, 3).map(w => w.w).join(' '), end: l.words[2]!.end };
+  const ptWords: Record<string, string> = { sharp: 'guinada', left: 'esquerda', turn: 'já', and: 'tá', there: 'sem', you: 'sem', are: 'freio', without: 'sem' };
+  const q = norm(PT ? ptWords[s] ?? s : s);
   return l.words.find((w) => norm(w.w).includes(q)) ?? l.words[0]!;
 }
 
@@ -45,6 +48,7 @@ export default class LeftTurn extends Scene {
   map!: ReturnType<typeof makeMapPass>;
   ov = new WorldLayer();
   glow = new LineBatch(6000);
+  lyric = new Layer2D();
   pd!: PDoom;
   sch!: Schedule;
   T = {
@@ -75,7 +79,7 @@ export default class LeftTurn extends Scene {
     T.without = wordOf(T.l6, 'without').start;
     const cdr = wordOf(T.l6, 'cdr');
     T.cdr = cdr.start;
-    T.cdrSyl = cdr.syl && cdr.syl.length >= 3 ? cdr.syl.map((s) => s[0]) : [0, 1, 2].map((i) => cdr.start + i * 0.4);
+    T.cdrSyl = cdr.syl && cdr.syl.length >= 3 ? cdr.syl.map((s) => s[0]) : [0, 1, 2].map((i) => cdr.start + i * (cdr.end - cdr.start) / 3);
     T.tPDR = beatAfter(T.sharp + 0.12);
     T.db1 = downAfter(T.you);
     T.call = beatAfter(T.are + 0.2);
@@ -88,9 +92,10 @@ export default class LeftTurn extends Scene {
     T.drain0 = beatBefore(this.ctx.end - 0.05);
     T.beats = [];
     for (let b = Math.floor(au.beatAt(T.without - 1)); au.timeOfBeat(b) < this.ctx.end + 1; b++) T.beats.push(au.timeOfBeat(b));
-    const head = T.l6.words.filter((w) => norm(w.w) !== 'cdr');
+    const cdrIndex = T.l6.words.indexOf(cdr);
+    const head = PT ? T.l6.words.slice(0, cdrIndex) : T.l6.words.filter((w) => norm(w.w) !== 'cdr');
     this.sch = new Schedule({
-      t0: T.without, words: head, cdr, syl: T.cdrSyl, SRR, PDR, TRR, LAUNCH: T.launch,
+      t0: T.without, words: head, tail: PT ? T.l6.words.slice(cdrIndex + 1) : [], cdr, syl: T.cdrSyl, SRR, PDR, TRR, LAUNCH: T.launch,
       zip0: T.launch - 0.24, beats: T.beats, downbeats: au.downbeats.filter((d) => d > T.without - 1 && d < this.ctx.end + 1),
       drain0: T.drain0, end: this.ctx.end,
     }, formatPDoom(this.pd.value(T.without)));
@@ -316,6 +321,19 @@ export default class LeftTurn extends Scene {
       sparkHead(g, hp.x, hp.y, t, 0.9 * Math.min(Math.sqrt(cam.zoom), 1.5), 1.2 * I);
     }
     g.render(renderer, out);
+    if (PT && t >= T.l5.start - 0.1 && t < T.l5.end + 0.1) {
+      // Keep the longer lyric legible while the camera travels outside the map.
+      this.lyric.clear();
+      const c = this.lyric.ctx, fam = F.archivo(87.5, 700);
+      const size = Math.min(76, 1660 / measure(T.l5.text, fam, 100) * 100);
+      c.font = font(fam, size); c.textBaseline = 'alphabetic';
+      let x = (W - measure(T.l5.text, fam, size)) / 2;
+      for (const w of T.l5.words) {
+        c.fillStyle = rgba(t >= w.start && t < w.end ? 'signal' : 'bone', t >= w.start ? 1 : 0.23);
+        c.fillText(w.w, x, 142); x += measure(w.w + ' ', fam, size);
+      }
+      this.ctx.comp.draw(renderer, this.lyric.upload(), out);
+    }
 
     // ---- post
     const corner = pulse(t, T.left, 0.08);
@@ -344,7 +362,7 @@ export default class LeftTurn extends Scene {
       const a = prog(e, 0, 0.03) * (1 - prog(e, 0.5, 0.8));
       c.save(); c.translate(MAP.PX - 132, m.y - 70); c.rotate(-0.08);
       c.font = font(F.mono(600), 20); c.fillStyle = rgba('signal', a); c.textAlign = 'center';
-      c.fillText('PASSED', 0, 0);
+      c.fillText(tr("PASSED", "APROVADO"), 0, 0);
       c.restore();
     };
     stamp(0, T.sharp);
@@ -358,7 +376,7 @@ export default class LeftTurn extends Scene {
     c.font = font(fam, size);
     c.fillStyle = rgba('ash', 0.75);
     c.textAlign = 'center';
-    const lay = layout('Terra incognita', fam, size);
+    const lay = layout(tr("Terra incognita", "Terra incógnita"), fam, size);
     const R = FACE.r * 0.8;
     const a0 = -Math.PI / 2 - (lay.width / R) / 2;
     // glyphs at their kerned positions along the arc (the T–e kern tucks the e under the T's arm)
@@ -429,8 +447,8 @@ export default class LeftTurn extends Scene {
       c.fillText(text, 0, size * 0.36);
       c.restore();
     };
-    stampWord(wYou, 'YOU', FACE.x, FACE.y - FACE.r * 0.5, 250);
-    stampWord(wAre, 'ARE', FACE.x, FACE.y + FACE.r * 0.72, 250);
+    stampWord(wYou, tr("YOU", "SEM"), FACE.x, FACE.y - FACE.r * 0.5, 250);
+    stampWord(wAre, tr("ARE", "FREIO"), FACE.x, FACE.y + FACE.r * 0.72, 250);
 
     // deadpan callout, filed on the snare
     const ca = prog(t, T.call - 0.01, T.call + 0.04);
@@ -447,9 +465,9 @@ export default class LeftTurn extends Scene {
       c.beginPath(); c.arc(ex, ey, 5 * px, 0, Math.PI * 2); c.fill();
       c.textAlign = 'right';
       c.font = font(F.mono(600), 68); c.fillStyle = rgba('bone', 1);
-      c.fillText('UNPLANNED OBJECT', lx, ly - 26);
+      c.fillText(tr("UNPLANNED OBJECT", "OBJETO NÃO PREVISTO"), lx, ly - 26);
       c.font = font(F.mono(400), 50); c.fillStyle = rgba('ash', 1);
-      c.fillText('not on roadmap', lx, ly + 66);
+      c.fillText(tr("not on roadmap", "fora do planejamento"), lx, ly + 66);
       c.restore();
     }
   }

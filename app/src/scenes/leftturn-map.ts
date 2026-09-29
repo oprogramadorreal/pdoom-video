@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // "Trajectory, revised": the drawing sheet. One big map drawn once into a canvas (y down, north
 // up), rendered by a shader with a 2D camera (pan, rotation, zoom, a keystone tilt for depth) and
 // true multi-tap motion blur over the camera path. On top of the static drawing the shader adds a
@@ -18,10 +19,10 @@ export const MAP = {
   TURN_Y: 2800, // the swerve
   RT: 60, // corner radius
   ms: [
-    { code: 'SRR', name: 'System Requirements Review', y: 3580, date: 'T−120 d' },
-    { code: 'PDR', name: 'Preliminary Design Review', y: 3200, date: 'T−90 d' },
-    { code: 'CDR', name: 'Critical Design Review', y: 2440, date: 'T−45 d' },
-    { code: 'TRR', name: 'Test Readiness Review', y: 1900, date: 'T−14 d' },
+    { code: 'SRR', name: tr("System Requirements Review", "Revisão de requisitos do sistema"), y: 3580, date: 'T−120 d' },
+    { code: 'PDR', name: tr("Preliminary Design Review", "Revisão preliminar de projeto"), y: 3200, date: 'T−90 d' },
+    { code: 'CDR', name: tr("Critical Design Review", "Revisão crítica de projeto"), y: 2440, date: 'T−45 d' },
+    { code: 'TRR', name: tr("Test Readiness Review", "Revisão de prontidão para testes"), y: 1900, date: 'T−14 d' },
     { code: 'LAUNCH', name: '', y: 1300, date: 'T−0' },
   ],
   SHARP_Y: 3390,
@@ -75,7 +76,7 @@ export function drawMap(): HTMLCanvasElement {
   c.save();
   c.translate(PX + 128, 2150); c.rotate(-Math.PI / 2);
   c.font = font(F.mono(500), 20); c.fillStyle = rgba('ash', 0.75); c.letterSpacing = '4px';
-  c.fillText('±3σ SCHEDULE ENVELOPE', 0, 0);
+  c.fillText(tr("±3σ SCHEDULE ENVELOPE", "MARGEM DO CRONOGRAMA ±3σ"), 0, 0);
   c.restore();
   // planned route: dashed centre line continuing past every milestone, arrow at the top
   c.strokeStyle = rgba('bone', 0.85);
@@ -102,7 +103,7 @@ export function drawMap(): HTMLCanvasElement {
     c.strokeStyle = rgba('ash', 0.8); c.lineWidth = 2;
     c.beginPath(); c.moveTo(44, 0); c.lineTo(150, 0); c.lineTo(170, -30); c.stroke();
     c.font = font(F.mono(600), 64); c.fillStyle = rgba('bone', 1); c.textBaseline = 'alphabetic';
-    c.fillText(m.code, 180, -40);
+    c.fillText(m.code === 'LAUNCH' ? tr('LAUNCH', 'LANÇAMENTO') : m.code, 180, -40);
     c.font = font(F.mono(400), 26); c.fillStyle = rgba('ash', 1);
     if (m.name) c.fillText(m.name, 182, 2);
     c.font = font(F.mono(500), 22); c.fillStyle = rgba('graphite', 1);
@@ -111,7 +112,7 @@ export function drawMap(): HTMLCanvasElement {
     c.strokeStyle = rgba('bone', 0.9); c.lineWidth = 3;
     c.strokeRect(-158, -26, 52, 52);
     c.font = font(F.mono(500), 16); c.fillStyle = rgba('graphite', 1);
-    c.fillText('STATUS', -166, 50);
+    c.fillText(tr("STATUS", "SITUAÇÃO"), -166, 50);
     c.restore();
   }
   // "you are here"
@@ -122,11 +123,11 @@ export function drawMap(): HTMLCanvasElement {
   c.beginPath(); c.moveTo(-180, 0); c.lineTo(-40, 0); c.stroke();
   c.beginPath(); c.moveTo(-40, 0); c.lineTo(-58, -10); c.lineTo(-58, 10); c.closePath(); c.fillStyle = rgba('bone', 0.9); c.fill();
   c.font = font(F.mono(600), 26); c.fillStyle = rgba('bone', 0.95); c.textAlign = 'right';
-  c.fillText('YOU ARE HERE', -196, 9);
+  c.fillText(tr("YOU ARE HERE", "VOCÊ ESTÁ AQUI"), -196, 9);
   c.restore();
   // time ruler on the left of the route
   c.fillStyle = rgba('ash', 0.6);
-  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const months = ['JAN', tr("FEB", "FEV"), 'MAR', tr("APR", "ABR"), tr("MAY", "MAI"), 'JUN', 'JUL', tr("AUG", "AGO"), tr("SEP", "SET"), tr("OCT", "OUT"), 'NOV', tr("DEC", "DEZ")];
   for (let y = Y0, i = 0; y > 1000; y -= 50, i++) {
     const big = i % 6 === 0;
     c.fillRect(PX - 300, y, big ? 40 : 18, 2);
@@ -135,7 +136,7 @@ export function drawMap(): HTMLCanvasElement {
   c.fillRect(PX - 300, 1000, 2, Y0 - 1000);
   // critical path callout
   c.font = font(F.mono(400, true), 24); c.fillStyle = rgba('ash', 0.9); c.textAlign = 'left';
-  c.fillText('critical path (do not deviate)', PX + 190, 2800);
+  c.fillText(tr("critical path (do not deviate)", "caminho crítico (não desvie)"), PX + 190, 2800);
   c.strokeStyle = rgba('ash', 0.7); c.lineWidth = 2;
   c.beginPath(); c.moveTo(PX + 185, 2792); c.lineTo(PX + 30, 2792); c.stroke();
   // compass
@@ -153,13 +154,13 @@ export function drawMap(): HTMLCanvasElement {
   for (const y of [70, 130, 190, 250]) { c.beginPath(); c.moveTo(0, y); c.lineTo(640, y); c.stroke(); }
   c.beginPath(); c.moveTo(320, 130); c.lineTo(320, 330); c.stroke();
   c.font = font(F.mono(600), 30); c.fillStyle = rgba('bone', 1); c.textAlign = 'left';
-  c.fillText('ROADMAP — AGI, v1.0', 18, 46);
+  c.fillText(tr("ROADMAP — AGI, v1.0", "PLANEJAMENTO — AGI, v1.0"), 18, 46);
   c.font = font(F.mono(400), 20); c.fillStyle = rgba('ash', 1);
-  c.fillText('REV C · SUPERSEDES REV B (ALSO FINE)', 18, 108);
+  c.fillText(tr("REV C · SUPERSEDES REV B (ALSO FINE)", "REV C · SUBSTITUI A REV B (TAMBÉM BOA)"), 18, 108);
   const cells: [string, string, number, number][] = [
-    ['DRAWN', 'ALIGNMENT TEAM', 18, 168], ['CHECKED', '—', 338, 168],
-    ['APPROVED', 'PENDING', 18, 228], ['SCALE', 'NOT TO SCALE', 338, 228],
-    ['SHEET', '1 OF 1', 18, 300], ['DATE', 'SOON', 338, 300],
+    [tr("DRAWN", "DESENHO"), tr("ALIGNMENT TEAM", "EQUIPE DE ALINHAMENTO"), 18, 168], [tr("CHECKED", "CONFERIDO"), '—', 338, 168],
+    [tr("APPROVED", "APROVADO"), tr("PENDING", "PENDENTE"), 18, 228], [tr("SCALE", "ESCALA"), tr("NOT TO SCALE", "SEM ESCALA"), 338, 228],
+    [tr("SHEET", "FOLHA"), tr("1 OF 1", "1 DE 1"), 18, 300], [tr("DATE", "DATA"), tr("SOON", "EM BREVE"), 338, 300],
   ];
   for (const [k, v, x, y] of cells) {
     c.font = font(F.mono(500), 14); c.fillStyle = rgba('graphite', 1); c.fillText(k, x, y - 26);
@@ -190,8 +191,8 @@ export function makeMarksTexture(): THREE.DataTexture {
     c.restore();
   };
   c.globalCompositeOperation = 'lighter';
-  paint('SHARP', MAP.PX, MAP.SHARP_Y, 0, 'rgb(255,0,0)');
-  paint('LEFT', MAP.PX, MAP.LEFT_Y, 0, 'rgb(0,255,0)');
+  paint(tr("SHARP", "GUINADA"), MAP.PX, MAP.SHARP_Y, 0, 'rgb(255,0,0)');
+  paint(tr("LEFT", "À ESQUERDA"), MAP.PX, MAP.LEFT_Y, 0, 'rgb(0,255,0)');
   // turn arrow: stem north, bending west, head pointing west
   c.save();
   c.strokeStyle = 'rgb(0,255,0)'; c.fillStyle = 'rgb(0,255,0)';
@@ -200,9 +201,9 @@ export function makeMarksTexture(): THREE.DataTexture {
   c.beginPath(); c.moveTo(ax, ay + 80); c.lineTo(ax, ay - 20); c.arc(ax - 70, ay - 20, 70, 0, -Math.PI / 2, true); c.lineTo(ax - 120, ay - 90); c.stroke();
   c.beginPath(); c.moveTo(ax - 190, ay - 90); c.lineTo(ax - 120, ay - 140); c.lineTo(ax - 120, ay - 40); c.closePath(); c.fill();
   c.restore();
-  paint('TURN', MAP.TURN_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)');
-  paint('AND', MAP.AND_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)', 100, 1.75);
-  paint('THERE', MAP.THERE_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,255,0)', 100, 1.75);
+  paint(tr("TURN", "JÁ"), MAP.TURN_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)');
+  paint(tr("AND", "TÁ"), MAP.AND_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)', 100, 1.75);
+  paint(tr("THERE", "SEM"), MAP.THERE_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,255,0)', 100, 1.75);
   const rgb = c.getImageData(0, 0, N, N).data;
   // check marks
   const cvA = canvas(N);

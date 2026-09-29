@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // HOOK x4 — "I'M / UPPING / MY / P(DOOM)": one full-frame slam per sung word, then P(doom)
 // itself takes the frame (maths label, rolling digits, scale) and leaves on the cut, a different
 // way each time:
@@ -39,10 +40,10 @@ const THREAD = { y: 629, sparkX: 300 };
 
 /** Deadpan footnote under the big number (Δ is computed from the actual step). */
 const NOTES: Record<number, string> = {
-  1: 'posterior · updated on one (1) chatbot',
-  2: 'posterior · updated on Sydney',
-  3: 'posterior · updated on a cat',
-  4: 'posterior · rounded up',
+  1: tr('posterior · updated on one (1) chatbot', "posterior · atualizado com um (1) chatbot"),
+  2: tr('posterior · updated on Sydney', "posterior · atualizado com Sydney"),
+  3: tr('posterior · updated on a cat', "posterior · atualizado com um gato"),
+  4: tr('posterior · rounded up', "posterior · arredondado para cima"),
 };
 
 type Col = keyof typeof HEX;
@@ -75,6 +76,8 @@ export default class Hook extends Scene {
     this.pd = new PDoom(lyrics);
     const line = lyrics.linesIn(start - 0.3, end).find((l) => /upping/i.test(l.text)) ?? lyrics.linesIn(start, end)[0]!;
     this.words = line.words.slice(0, 4);
+    // English has four slams; Portuguese has three. Skip the English pickup slot while retaining its choreography.
+    if (PT) this.words = [line.words[0]!, line.words[0]!, line.words[1]!, line.words[2]!];
     const prev = lyrics.lines[line.i - 1];
     this.prevWord = prev ? plain(prev.words[prev.words.length - 1]!.w) : ''; // typed (mono): typewriter quotes
     this.ws = this.words.map((w) => w.start);
@@ -103,7 +106,7 @@ export default class Hook extends Scene {
     } else {
       this.tX0 = end - 0.1; this.tX1 = end - 0.008;
     }
-    this.upLay = layout('UPPING', this.f.up, 100);
+    this.upLay = layout(tr('UPPING', 'AUMENTO'), this.f.up, 100);
     this.finLay = layout('P(DOOM)', this.f.doom, ROOM.size);
     this.comp = new FSPass(COMP, {
       tex: { value: this.L.texture }, bgCol: { value: [0, 0, 0] }, echo: { value: 0 }, hot: { value: 1 }, gain: { value: 1 },
@@ -221,7 +224,7 @@ export default class Hook extends Scene {
     const t0 = this.ws[0]!;
     const k = prog(t, this.ctx.start, t0);
     const fam = this.f.im, size = 1150;
-    const w = measure('I’M', fam, size);
+    const w = measure(tr('I’M', 'AUMENTO'), fam, size);
     c.save();
     c.translate(W / 2, H / 2);
     c.rotate(-0.12 * (1 - k * k));
@@ -231,7 +234,7 @@ export default class Hook extends Scene {
       c.save(); c.scale(sc, sc);
       c.strokeStyle = rgba(j % 2 ? 'signal' : 'bone', 0.5 * sc);
       c.lineWidth = 2 / sc;
-      c.strokeText('I’M', -w / 2, (size * CAP) / 2);
+      c.strokeText(tr('I’M', 'AUMENTO'), -w / 2, (size * CAP) / 2);
       c.restore();
     }
     c.restore();
@@ -246,15 +249,15 @@ export default class Hook extends Scene {
     c.fillRect(0, Math.round(base - capH), W, 1);
     c.font = font(this.f.mono, 11);
     c.fillStyle = rgba(ink, 0.5 * a);
-    c.fillText('baseline', 96, Math.round(base) + 16);
-    c.fillText(`cap-height · ${(CAP).toFixed(3)} em`, 96, Math.round(base - capH) - 8);
+    c.fillText(tr('baseline', "linha de base"), 96, Math.round(base) + 16);
+    c.fillText(`${tr('cap-height', 'altura da maiúscula')} · ${(CAP).toFixed(3)} em`, 96, Math.round(base - capH) - 8);
     c.restore();
   }
 
   private drawIM(c: CanvasRenderingContext2D, t: number, ink: Col) {
     const n = this.n, t0 = this.ws[0]!;
     const fam = this.f.im;
-    const w1 = measure('I’M', fam, 100) / 100;
+    const w1 = measure(tr('I’M', 'AUMENTO'), fam, 100) / 100;
     const size = Math.min(n === 1 ? 980 : 1200, (W - 150) / w1);
     const s = this.slam(t, t0, n === 4 ? 0.3 : 0.16);
     const w = w1 * size;
@@ -263,10 +266,10 @@ export default class Hook extends Scene {
     c.save();
     c.translate(W / 2, base);
     c.scale(s, s);
-    if (n === 4) this.echoes(c, 'I’M', fam, size, -w / 2, 0, t, t0);
+    if (n === 4) this.echoes(c, tr('I’M', 'AUMENTO'), fam, size, -w / 2, 0, t, t0);
     c.font = font(fam, size);
     c.fillStyle = rgba(ink);
-    c.fillText('I’M', -w / 2, 0);
+    c.fillText(tr('I’M', 'AUMENTO'), -w / 2, 0);
     c.restore();
   }
 
@@ -274,7 +277,7 @@ export default class Hook extends Scene {
     const n = this.n, t0 = this.ws[1]!, t1 = this.ws[2] ?? t0 + 0.4;
     const fam = this.f.up;
     const size = Math.min(900, (W - 150) / (this.upLay.width / 100));
-    const lay = layout('UPPING', fam, size);
+    const lay = layout(tr('UPPING', 'AUMENTO'), fam, size);
     const x0 = (W - lay.width) / 2;
     const capH = size * CAP;
     const endY = H / 2 + capH / 2 - 30;
@@ -326,18 +329,18 @@ export default class Hook extends Scene {
   private drawMY(c: CanvasRenderingContext2D, t: number, ink: Col) {
     const n = this.n, t0 = this.ws[2]!;
     const fam = this.f.my;
-    const size = n === 1 ? 1300 : 1420;
+    const size = PT ? Math.min(n === 1 ? 1300 : 1420, (W - 150) / (measure('MEU', fam, 100) / 100)) : n === 1 ? 1300 : 1420;
     const s = this.slam(t, t0, n === 4 ? 0.3 : 0.12);
-    const w = measure('MY', fam, size);
+    const w = measure(tr('MY', 'MEU'), fam, size);
     const base = H / 2 + (size * CAP) / 2;
     this.guides(c, base, size * CAP, ink);
     c.save();
     c.translate(W / 2, base);
     c.scale(s, s);
-    if (n === 4) this.echoes(c, 'MY', fam, size, -w / 2, 0, t, t0);
+    if (n === 4) this.echoes(c, tr('MY', 'MEU'), fam, size, -w / 2, 0, t, t0);
     c.font = font(fam, size);
     c.fillStyle = rgba(ink);
-    c.fillText('MY', -w / 2, 0);
+    c.fillText(tr('MY', 'MEU'), -w / 2, 0);
     c.restore();
   }
 
@@ -416,11 +419,11 @@ export default class Hook extends Scene {
 
   /** Hook 3: tiny hairline words in a lot of black; earlier words climb away above, fading. */
   private drawTiny(c: CanvasRenderingContext2D, t: number, wi: number, fade = 1, skip = -1) {
-    const labels = ['I’M', 'UPPING', 'MY', 'P(DOOM)'];
+    const labels = [tr('I’M', 'AUMENTO'), tr('UPPING', 'AUMENTO'), tr('MY', 'MEU'), 'P(DOOM)'];
     const fam = this.f.hair, size = 54, track = 16, gap = 84;
     const cy = H / 2 + (size * CAP) / 2;
     for (let i = 0; i <= wi; i++) {
-      if (i === skip) continue;
+      if (i === skip || (PT && i === 0)) continue;
       const since = t - this.ws[i]!;
       const cur = i === wi;
       // the stack scrolls up one slot per new word (eased), plus a slow drift
@@ -452,17 +455,18 @@ export default class Hook extends Scene {
     c.save();
     c.font = font(this.f.monoM, 13);
     c.letterSpacing = '3px';
-    const labels = ["I'M", 'UPPING', 'MY', 'P(DOOM)']; // mono UI legend: typewriter apostrophe
+    const labels = ["I'M", tr('UPPING', 'AUMENTO'), tr('MY', 'MEU'), 'P(DOOM)']; // mono UI legend: typewriter apostrophe
     let x = 96;
     labels.forEach((l, i) => {
-      const s = `${String(i + 1).padStart(2, '0')} ${l}`;
+      if (PT && i === 0) return;
+      const s = `${String(PT ? i : i + 1).padStart(2, '0')} ${l}`;
       c.fillStyle = i === wi ? rgba(ink === 'ink' ? 'ink' : 'signal', 1) : rgba(ink, 0.4);
       c.fillText(s, x, 84);
       x += measure(s, this.f.monoM, 13, 3) + 36;
     });
     c.textAlign = 'right';
     c.fillStyle = rgba(ink, 0.5);
-    c.fillText(`HOOK ${this.n} / 4`, W - 96, 84);
+    c.fillText(`${tr('HOOK', 'REFRÃO')} ${this.n} / 4`, W - 96, 84);
     c.restore();
     void t;
   }

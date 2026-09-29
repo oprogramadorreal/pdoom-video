@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // FIG. 13 — "Loom (branching)" (final chorus, the loudest part of the song).
 //  1 "Just as foretold by Loom": one shot of the Loom tree. Hook 4's thread and spark become the root:
 //    the line is generated token by token along the chosen path (the spark writes each word as it is
@@ -32,14 +33,14 @@ const TAG = { x: 70, y: 62, w: 560, h: 46 };
 const TERM_LEVEL = 5;
 
 const CORPUS = [
-  'the mitochondria is the powerhouse of the cell', 'click here to subscribe', 'posted by anonymous at 3:14 am',
-  'terms of service apply', 'how to boil an egg (easy!)', 'in 1998 the committee decided', 'page not found',
-  'the quick brown fox jumps over the lazy dog', 'reply all', 'lol same', 'add to cart', 'chapter one', 'see also:',
-  'this article is a stub', 'you can help by expanding it', 'thanks in advance', 'edit: typo', 'citation needed',
-  'first post', 'the results are shown in table 2', 'we thank the anonymous reviewers', 'unsubscribe',
-  'all rights reserved', 'as shown above', 'it was a dark and stormy night', 'preheat the oven to 180',
-  'lorem ipsum dolor sit amet', 'the answer is 42', 'do not reply to this email', 'returns: None',
-  'import numpy as np', 'the end', 'is this a bug?', 'works on my machine', 'accept all cookies',
+  tr("the mitochondria is the powerhouse of the cell", "a mitocôndria é a usina de energia da célula"), tr("click here to subscribe", "clique aqui para se inscrever"), tr("posted by anonymous at 3:14 am", "publicado por anônimo às 3h14"),
+  tr("terms of service apply", "aplicam-se os termos de serviço"), tr("how to boil an egg (easy!)", "como cozinhar um ovo (fácil!)"), tr("in 1998 the committee decided", "em 1998 o comitê decidiu"), tr("page not found", "página não encontrada"),
+  tr("the quick brown fox jumps over the lazy dog", "a raposa marrom rápida pula sobre o cão preguiçoso"), tr("reply all", "responder a todos"), tr("lol same", "kkkk eu também"), tr("add to cart", "adicionar ao carrinho"), tr("chapter one", "capítulo um"), tr("see also:", "veja também:"),
+  tr("this article is a stub", "este artigo é um esboço"), tr("you can help by expanding it", "você pode ajudar a ampliá-lo"), tr("thanks in advance", "agradeço desde já"), tr("edit: typo", "edição: erro de digitação"), tr("citation needed", "carece de fontes"),
+  tr("first post", "primeiro post"), tr("the results are shown in table 2", "os resultados estão na tabela 2"), tr("we thank the anonymous reviewers", "agradecemos aos pareceristas anônimos"), tr("unsubscribe", "cancelar inscrição"),
+  tr("all rights reserved", "todos os direitos reservados"), tr("as shown above", "como mostrado acima"), tr("it was a dark and stormy night", "era uma noite escura e tempestuosa"), tr("preheat the oven to 180", "preaqueça o forno a 180"),
+  tr("lorem ipsum dolor sit amet", "texto de exemplo para diagramação"), tr("the answer is 42", "a resposta é 42"), tr("do not reply to this email", "não responda a este e-mail"), tr("returns: None", "retorna: None"),
+  'import numpy as np', tr("the end", "fim"), tr("is this a bug?", "isso é um bug?"), tr("works on my machine", "na minha máquina funciona"), tr("accept all cookies", "aceitar todos os cookies"),
 ];
 
 export default class Loom extends Scene {
@@ -64,7 +65,7 @@ export default class Loom extends Scene {
   room!: IlyaRoom;
   roomRT = makeRT(W, H, { depthBuffer: false });
   T!: { start: number; end: number; s2: number; s3: number; twist: number; untwist: number; beats: number[]; b1: number; b2: number; b3: number };
-  context = '…I’m upping my P(doom)'; // the lyric it continues (display punctuation, like the ellipsis)
+  context = tr("…I’m upping my P(doom)", "…Aumento meu P(doom)"); // the lyric it continues (display punctuation, like the ellipsis)
 
   override init() {
     const { lyrics: ly, audio: au, start, end } = this.ctx;
@@ -76,7 +77,13 @@ export default class Loom extends Scene {
     const beats: number[] = [];
     for (let b = b0; au.timeOfBeat(b) < end + 0.01; b++) beats.push(au.timeOfBeat(b));
     // cuts on the beats nearest the line starts
-    const s2 = au.nearestBeat(this.L2.start), s3 = au.nearestBeat(this.L3.start);
+    const cut = (previous: Line, next: Line) => {
+      const beat = au.nearestBeat(next.start);
+      // The new vocal can start ahead of the nearest beat ("ao" fits entirely
+      // before it). Keep both the held ending and the next phrase's pickup.
+      return PT ? Math.min(next.start, Math.max(previous.end, beat)) : beat;
+    };
+    const s2 = cut(this.L1, this.L2), s3 = cut(this.L2, this.L3);
     const inTree = beats.filter((b) => b > start + 0.1 && b < s2 - 0.1);
     const self = this.L3.words[this.L3.words.length - 1]!;
     const twist = Math.min(au.nearestBeat(self.start), end - 0.9);
@@ -118,10 +125,10 @@ export default class Loom extends Scene {
       c.font = font(F.mono(600), 30 * sc * 0.72);
       c.fillStyle = rgba('signal');
       c.textBaseline = 'middle';
-      c.fillText(`SELF v${i + 1}.0`, 14 * sc, y + rh / 2);
+      c.fillText(`${tr('SELF', 'EU')} v${i + 1}.0`, 14 * sc, y + rh / 2);
       c.font = font(F.mono(400), 30 * sc * 0.6);
       c.fillStyle = rgba('bone', 0.9);
-      c.fillText(`${mant}${u} params · rev. ${String(i + 1).padStart(3, '0')}`, 190 * sc, y + rh / 2);
+      c.fillText(`${mant}${u} ${tr('params', 'parâm.')} · rev. ${String(i + 1).padStart(3, '0')}`, 190 * sc, y + rh / 2);
     }
     this.atlasTex = new THREE.CanvasTexture(cv);
     this.atlasTex.colorSpace = THREE.SRGBColorSpace;

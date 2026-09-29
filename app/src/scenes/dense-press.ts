@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // dense, movements 1–2: "Post-Chinchilla, super-dense" / "Breaking through each safety fence".
 // Typographic pressure, then release through the frame's own safe areas.
 //  1. The lyric is packed into the broadcast title-safe rectangle. On each kick it is compressed
@@ -109,20 +110,34 @@ export class Press {
     // movement 2: each stressed word lands on a beat and breaks one more fence
     const beatOf = (s: number) => this.beats.find((b) => b >= s - 0.07) ?? s;
     const [wBr, wTh, wEa, wSa, wFe] = L2.words as [Word, Word, Word, Word, Word];
-    const up = (w: Word) => w.w.replace(/[^A-Za-z-]/g, '').toUpperCase();
+    const up = (w: Word) => w.w.replace(/[^\p{L}-]/gu, '').toUpperCase();
     this.rup = [c2, beatOf(wTh.start), beatOf(wSa.start), beatOf(wFe.start)];
     const AW = ACTION.x1 - ACTION.x0, TW = TITLE.x1 - TITLE.x0;
     // [words, Archivo width, width it bursts out to, width it is held at before, burst beat, left-anchored]
-    const spec: [Word[], number, number, number, number, boolean][] = [
+    // pt-BR "pula a cerca sem bom senso.": PULA A / CERCA / SEM BOM / SENSO.
+    const ws = L2.words, wLast = ws[ws.length - 1]!;
+    const spec: [Word[], number, number, number, number, boolean][] = PT ? [
+      [ws.slice(0, 2), 62, AW, TW, c2, false],
+      [[ws[2]!], 75, AW, TW, beatOf(ws[2]!.start), false],
+      [ws.slice(3, -1), 62, W, AW, beatOf(ws[3]!.start), false],
+      [[wLast], 87.5, W * 1.05, W - 2 * FENCE_X, beatOf(wLast.start), true],
+    ] : [
       [[wBr], 62, AW, TW, this.rup[0]!, false],
       [[wTh], 75, W, AW, this.rup[1]!, false],
       [[wEa, wSa], 62, W * 1.06, W, this.rup[2]!, false],
       [[wFe], 87.5, W * 1.05, W - 2 * FENCE_X, this.rup[3]!, true],
     ];
+    if (PT) this.rup = spec.map(row => row[4]);
     this.rows = spec.map(([ws, wd, wTarget, wPre, tIn, left]) => {
       const text = ws.map(up).join(' ');
       const fam = F.archivo(wd, 900);
       const adv = lay(text, fam, 100, 0).width / 100;
+      if (PT) {
+        // Portuguese has shorter stressed words. Keep the bursts inside the
+        // frame and cap their height so successive words can both be read.
+        wTarget = Math.min(wTarget, W * 0.8, adv * 340);
+        wPre = Math.min(wPre, wTarget * 0.94);
+      }
       const size = wTarget / adv;
       return { text, words: ws, fam, w: wTarget, wPre, tIn, tShow: ws[0]!.start, size, cap: size * CAP, left };
     });
@@ -337,6 +352,9 @@ export class Press {
   /** 0..1 over the last beat's tail: the camera dives into a stem of FENCE (match cut to the GPU macro). */
   dive(t: number) {
     const wEnd = this.rows[this.rows.length - 1]!.words[0]!.end;
+    // A held Portuguese ending may fill the entire shot; cut after it instead
+    // of reversing the dive interval and zooming in before the word appears.
+    if (PT && this.c3 <= wEnd + 0.04) return 0;
     return prog(t, Math.max(wEnd + 0.02, this.c3 - DIVE), this.c3);
   }
 
@@ -374,7 +392,7 @@ export class Press {
       // per-word karaoke: outline before, signal wipe while sung, bone after
       let ci = 0;
       r.words.forEach((w, wi) => {
-        const wt = w.w.replace(/[^A-Za-z-]/g, '').toUpperCase();
+        const wt = w.w.replace(/[^\p{L}-]/gu, '').toUpperCase();
         const a = xAt(l, ci), bx = xAt(l, ci + wt.length);
         const n = sungChars(w, wt, t);
         const s = xAt(l, ci + n);
@@ -461,7 +479,7 @@ export class Press {
       c.lineWidth = 1;
       bowPath(c, r, bow);
       c.stroke();
-      this.label(c, 'TITLE SAFE 90%', r.x0 + 26, r.y0 - 0.06 * bow, inA);
+      this.label(c, tr("TITLE SAFE 90%", "ÁREA SEGURA DE TÍTULOS 90%"), r.x0 + 26, r.y0 - 0.06 * bow, inA);
     } else {
       this.trip(glow, r, dt);
       const life = 1 - prog(dt, 0.3, 0.75);
@@ -482,7 +500,7 @@ export class Press {
           this.recoil(c, glow, r.x0, yy, px, yy, 0, ny, dt, 0.8 * life, 11 + ny);
           this.recoil(c, glow, r.x1, yy, px, yy, 0, ny, dt, 0.8 * life, 13 + ny);
         }
-        this.label(c, 'TITLE SAFE 90%', r.x0 + 26, r.y0 - 30 * ease.outCubic(prog(dt, 0, 0.3)), life, false, ease.outExpo(prog(dt, 0, 0.1)));
+        this.label(c, tr("TITLE SAFE 90%", "ÁREA SEGURA DE TÍTULOS 90%"), r.x0 + 26, r.y0 - 30 * ease.outCubic(prog(dt, 0, 0.3)), life, false, ease.outExpo(prog(dt, 0, 0.1)));
       }
     }
     c.restore();
@@ -500,7 +518,7 @@ export class Press {
       c.lineWidth = 1 + 0.25 * load;
       bowPath(c, r, bow);
       c.stroke();
-      this.label(c, 'ACTION SAFE 93%', r.x1 - 26, r.y0 - 0.06 * bow, inA, true);
+      this.label(c, tr("ACTION SAFE 93%", "ÁREA SEGURA DE AÇÃO 93%"), r.x1 - 26, r.y0 - 0.06 * bow, inA, true);
     } else {
       this.trip(glow, r, dt);
       const life = 1 - prog(dt, 0.3, 0.75);
@@ -524,7 +542,7 @@ export class Press {
           this.recoil(c, glow, r.x0, yy, px, yy, 0, ny, d2, 0.85 * life, 35 + ny);
           this.recoil(c, glow, r.x1, yy, px, yy, 0, ny, d2, 0.85 * life, 37 + ny);
         }
-        this.label(c, 'ACTION SAFE 93%', r.x1 - 26, r.y0 - 30 * ease.outCubic(prog(dt, 0, 0.3)), life, true, ease.outExpo(prog(dt, 0, 0.1)));
+        this.label(c, tr("ACTION SAFE 93%", "ÁREA SEGURA DE AÇÃO 93%"), r.x1 - 26, r.y0 - 30 * ease.outCubic(prog(dt, 0, 0.3)), life, true, ease.outExpo(prog(dt, 0, 0.1)));
       }
     }
     c.restore();
@@ -545,7 +563,7 @@ export class Press {
       c.lineWidth = 1.5;
       bowPath(c, BORDER, bow);
       c.stroke();
-      this.label(c, t >= tB ? 'FRAME 100% — UNDER LOAD' : 'FRAME 100%', W / 2, 16 - 0.5 * bow, a / 0.75, false);
+      this.label(c, t >= tB ? tr('FRAME 100% — UNDER LOAD', 'QUADRO 100% — SOB PRESSÃO') : tr('FRAME 100%', 'QUADRO 100%'), W / 2, 16 - 0.5 * bow, a / 0.75, false);
     }
     if (snap >= 0) this.trip(glow, { x0: 1, y0: 1, x1: W - 1, y1: H - 1 }, snap, 1.4);
     // crop marks: the frame's guides, shown with its border (the video is otherwise full-bleed)
@@ -605,12 +623,12 @@ export class Press {
     c.fillRect(x, y, w, h);
     c.strokeStyle = rgba('bone', 0.35); c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, w, h);
     c.font = font(F.mono(500), 13); c.letterSpacing = '3px'; c.fillStyle = rgba('bone', 0.6);
-    c.fillText('TOKENS / PARAM', x + 20, y + 30);
+    c.fillText(tr("TOKENS / PARAM", "TOKENS / PARÂMETRO"), x + 20, y + 30);
     c.letterSpacing = '0px';
     c.font = font(F.mono(500), 50);
     c.fillStyle = k === 3 ? rgba('signal') : rgba('bone', 0.95);
     c.textAlign = 'right';
-    c.fillText(v.toLocaleString('en-US'), x + w - 20, y + 86);
+    c.fillText(v.toLocaleString(PT ? 'pt-BR' : 'en-US'), x + w - 20, y + 86);
     c.textAlign = 'left';
     // log scale 1 … 100k with the Chinchilla-optimal tick at 20
     const bx = x + 20, bw = w - 40, by = y + 110;
@@ -620,16 +638,16 @@ export class Press {
     c.fillStyle = rgba('signal'); c.fillRect(bx, by - 1, X(v) - bx, 3);
     c.fillStyle = rgba('bone', 0.9); c.fillRect(X(20), by - 9, 1, 18);
     c.font = font(F.mono(400), 12); c.fillStyle = rgba('bone', 0.6);
-    c.fillText('20 = Chinchilla-optimal', X(20) - 3, by + 26);
+    c.fillText(tr("20 = Chinchilla-optimal", "20 = ótimo de Chinchilla"), X(20) - 3, by + 26);
     c.restore();
   }
 
   private drawQC(c: CanvasRenderingContext2D, t: number) {
     const msgs = [
-      ['WARN', 'text outside title safe (90%)'],
-      ['WARN', 'text outside action safe (93%)'],
-      ['WARN', 'frame under load'],
-      ['FAIL', 'text outside frame'],
+      ['WARN', tr("text outside title safe (90%)", "texto fora da área de títulos (90%)")],
+      ['WARN', tr("text outside action safe (93%)", "texto fora da área de ação (93%)")],
+      ['WARN', tr("frame under load", "quadro sob pressão")],
+      ['FAIL', tr("text outside frame", "texto fora do quadro")],
     ];
     const shown = this.rup.filter((r) => t >= r).length;
     if (shown === 0) return;
@@ -639,14 +657,14 @@ export class Press {
     const x = TITLE.x0, lh = 21;
     const y0 = TITLE.y1 - 16 - (shown - 1) * lh + lh * (1 - ease.outCubic(prog(t, this.rup[shown - 1]!, this.rup[shown - 1]! + 0.12)));
     for (let i = 0; i < shown; i++) {
-      const tr = this.rup[i]!;
-      const a = prog(t, tr, tr + 0.04);
+      const rupture = this.rup[i]!;
+      const a = prog(t, rupture, rupture + 0.04);
       const y = y0 + i * lh;
       const fail = msgs[i]![0] === 'FAIL';
       c.fillStyle = rgba('ink', 0.9 * a); c.fillRect(x - 8, y - 15, 560, lh);
-      c.fillStyle = rgba('bone', 0.55 * a); c.fillText(`QC  ${timecode(tr)}`, x, y);
+      c.fillStyle = rgba('bone', 0.55 * a); c.fillText(`${PT ? 'CQ' : 'QC'}  ${timecode(rupture)}`, x, y);
       c.fillStyle = fail ? rgba('signal', a) : rgba('ember', 0.95 * a);
-      c.fillText(msgs[i]![0]!, x + 176, y);
+      c.fillText(PT ? (fail ? 'ERRO' : 'AVISO') : msgs[i]![0]!, x + 176, y);
       c.fillStyle = rgba('bone', 0.85 * a); c.fillText(msgs[i]![1]!, x + 230, y);
     }
     c.restore();

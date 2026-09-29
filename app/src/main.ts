@@ -2,6 +2,10 @@
 import { Engine, type AdaptiveSampling } from './engine/engine';
 import { PW, PH, SCALE } from './engine/gl';
 import { makeTimeline } from './timeline';
+import { AUDIO_URL, LANG, PT, PT_END_FADE_SECONDS, sceneName, tr } from './locale';
+
+document.documentElement.lang = LANG;
+document.title = tr("I'm Upping My P(doom)", 'Aumento meu P(doom)');
 
 const params = new URLSearchParams(location.search);
 const EXPORT = params.has('export');
@@ -34,6 +38,8 @@ function setupExport() {
   document.body.classList.add('export');
   window.__pdoom = {
     engine,
+    language: LANG,
+    audioUrl: AUDIO_URL,
     duration: engine.duration,
     errors: engine.errors,
     /** Output size in px (1920x1080 times scale); stream() sends frames of width*height*4 bytes. */
@@ -95,7 +101,7 @@ function setupExport() {
 
 // ------------------------------------------------------------------ preview player
 function setupPlayer() {
-  const audio = new Audio('audio/pdoom.mp3');
+  const audio = new Audio(AUDIO_URL);
   audio.preload = 'auto';
   const ui = document.getElementById('ui')!;
   const scrub = document.getElementById('scrub') as HTMLInputElement;
@@ -104,6 +110,8 @@ function setupPlayer() {
   const errs = document.getElementById('errs')!;
   scrub.max = String(engine.duration);
   scrub.step = '0.001';
+  scrub.setAttribute('aria-label', tr('Song position', 'Posição na música'));
+  canvas.setAttribute('aria-label', tr('Play / pause', 'Reproduzir / pausar'));
   if (engine.errors.length) { errs.textContent = engine.errors.join('\n\n'); errs.style.display = 'block'; }
 
   for (const e of TIMELINE) {
@@ -111,8 +119,8 @@ function setupPlayer() {
     m.className = 'mark';
     m.style.left = `${(e.start / engine.duration) * 100}%`;
     m.style.width = `${((e.end - e.start) / engine.duration) * 100}%`;
-    m.title = `${e.id} ${e.start.toFixed(2)}–${e.end.toFixed(2)}`;
-    m.textContent = e.id;
+    m.title = `${sceneName(e.id)} ${e.start.toFixed(2)}–${e.end.toFixed(2)}`;
+    m.textContent = sceneName(e.id);
     m.onclick = () => seek(e.start);
     marks.appendChild(m);
   }
@@ -152,6 +160,7 @@ function setupPlayer() {
       if (loop && t >= loop[1]) seek(loop[0]);
       if (audio.ended) playing = false;
     }
+    if (PT) audio.volume = Math.max(0, Math.min(1, (engine.duration - t) / PT_END_FADE_SECONDS));
     engine.render(t, 1 / 60);
     scrub.value = String(t);
     frames++;
@@ -159,7 +168,7 @@ function setupPlayer() {
     if (now - fpsT > 500) { fps = (frames * 1000) / (now - fpsT); frames = 0; fpsT = now; }
     const e = TIMELINE.find((x) => t >= x.start && t < x.end);
     const l = engine.lyrics.lineAt(t);
-    info.textContent = `${t.toFixed(2)}s  beat ${engine.audio.beatAt(t).toFixed(2)}  bar ${engine.audio.barAt(t).toFixed(2)}  [${e?.id ?? '—'}]  ${fps.toFixed(0)}fps   ${l ? '“' + l.text + '”' : ''}${loop ? '  LOOP' : ''}`;
+    info.textContent = `${t.toFixed(2)}s  ${tr('beat', 'batida')} ${engine.audio.beatAt(t).toFixed(2)}  ${tr('bar', 'compasso')} ${engine.audio.barAt(t).toFixed(2)}  [${e ? sceneName(e.id) : '—'}]  ${fps.toFixed(0)}fps   ${l ? '“' + l.text + '”' : ''}${loop ? tr('  LOOP', '  REPETIR') : ''}`;
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);

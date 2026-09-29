@@ -40,6 +40,24 @@ bunx vite
 
 Open http://localhost:5173 and use the keys below. `?t=23` starts at a given time.
 
+### Brazilian Portuguese
+
+The complete pt-BR edit uses `audio/pdoom-pt-BR.mp3`, the supplied Portuguese lyrics,
+its own word alignment and audio analysis, translated scene artwork, and a 155.6-second timeline.
+Open **http://localhost:5173/?lang=pt-BR**. The default URL still plays the original English edit.
+
+```sh
+cd app
+bun run check
+bun run check:pt-br
+bun scripts/render.ts video --lang pt-BR --samples auto --shutter 0.2 --out ../out/pdoom-pt-BR.mp4
+```
+
+All rendering modes accept `--lang pt-BR`, including `stills`, `sheet`, `plates`, `perf`, and
+`verify` (renders across the entire track at word transitions and scene cuts, checks errors and audio duration).
+After changing translated scenes, run `bun run plates:pt-br` to regenerate the Portuguese rewind images.
+See [the pt-BR guide](docs/PT-BR.md) for generation, validation, terminology and draft-render commands.
+
 | Key | Action |
 |---|---|
 | space | play / pause |

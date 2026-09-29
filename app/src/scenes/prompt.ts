@@ -1,3 +1,4 @@
+import { PT, tr } from '../locale';
 // PROMPT x3 — the pre-choruses. A thin prompt field in a vast dark field; the plea is
 // typed as tokens exactly on the sung word starts, each with a tiny next-token
 // distribution flickering above it; ⏎ launches the chorus.
@@ -258,7 +259,7 @@ export default class Prompt extends Scene {
       const lt = t - this.ctx.start, dur = this.tEnd - this.ctx.start;
       const rushK = clamp((t - this.tEnter) / (this.tEnd - this.tEnter));
       u.camZ!.value = lt * 0.42 + 2.2 * Math.pow(lt / dur, 2.4) + 16 * Math.pow(rushK, 2.2);
-      const eat = this.line.words.find((w) => norm(w.w) === 'eat');
+      const eat = this.line.words.find((w) => norm(w.w) === (PT ? 'engole' : 'eat'));
       u.swallow!.value = eat ? clamp((t - eat.start) / 0.9, 0, 2) : 2;
       u.glow!.value = 0.25 + 0.5 * Math.pow(lt / dur, 2) + 6 * Math.pow(rushK, 3) + 0.25 * beatPulse;
       u.rush!.value = rushK;
@@ -379,11 +380,11 @@ export default class Prompt extends Scene {
     c.letterSpacing = '3px';
     c.font = font(F.mono(500), 13);
     c.fillStyle = rgba('bone', 0.6);
-    c.fillText(`CONTEXT ${String(nTok).padStart(2, '0')} / 8192`, fx1, fy1 + 30);
+    c.fillText(`${tr('CONTEXT', 'CONTEXTO')} ${String(nTok).padStart(2, '0')} / 8192`, fx1, fy1 + 30);
     c.letterSpacing = '0px';
     c.font = font(F.mono(400), 13);
     c.fillStyle = rgba('ash', 0.75);
-    const sendTxt = ' send  (irreversible)';
+    const sendTxt = tr(' send  (irreversible)', " enviar  (irreversível)");
     c.fillText(sendTxt, fx1, fy1 + 52);
     c.textAlign = 'left';
     // ⏎ (not in Plex Mono): the keycap's return arrow, drawn small in the cell before "send"
@@ -543,9 +544,9 @@ export default class Prompt extends Scene {
       c.textBaseline = 'alphabetic';
       c.font = font(F.mono(400), 11);
       c.fillStyle = rgba('ash', 0.85);
-      c.fillText('p( next | context )', 10, -hgt + 14);
+      c.fillText(tr('p( next | context )', "p( próximo | contexto )"), 10, -hgt + 14);
       c.textAlign = 'right';
-      c.fillText(picked ? 'sampled' : 'computing…', pw - 8, -hgt + 14);
+      c.fillText(picked ? tr('sampled', "amostrado") : tr('computing…', "calculando…"), pw - 8, -hgt + 14);
       c.textAlign = 'left';
       const pmax = rows[0]![1];
       rows.forEach(([txt, p0], i) => {
@@ -623,7 +624,7 @@ export default class Prompt extends Scene {
     c.font = font(F.mono(500), 13);
     c.letterSpacing = '3px';
     c.fillStyle = rgba('signal', 0.9);
-    c.fillText('REPLY', rx - 96 + 8, ry);
+    c.fillText(tr('REPLY', "RESPOSTA"), rx - 96 + 8, ry);
     c.letterSpacing = '0px';
     c.font = font(F.mono(400), 30);
     if (t < tStream) {
