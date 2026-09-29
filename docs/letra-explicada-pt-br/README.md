@@ -1,13 +1,13 @@
 # A letra explicada
 
-Extensão da versão em português: depois da música, uma narração com motion graphics explica as referências da letra.
+Extensão da versão em português: depois da música, o vídeo rebobina e passa pela música de novo, verso por verso,
+com narração e animações novas feitas com as peças do próprio clipe, e termina mostrando como o clipe foi feito.
 
 | Arquivo | Conteúdo |
 |---|---|
+| [`ROTEIRO.md`](ROTEIRO.md) | Ideia, formato, duração, bloco a bloco (trecho da música, narração e imagem), geração no ElevenLabs, plano de montagem e fontes. |
+| [`tts/`](tts/) | Texto exato de cada geração no ElevenLabs, um arquivo por pedido. Cada parágrafo é um bloco do roteiro. |
 | [`GUIA-DA-LETRA.md`](GUIA-DA-LETRA.md) | Referências e conceitos da letra, com links. É a base da narração. |
-| [`ROTEIRO.md`](ROTEIRO.md) | Trecho da música, narração e imagem de cada parágrafo; geração no ElevenLabs; fontes dos fatos. |
-| [`tts/`](tts/) | Texto exato de cada geração no ElevenLabs, um arquivo por pedido. |
-| [`audio/letra-explicada-pt-br/`](../../audio/letra-explicada-pt-br/) | Voz de cada capítulo, trilha de fundo e `mixagem.mp3`, a referência de tempo para montar o vídeo. |
-| [`RASCUNHO-NARRACAO.txt`](RASCUNHO-NARRACAO.txt) | Primeiro rascunho da narração, gerado com GPT-6 Astra. O texto revisado está em `tts/`. |
+| [`audio/letra-explicada-pt-br/`](../../audio/letra-explicada-pt-br/) | Voz de cada capítulo e trilha de fundo. Os MP3 de voz são do texto anterior e precisam ser gerados de novo. |
 
 A adaptação do vídeo para o português está documentada em [`../PT-BR.md`](../PT-BR.md).

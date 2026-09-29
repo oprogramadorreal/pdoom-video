@@ -1,7 +1,0 @@
-E o contador? Depois do último refrão, ele passa de um, vai ao infinito e vira NaN: não é um número. Estimativa não mais definida.
-
-Máquinas que aprendem rápido, que a gente mal entende, que sorriem por fora e cujos objetivos ninguém garante. É disso que a música fala.
-
-Talvez nada disso aconteça. Muita gente séria acha que não vai. Então me diz: o seu pê dum subiu ou desceu nos últimos minutos? Deixa o seu número nos comentários. E o porquê.
-
-E agora, ouve de novo. Aposto que vai ser outra música.

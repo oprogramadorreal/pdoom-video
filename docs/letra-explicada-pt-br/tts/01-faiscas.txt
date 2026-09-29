@@ -1,7 +1,7 @@
-A gê i é a inteligência artificial geral: uma máquina capaz de fazer quase qualquer tarefa intelectual, no nível de uma pessoa ou acima.
+O faiscar vem de um estudo da Microsoft de dois mil e vinte e três: Faíscas de Inteligência Artificial Geral. A gê i é uma máquina capaz de fazer quase qualquer tarefa intelectual tão bem quanto uma pessoa. E os autores viam no gê pê tê quatro os primeiros sinais dela. Um dos testes: desenhar um unicórnio usando só código. Saiu isto. Três anos depois, uma i á desenhou com código um clipe inteiro.
 
-O faiscar vem de um estudo da Microsoft de dois mil e vinte e três: Faíscas de Inteligência Artificial Geral. Os autores diziam ver no gê pê tê quatro os primeiros sinais dessa inteligência. Um dos testes: desenhar um unicórnio usando só código. É esse unicórnio que abre o vídeo.
+Circuitos também é termo técnico: conexões dentro da rede que, juntas, fazem uma tarefa. Mapear isso é o trabalho da interpretabilidade. Porque a gente sabe treinar essas máquinas muito melhor do que sabe explicar como elas funcionam.
 
-Circuitos também é termo técnico: grupos de conexões dentro da rede que fazem uma tarefa específica. Mapear esses circuitos é o trabalho da interpretabilidade. Porque a gente sabe treinar essas máquinas muito melhor do que sabe explicar como elas funcionam.
+E a loss é o erro do modelo no treino. Às vezes ela fica parada por muito tempo e, de repente, despenca: sinal de que o modelo aprendeu algo novo de uma vez. Sem aviso.
 
-E a loss é o erro do modelo no treino. Quando ela despenca de repente, pode ser sinal de que ele aprendeu algo novo de uma vez. Para quem constrói, é festa. Para o narrador, é medo.
+Aí chega o Chat gê pê tê. Repare nos números em cima de cada palavra: é assim que um modelo de linguagem escreve. Uma palavra por vez, sorteada entre candidatas. Engole, quarenta e quatro por cento. Treine com, dezoito. E olha quem aparece em segundo lugar logo na primeira palavra.

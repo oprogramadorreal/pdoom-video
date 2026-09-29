@@ -1,11 +1,11 @@
-Espera. Antes de gerar de novo.
+Você acabou de ouvir uma música de amor sobre o fim do mundo.
 
-Você acabou de ouvir uma música de amor sobre o fim do mundo. E ela esconde umas trinta referências: ciência, filosofia, memes e histórias reais.
+E tudo que você viu no vídeo é código. Nenhum quadro foi desenhado à mão, filmado ou gerado por uma i á de vídeo. Nem programa de edição teve, nada de After Effects. São mais de vinte mil linhas de TypeScript e de gê ele esse ele, a linguagem dos shaders da placa de vídeo, rodando numa página web. Escritas por uma inteligência artificial: o Clód Opus cinco ponto cinco. No final, eu te mostro melhor.
 
-Uma inteligência artificial que se declarou para um jornalista. Um monstro atrás de um sorriso. Uma demissão que o Vale do Silício até hoje não explicou. E uma fábrica de clipes de papel que poderia acabar com a humanidade.
+Mas antes, a letra. Ela esconde umas trinta referências. Uma i á que se declarou para um jornalista. Um monstro escondido atrás de um sorriso. Uma demissão que virou mistério. E uma fábrica de clipes de papel que poderia acabar com a humanidade.
 
-Vamos rebobinar e parar em cada uma. Tem coisa escondida na imagem que quase ninguém percebe. E, no final, eu vou te fazer uma pergunta.
+Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe.
 
-Primeiro, o título. Pê dum: pê de probabilidade, dum de ruína, em inglês. A chance de a inteligência artificial causar uma catástrofe, tipo extinção humana. Parece piada, mas em dois mil e vinte e três quase três mil pesquisadores da área responderam a uma pergunta parecida. A resposta típica: entre cinco e dez por cento. Tem quem ache muito mais. Tem quem ache exagero.
+Primeiro, o título. Pê dum: pê de probabilidade, dum de ruína, em inglês. A chance de a inteligência artificial causar uma catástrofe, tipo a extinção humana. Em dois mil e vinte e três, quase três mil pesquisadores responderam a uma pergunta parecida. Metade deu cinco por cento ou mais. Você entraria num avião com essa chance de cair?
 
 No vídeo, esse número sobe a cada refrão. Vamos subir junto.

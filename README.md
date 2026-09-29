@@ -75,8 +75,7 @@ After changing translated scenes, run `bun run plates:pt-br` to regenerate the P
 See [the pt-BR guide](docs/PT-BR.md) for generation, validation, terminology and draft-render commands.
 
 The pt-BR edition is getting a narrated extension that explains the lyrics. Its script, storyboard and audio
-are described in [`docs/letra-explicada-pt-br/`](docs/letra-explicada-pt-br/); the narration mix is
-`audio/letra-explicada-pt-br/mixagem.mp3`.
+are described in [`docs/letra-explicada-pt-br/`](docs/letra-explicada-pt-br/).
 
 | Key | Action |
 |---|---|

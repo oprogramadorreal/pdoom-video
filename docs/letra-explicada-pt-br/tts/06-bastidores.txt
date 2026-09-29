@@ -1,0 +1,13 @@
+Máquinas que aprendem rápido, que a gente mal entende, que sorriem por fora e cujos objetivos ninguém garante. É disso que a música fala.
+
+E a promessa do começo: como uma i á fez este vídeo? Não foi com um prompt só. O clipe original, em inglês, foi feito por um desenvolvedor conversando com o Clód, cena por cena: ele descrevia a ideia, a i á escrevia o código, ele assistia e pedia ajustes.
+
+O truque é que cada quadro é uma função do tempo. Você dá o segundo exato da música, e o programa calcula a imagem. Sempre a mesma. Foi isso que deixou a gente pausar, voltar e desenhar por cima.
+
+A letra, não: essa foi escrita por gente, numa comunidade online de pesquisa em i á. Com uma ajudinha do próprio Clód no final.
+
+E tem uma ironia aqui. Lembra da máscara sorridente? O assistente simpático? Foi esse tipo de i á que escreveu o código deste vídeo, inclusive o do monstro. E o roteiro. Inclusive esta frase. E esta voz, que você está ouvindo esse tempo todo? Também é i á. Loucura, né?
+
+Talvez o fim do mundo que a música canta nunca aconteça. Muita gente séria acha que não vai. Então me diz: o seu pê dum subiu ou desceu? Deixa o seu número nos comentários. E o porquê.
+
+E agora, ouve de novo. Aposto que vai ser outra música.
