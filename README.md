@@ -14,7 +14,7 @@ The song is not ours: see [Credits](#credits) for who wrote and made it.
 
 The concept, style bible and plate-by-plate treatment are in [`docs/TREATMENT.md`](docs/TREATMENT.md). The engine and scene API are documented in [`docs/ENGINE.md`](docs/ENGINE.md).
 
-There is also a Brazilian Portuguese edition, with its own recording, timing data and translated artwork, and a narrated extension for it that explains the lyrics: see [Brazilian Portuguese](#brazilian-portuguese).
+There is also a Brazilian Portuguese edition, with its own recording, timing data and translated artwork (see [Brazilian Portuguese](#brazilian-portuguese)). It has a longer cut, 12:37.7, that adds a narrated explainer of the lyrics after the clip: see [The full pt-BR video](#the-full-pt-br-video).
 
 ## About this copy
 
@@ -58,6 +58,17 @@ bunx vite
 
 Open http://localhost:5173 and use the keys below. `?t=23` starts at a given time.
 
+| Key | Action |
+|---|---|
+| space | play / pause |
+| ← / → | seek ±1 s (±5 s with shift) |
+| `,` / `.` | step one frame |
+| `[` / `]` | previous / next scene |
+| `l` | loop the current scene |
+| `h` | hide the UI |
+
+The preview renders in real time on a recent Mac. The export is not real time and is heavier.
+
 ### Brazilian Portuguese
 
 The complete pt-BR edit uses `audio/pdoom-pt-BR.mp3`, the supplied Portuguese lyrics,
@@ -76,45 +87,8 @@ All rendering modes accept `--lang pt-BR`, including `stills`, `sheet`, `plates`
 After changing translated scenes, run `bun run plates:pt-br` to regenerate the Portuguese rewind images.
 See [the pt-BR guide](docs/PT-BR.md) for generation, validation, terminology and draft-render commands.
 
-#### The lyrics explainer (pt-BR)
-
-The full pt-BR video adds a narrated explainer after the clip: the clip plays unchanged (0–155.6 s), rewinds to its
-first frame, and a ~9:40 narration goes back through the song verse by verse, a player's ruler at the foot of the
-frame, the clip's scenes re-rendered at any song time (slowed down, reframed, remixed) and new diagrams in the same
-style; at the end the song restarts with the clip under the YouTube end screen. The whole video is 12:37.7.
-Its script, storyboard and every editing decision are in
-[`docs/letra-explicada-pt-br/ROTEIRO.md`](docs/letra-explicada-pt-br/ROTEIRO.md); the code is in `app/src/letra/`.
-
-It exists only with `--lang pt-BR --full` (`?lang=pt-BR&full=1` in the preview). Without `--full`, `--lang pt-BR` is
-the clip alone, and without `--lang` the English clip, exactly as before.
-
-```sh
-cd app
-bun run dev    # preview: http://localhost:5173/?lang=pt-BR&full=1  (add &t=300 to start at 5:00)
-bun scripts/render.ts verify --lang pt-BR --full
-bun scripts/render.ts sheet --lang pt-BR --full --from 296 --to 306 --n 16 --out ../out/sheet.png
-# draft (about half an hour on a laptop GPU)
-bun scripts/render.ts video --lang pt-BR --full --fps 30 --samples 1 --preset veryfast --crf 24 --out ../out/pdoom-pt-BR-letra-explicada-draft.mp4
-# final (1080p60, adaptive motion blur)
-bun scripts/render.ts video --lang pt-BR --full --samples auto --shutter 0.2 --out ../out/pdoom-pt-BR-letra-explicada.mp4
-```
-
-The explainer's sound is `audio/letra-explicada-pt-br/mixagem.mp3`, used as it is: the render splices the song,
-0.6 s of silence, the mix and the song again with ffmpeg (no remixing). The narration's word timings and the
-background track's beats are in `data/narracao.pt-br.json`, made by `analysis/narracao.py`
-(`analysis/.venv/Scripts/python.exe analysis/narracao.py all`, see [the pt-BR alignment guide](docs/PT-BR-ALIGNMENT.md)
-for the environment).
-
-| Key | Action |
-|---|---|
-| space | play / pause |
-| ← / → | seek ±1 s (±5 s with shift) |
-| `,` / `.` | step one frame |
-| `[` / `]` | previous / next scene |
-| `l` | loop the current scene |
-| `h` | hide the UI |
-
-The preview renders in real time on a recent Mac. The export is not real time and is heavier.
+The full pt-BR video, with the lyrics explainer after the clip, opens at
+**http://localhost:5173/?lang=pt-BR&full=1**: see [The full pt-BR video](#the-full-pt-br-video).
 
 ## Render the video
 
@@ -138,6 +112,32 @@ bun scripts/render.ts video --scale 2 --samples auto --shutter 0.2 --x264 aq-mod
 - **Cost:** GPU-bound. A frame takes from about 40 ms (a still frame) to over 10 s (the ray-marched rooms at 108–324 sub-frames). The whole song took about 2.5 hours on an M5 Pro, rendered as segments in two parallel pipelines (`--from`/`--to`, then a lossless concat). Each pipeline uses about 5 GB for headless Chrome plus about 4 GB for ffmpeg; the shorter x264 lookahead above keeps ffmpeg's memory down.
 - **Encoding:** the film grain is rendered per 4K pixel, which is expensive to encode: at the default CRF 16 the file runs at about 670 Mbit/s (13 GB for the song, 8× the 1080p file), `--crf 18` gives about 450 Mbit/s and `--crf 20` about 230 Mbit/s.
 - `--scale 2` works with every mode. `stills` then saves full-resolution PNGs, and `perf` measures 4K frame times. In the browser preview, add `&scale=2` to the URL.
+
+## The full pt-BR video
+
+The full pt-BR video (12:37.7) has three parts:
+
+- the pt-BR clip, unchanged;
+- a ~9:40 narrated explainer that goes back through the lyrics verse by verse;
+- the clip starting over under the YouTube end screen.
+
+It exists only with `--lang pt-BR --full`. Without `--full`, `--lang pt-BR` is still the clip alone. The script and the storyboard are in [`docs/letra-explicada-pt-br/ROTEIRO.md`](docs/letra-explicada-pt-br/ROTEIRO.md), and the code is in `app/src/letra/`.
+
+**Preview:** run `bun run dev` in `app` and open **http://localhost:5173/?lang=pt-BR&full=1** (add `&t=300` to start at 5:00).
+
+**Render at full quality** (1920×1080, 60 fps, adaptive motion blur, AAC audio):
+
+```sh
+cd app
+bun scripts/render.ts verify --lang pt-BR --full    # optional: checks the whole video before a long render
+bun scripts/render.ts video --lang pt-BR --full --samples auto --shutter 0.2 --out ../out/pdoom-pt-BR-letra-explicada.mp4
+```
+
+- **Faster draft:** `--fps 30 --samples 1 --preset veryfast --crf 24` renders it in about 35 minutes on an RTX 5070 Laptop GPU.
+- **4K:** add `--scale 2 --x264 aq-mode=3:rc-lookahead=30` (see [4K](#4k)).
+- **In parts:** `--from`/`--to` render a part, with its sound.
+
+Before publishing, replace the placeholder image in block 01.1, the GPT-4 unicorn figure, which is not in the repo (see "Imagens de fora" in the ROTEIRO).
 
 ## Regenerate the timing data
 
