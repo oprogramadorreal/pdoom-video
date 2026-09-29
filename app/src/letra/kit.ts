@@ -16,7 +16,7 @@ import { Sheet } from './paper';
 
 // ---------------------------------------------------------------- shared scratch resources
 const VIEW = /* glsl */ `
-  uniform sampler2D tex; uniform vec4 cam; uniform vec4 rect; uniform float dim, duo, satur, alpha, blur, fit, feather; uniform vec3 tint;
+  uniform sampler2D tex; uniform vec4 cam; uniform vec4 rect; uniform float dim, duo, satur, alpha, blur, fit, feather; uniform vec3 tint, circ;
   vec3 grade(vec3 c) {
     float l = luma(c);
     vec3 d = mix(C_INK, C_SIGNAL * 1.2, smoothstep(0.02, 0.35, l));
@@ -50,11 +50,12 @@ const VIEW = /* glsl */ `
     }
     vec2 e = min(sp - rect.xy, rect.zw - sp);
     float a = alpha * clamp((min(e.x, e.y) + 0.5) / max(feather, 1.0), 0.0, 1.0);
+    if (circ.z > 0.0) a *= clamp(circ.z - length(sp - circ.xy) + 0.5, 0.0, 1.0);
     fragColor = vec4(grade(c) * a, a);
   }`;
 const viewUniforms = () => ({
   tex: { value: null }, cam: { value: new THREE.Vector4(W / 2, H / 2, 1, 0) }, rect: { value: new THREE.Vector4(0, 0, W, H) },
-  dim: { value: 1 }, duo: { value: 0 }, satur: { value: 1 }, alpha: { value: 1 }, blur: { value: 0 }, fit: { value: 1 }, feather: { value: 1 }, tint: { value: new THREE.Vector3(1, 1, 1) },
+  dim: { value: 1 }, duo: { value: 0 }, satur: { value: 1 }, alpha: { value: 1 }, blur: { value: 0 }, fit: { value: 1 }, feather: { value: 1 }, tint: { value: new THREE.Vector3(1, 1, 1) }, circ: { value: new THREE.Vector3(0, 0, 0) },
 });
 
 class Shared {
@@ -88,6 +89,8 @@ export interface Cam {
   mask?: boolean;
   /** Soft edges of the rect (px). */
   feather?: number;
+  /** A circular window (screen x, y, radius). */
+  circle?: [number, number, number];
 }
 /**
  * Draw `tex` (a full frame) into `out` through a 2D camera. `over`: composite over what `out` holds (only
@@ -100,6 +103,7 @@ export function camPass(renderer: THREE.WebGLRenderer, tex: THREE.Texture, out: 
   (u.rect!.value as THREE.Vector4).set(...(c.rect ?? [0, 0, W, H]));
   u.dim!.value = c.dim ?? 1; u.duo!.value = c.duo ?? 0; u.satur!.value = c.sat ?? 1; u.alpha!.value = c.alpha ?? 1; u.blur!.value = c.blur ?? 0; u.fit!.value = c.mask ? 0 : 1; u.feather!.value = c.feather ?? 1;
   (u.tint!.value as THREE.Vector3).set(...(c.tint ?? [1, 1, 1]));
+  (u.circ!.value as THREE.Vector3).set(...(c.circle ?? [0, 0, 0]));
   p.render(renderer, out);
 }
 

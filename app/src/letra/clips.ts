@@ -49,6 +49,13 @@ export class Clips {
     return p;
   }
 
+  /** A loaded clip scene, to use its own geometry (cameras, projections, paths) in an explanation. */
+  scene<T = any>(id: string): T {
+    const sc = this.ready.get(id);
+    if (!sc) throw new Error(`clip scene not loaded: ${id}`);
+    return sc as unknown as T;
+  }
+
   /** The frame a clip scene would get at song time s (the song's audio analysis at s). */
   frame(e: TimelineEntry, s: number, remix?: Record<string, any>): Frame {
     const au = this.ctx.audio;
