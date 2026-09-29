@@ -338,11 +338,11 @@ animação nova.
 
 | Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
-| 05.1 | "Aumento meu P(doom), / como previu o Loom." (o refrão rola até 0,999…) | "Lembra dos números em cima das palavras?…" | As barras de probabilidade de 01.4 voltam e giram 90°, virando galhos: é a árvore do `loom`, que cresce palavra por palavra até "Loom" ser amostrado. "Loom · Janus, 2021". |
-| 05.2 | "Do pré-treino preditivo / ao auto-upgrade recursivo." | "No pré-treino…" | Uma frase corre na tela com a próxima palavra coberta por um bloco [MASK]; o bloco se abre com o palpite; outra frase, outro palpite, cada vez mais rápido, até virar um borrão em "Bilhões de vezes". "GPT = Generative **Pre-trained** Transformer", com o P aceso. Em "melhorando a si mesma": a recursão de Droste do `loom`, e um segundo da explosão do FOOM. |
-| 05.3 | "O que Ilya viu? Nunca vamos saber." | "Ília Sutskever…" | A sala do laptop, com a câmera circulando. Linha do tempo datilografada: "17 nov. 2023: demitido · 22 nov.: de volta". Em "Uma superinteligência escondida?": a câmera passa para trás da tampa, e os adesivos acendem com legendas: "SINTA A AGI · festa da OpenAI, 2022", "LEVEMENTE CONSCIENTE · ele, em fev. 2022", "Q\* · boatos, nov. 2023". |
-| 05.4 | — | "Mas nessa, a letra envelheceu…" | A câmera volta à frente da tela REDIGIDO; as tarjas saem uma a uma e, de trás delas, 52 folhas se abrem em leque: "MEMORANDO · 52 PÁGINAS". Cartão: "Depoimento de Ilya Sutskever · Musk v. Altman · 1º out. 2025 · divulgado em nov. 2025". **Novo.** |
-| 05.5 | "Foi tudo só pra inglês ver?" | "Quanto das promessas…" | O teatro vazio, com o holofote sobre o nada; as cortinas fecham na última palavra. |
+| 05.1 | "Aumento meu P(doom), / como previu o Loom." (o refrão rola até 0,999…) | "Lembra dos números em cima das palavras?…" | O refrão até 0.999… e "como previu o Loom", como no clipe. Em "Lembra dos números em cima das palavras?", as barras de 01.4 voltam ("ChatGPT, não me" → engole 0,44, apague 0,21, treine com 0,18); em "mostra as outras escolhas", elas giram e viram galhos saindo da última palavra; em "várias continuações pro mesmo texto, como galhos de uma árvore", cada galho brota as suas continuações ("vivo, não.", "meus dados.", "os meus textos."…). Em "Com ela, alguém que assina como Janus", a árvore do `loom` do clipe, de perto, com "Loom · Janus · 2021". |
+| 05.2 | "Do pré-treino preditivo / ao auto-upgrade recursivo." | "No pré-treino…" | O verso com as palavras saindo das tarjas [MASK], como no clipe. Em "o pê do GPT", GPT com o P laranja e "Generative **Pre-trained** Transformer". Em "o modelo só aprende a adivinhar a próxima palavra", frases com a última palavra sob um bloco [MASK] que se abre no palpite ("O gato subiu no telhado", "A capital do Brasil é Brasília"…), cada vez mais rápido; em "Bilhões de vezes", um fluxo borrado de frases e um contador. Em "O verso imagina o passo seguinte", a recursão do clipe (auto-upgrade); em "A explosão de inteligência, de volta", um segundo do FOOM de 02.1. |
+| 05.3 | "O que Ilya viu? Nunca vamos saber." | "Ília Sutskever…" | O laptop do clipe visto por trás ("Ilya Sutskever · cofundador da OpenAI"). Em "demitir Sam Altman", a cena escurece e uma linha do tempo se datilografa por cima: "OPENAI · NOVEMBRO DE 2023", "17 nov. 2023 · Altman demitido"; em "Dias depois", "22 nov. · de volta". Em "E a internet perguntou", o clipe: a tela CENSURADO e "O que Ilya viu?". Em "Uma superinteligência escondida?", de volta para trás da tampa, e os adesivos ganham chamadas: SINTA A AGI ("o grito dele na festa da OpenAI, 2022"), Q* ("o boato de nov. de 2023"), LEVEMENTE CONSCIENTE ("um tuíte dele, fevereiro de 2022"). |
+| 05.4 | — | "Mas nessa, a letra envelheceu…" | A tela CENSURADO de perto. Em "um depoimento do Ília", a tarja CENSURADO se descola e, por trás dela, há papel: a capa do depoimento em papel osso ("Elon Musk v. Samuel Altman et al.", "DEPOIMENTO DE ILYA SUTSKEVER", "tomado em 1º de outubro de 2025 · divulgado em novembro de 2025"). Em "não é uma máquina secreta", "P. O que você viu? R. —" e "uma máquina secreta", riscado em laranja. Em "É um memorando de cinquenta e duas páginas", a pilha de páginas se abre em leque: "MEMORANDO · CONFIDENCIAL · 52 PÁGINAS", "Para: conselheiros independentes · De: Ilya Sutskever · Assunto: a conduta de Sam Altman", com os itens quase todos tarjados. Em "Menos ficção científica", um carimbo FICÇÃO CIENTÍFICA, riscado; em "Mais novela corporativa", o carimbo laranja NOVELA CORPORATIVA. **Novo.** |
+| 05.5 | "Foi tudo só pra inglês ver?" | "Quanto das promessas…" | O teatro vazio do clipe, o holofote sobre o nada, a pergunta no proscênio; as cortinas fecham na última palavra. |
 
 Depois de 05.5, a mixagem passa direto para 06.1, sem pausa para o cartão final do `outro`. O contador quebra
 no fim de 06.1 (abaixo).
@@ -432,6 +432,14 @@ O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem
 - 04.5: em vez de o bloco "girar", o clipe segue do ponto em que o bloco sai do alinhamento ("NÃO PRA MIM"); a vista explodida mostra que conhecer as peças não diz nada sobre os números.
 - 04.6: das três legendas do verso (Chinchilla, cercas, cem mil GPUs), nenhuma entrou: disputariam com a voz, que começa logo. Vão para a descrição do vídeo.
 - 04.6: a bajulação é mostrada com um exemplo (a resposta verdadeira punida, a bajuladora premiada), com a fonte na tela.
+
+**05 · O que Ilya viu**
+
+- 05.1: as barras de 01.4 viram galhos desenhados, num diagrama novo, antes de a árvore do clipe aparecer: sem isso, a ligação "números em cima das palavras" → Loom ficava só na voz.
+- 05.2: as frases mascaradas são exemplos em português, uma atrás da outra, acelerando; o "P" de GPT repete o gesto do "T" em 04.5.
+- 05.3: a linha do tempo da demissão fica por cima do laptop escurecido, e as legendas dos adesivos entram só em "Uma superinteligência escondida?", em que a pergunta pede os boatos.
+- 05.4: a tarja CENSURADO do clipe se descola e revela o depoimento — o mistério do clipe vira documento; os itens do memorando ficam tarjados porque o conteúdo não é público por inteiro.
+- 05.5: o clipe como é, em câmera lenta, para as cortinas fecharem na última palavra.
 
 ## Cortes possíveis
 
