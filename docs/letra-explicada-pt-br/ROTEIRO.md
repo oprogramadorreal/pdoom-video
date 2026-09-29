@@ -294,10 +294,10 @@ animação nova.
 
 | Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
-| 01.1 | "Vejo AGI faiscar no teu olhar," (a folha TikZ num plano mais aberto) | "O faiscar vem de um estudo… um clipe inteiro." | O estudo entra como folha de papel osso deslizando sobre a folha TikZ, com o título se datilografando: *Sparks of Artificial General Intelligence*, Microsoft Research, mar. 2023; chamada "AGI = inteligência artificial geral". Em "Saiu isto": os unicórnios do GPT-4 (figura 1.3), revelados traço a traço por uma máscara que segue a linha. **Externa.** Em "Três anos depois": tela dividida, 2023 à esquerda e a caneta plotando o nosso unicórnio à direita; a câmera se afasta, e o unicórnio vira um quadradinho num mosaico com quadros do clipe inteiro. |
-| 01.2 | "teus circuitos me dão medo," | "Circuitos também é termo técnico…" | Mergulho nos traços do unicórnio enquanto viram trilhas de circuito; a câmera segue um pulso (a faísca) por uma trilha, que se isola: "circuito". Em "interpretabilidade": uma lente circular passa pelas trilhas e rotula algumas ("detecta curvas", "detecta chifre?"). Em "explicar como elas funcionam": todas as outras etiquetas viram "???". |
-| 01.3 | "Tua loss de treino despencou," | "E a loss é o erro…" | A câmera anda sobre a curva da loss, colada na faísca, como num trilho, com a chamada "loss = erro" presa à curva. Em "fica parada por muito tempo": o platô, longo, com os passos de treino passando no eixo. Em "despenca": o mergulho pelo penhasco até a paisagem de contorno. Em "Sem aviso": o mundo gira 180°, como em "dominou". |
-| 01.4 | "ChatGPT, não me engole vivo, não." | "Aí chega o ChatGPT…" | O campo de prompt em close. Em "números em cima de cada palavra", a distribuição de "engole" cresce até ocupar a tela como gráfico de barras. Em "sorteada": as barras viram uma faixa proporcional, e a faísca cai nela como bolinha de roleta, parando em "engole 0,44"; "treine com 0,18" acende quando é dito. Em "olha quem aparece": corte seco para o primeiro token, "ChatGPT, 0,61", e a faísca circula "Claude, 0,12"; meio segundo de silêncio. |
+| 01.1 | "Vejo AGI faiscar no teu olhar," (a folha TikZ num plano mais aberto) | "O faiscar vem de um estudo… um clipe inteiro." | A folha TikZ vista de longe, com a construção inteira em time-lapse (eixos, compasso, unicórnio, a letra na coluna) e depois quase parada. Em "Faíscas", a primeira página do estudo desliza sobre ela, em papel osso: "arXiv:2303.12712 · março de 2023", *Sparks of Artificial General Intelligence: Early experiments with GPT-4* datilografado, os autores (Microsoft Research) e, como nota, "→ Faíscas de Inteligência Artificial Geral". Em "A AGI", as iniciais do título ficam laranja e "AGI · inteligência artificial geral" aparece na margem; em "capaz de fazer", uma figura: a barra da máquina cresce até a da pessoa ("tão bem quanto uma pessoa"). Em "GPT-4", sublinhado laranja; em "primeiros sinais", o S de *Sparks* pega fogo. Em "Um dos testes", a listagem TikZ do clipe, com o prompt "Desenhe um unicórnio em TikZ." no alto. Em "Saiu isto", a figura 1.3 do estudo — **placeholder marcado** ("IMAGEM EXTERNA · A INSERIR"), em papel. Em "Três anos depois": 2023 à esquerda, 2026 à direita, a caneta plotando o nosso unicórnio; em "uma I-Á", 2026 toma o quadro; em "um clipe inteiro", a câmera recua e o unicórnio vira um quadradinho num mosaico de 49 quadros do clipe. **Externa.** |
+| 01.2 | "teus circuitos me dão medo," | "Circuitos também é termo técnico…" | O verso como o clipe o toca (os traços do unicórnio se reorganizando em trilhas de circuito, o tremor em "medo"). Em "conexões dentro da rede", a câmera mergulha nas trilhas e segue um pulso pelo circuito do corpo (a rota tirada da geometria do próprio `open`); em "fazem uma tarefa", o resto escurece e o circuito se isola: "circuito · conexões que, juntas, fazem uma tarefa". Em "interpretabilidade", a câmera recua e uma lente passa pelo desenho, ampliando, e rotula três circuitos: "detecta curvas", "detecta pernas", "detecta chifre?". Em "a gente sabe treinar", o desenho volta aos checkpoints do clipe (o de cinco patas) e retreina; de "muito melhor" a "funcionam", todos os outros circuitos ganham a etiqueta "???". |
+| 01.3 | "Tua loss de treino despencou," | "E a loss é o erro…" | O gráfico como o clipe o desenha, o verso correndo na curva; em "erro", "loss = erro" pendurado na faísca. Em "fica parada por muito tempo", a câmera anda num trilho ao lado da faísca, um pouco à frente, e o verso já escrito fica para trás; um contador de passos de treino corre (3.000 → 31.000, "loss ≈ 0,5 · parada") e a chamada "platô" acompanha a faísca. Em "despenca", o mergulho em tempo real, com a câmera do clipe caindo junto até a paisagem de curvas de nível (e a nota do próprio clipe, "grokking (?) Δloss −99,9999%"). Em "Sem aviso", o mundo gira 180°, como em "dominou". |
+| 01.4 | "ChatGPT, não me engole vivo, não." | "Aí chega o ChatGPT…" | O campo de prompt do clipe digitando "ChatGPT," com a distribuição em cima; em "Repare nos números em cima de cada palavra", o resto da linha corre, uma distribuição sobre cada palavra. Em "é assim que um modelo de linguagem escreve", a de "engole" vira um gráfico de barras em tela cheia ("p( próximo \| ChatGPT, não me ▮ )"); em "Uma palavra por vez", as barras viram uma faixa proporcional; em "sorteada", a faísca cai nela como bolinha de roleta e para em "engole". "engole · 0,44" e "treine com · 0,18" acendem quando são ditos. Em "E olha quem aparece", de volta à primeira palavra, e a faísca circula "Claude, 0.12" em "segundo lugar". |
 
 ### 02 · 0,15 · O que tem lá dentro
 
@@ -385,6 +385,19 @@ O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem
 - 00.5: o avião é um mapa de 20 assentos visto de cima, um laranja ("1 em 20") — 5% vira algo que se enxerga.
 - 00.6: os números de cada refrão aparecem como o clipe os mostra (quadros das cenas `hook`), um por batida, com o cursor pulando.
 
+**01 · Faíscas**
+
+- 01.1: a folha TikZ abre em time-lapse de longe (câmera nova para o `open`, parâmetro opcional) — o verso inteiro se monta em menos de um segundo, sem cantar.
+- 01.1: em "A AGI é uma máquina capaz de fazer quase qualquer tarefa…", uma figura no próprio estudo (a barra da máquina alcançando a da pessoa), no lugar de uma chamada que repetiria a frase.
+- 01.1: o S de *Sparks* pega fogo em "primeiros sinais" — a faísca do clipe nasce do título do estudo.
+- 01.1: a figura do GPT-4 é um placeholder marcado até a imagem entrar (ver "Imagens de fora").
+- 01.1: o mosaico usa 49 quadros do clipe inteiro, renderizados uma vez; o unicórnio é o quadro do centro, ao vivo.
+- 01.2: o pulso segue a rota real do circuito do corpo, calculada com a geometria do `open`, e a lente é uma segunda renderização do clipe, mais próxima, recortada num círculo.
+- 01.2: em "a gente sabe treinar", o desenho volta aos checkpoints do clipe — "treinar" vira imagem.
+- 01.3: o trilho vai um pouco à frente da faísca, olhando para trás: de trás para frente, as letras do verso escrito na curva enchiam o quadro.
+- 01.4: sem o popup "crescendo": corte seco na batida para as barras em tela cheia, que a leitura pede grandes; os valores seguem o clipe (`prompt-data.ts`).
+- 01.4: a faísca circula a linha inteira de "Claude, 0.12", com o número — é o que dá o "segundo lugar".
+
 ## Cortes possíveis
 
 A mixagem é fixa, então cortar um bloco exige refazê-la (e refazer os tempos da narração). Não é para a primeira
@@ -411,6 +424,8 @@ Vai no tratamento duotônico das pranchas do `outro` (tinta → laranja → osso
 
 - **Unicórnios do GPT-4**, figura 1.3 de [*Sparks of AGI*](https://arxiv.org/abs/2303.12712) (01.1).
   É citação de trecho de obra para estudo e crítica, com a fonte indicada (Lei 9.610/98, art. 46, III).
+  **Ainda não está no repositório:** o vídeo mostra um placeholder marcado ("IMAGEM EXTERNA · A INSERIR"),
+  desenhado por `drawFigurePlaceholder` em `app/src/letra/c01.ts`, em 01.1, de "Saiu isto" até "Três anos depois".
 
 O resto é refeito em tipografia: primeiras páginas de estudos, a manchete do NYT, o anúncio satírico
 e o depoimento.
