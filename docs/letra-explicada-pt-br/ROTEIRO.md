@@ -177,14 +177,14 @@ Voz estimada pelo ritmo das gravações anteriores (~16,8 caracteres/s). Trechos
 
 | Arquivo | Capítulo | Blocos | Caracteres | Voz | Trechos | Total |
 |---|---|---:|---:|---:|---:|---:|
-| `00-abertura` | Tudo é código | 6 | 1.176 | 70 s | — | ~1:12 |
-| `01-faiscas` | P(doom) 0,02 · Faíscas | 4 | 1.083 | 64 s | 16 s | ~1:22 |
+| `00-abertura` | Tudo é código | 6 | 1.165 | 69 s | — | ~1:12 |
+| `01-faiscas` | P(doom) 0,02 · Faíscas | 4 | 1.066 | 63 s | 16 s | ~1:21 |
 | `02-o-que-tem-dentro` | 0,15 · O que tem lá dentro | 7 | 1.539 | 91 s | 25 s | ~1:59 |
-| `03-poder-demais` | 0,42 · Poder demais | 7 | 1.540 | 91 s | 34 s | ~2:08 |
-| `04-clipes-de-papel` | 0,81 · Clipes de papel | 6 | 1.574 | 93 s | 30 s | ~2:05 |
-| `05-o-que-ilya-viu` | 0,99 · O que Ilya viu | 5 | 1.116 | 66 s | 15 s | ~1:23 |
-| `06-bastidores` | Como uma IA fez este vídeo | 7 | 1.222 | 73 s | ~8 s | ~1:24 |
-| | **Total** | **42** | **9.250** | **~9:09** | **~2:08** | **~11:34** |
+| `03-poder-demais` | 0,42 · Poder demais | 7 | 1.502 | 89 s | 34 s | ~2:06 |
+| `04-clipes-de-papel` | 0,81 · Clipes de papel | 6 | 1.557 | 92 s | 30 s | ~2:05 |
+| `05-o-que-ilya-viu` | 0,99 · O que Ilya viu | 5 | 1.111 | 66 s | 15 s | ~1:23 |
+| `06-bastidores` | Como uma IA fez este vídeo | 7 | 1.222 | 73 s | ~8 s | ~1:23 |
+| | **Total** | **42** | **9.162** | **~9:04** | **~2:08** | **~11:29** |
 
 Com a música (2:35), o vídeo completo fica com cerca de **14 min**. A voz tem meio minuto a mais que o primeiro
 rascunho; o que mais cresceu foram os trechos da música, que são o formato. Mais cortes, se precisar, devem sair da primeira
@@ -288,7 +288,7 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 
 | Bloco | Trecho | Narração | Imagem |
 |---|---|---|---|
-| 03.1 | "Aumento meu P(doom), / ouço o basilisco: BUM!" (o refrão rola até 0,42) | "O basilisco de Roko…" | Close extremo na pupila da serpente. Refletida nela, uma lista em Plex Mono se datilografa; em "agora você também está na lista", termina com "você", e a pupila se estreita. "LessWrong, 2010". |
+| 03.1 | "Aumento meu P(doom), / ouço o basilisco: BUM!" (o refrão rola até 0,42) | "O basilisco de Roko…" | Close extremo na pupila da serpente. Refletida nela, uma lista em Plex Mono se datilografa com quem ficou sabendo; em "E você acabou de ouvir", a lista ganha mais uma linha, "você", e a pupila se estreita. "LessWrong, 2010". |
 | 03.2 | "NVIDIA pra Lua: ZUM! / Ponto Ômega em três, dois, um. / Um E trinta FLOPs por segundo," (só música) | "Um ê trinta flops…" | No trecho, o clipe como é, com legendas integradas: "NVIDIA · a empresa mais valiosa do mundo", gravada como letra de cédula no gráfico que sobe até a lua, e "Ponto Ômega · Teilhard de Chardin · a evolução rumo a uma consciência suprema", em Cormorant, nas linhas que convergem. No bloco: a câmera viaja por uma régua logarítmica, como a do `outro`, de 10⁰ a 10³⁰, passando por "GPT-4, treino inteiro ≈ 2×10²⁵" até "1 segundo = 10³⁰"; o último salto é marcado "× 50.000". **Novo.** |
 | 03.3 | "MLP: vai, volta, repetição," | "MLP…" | O diagrama do anexo B do `bureau`, com profundidade: na ida, pulsos laranja atravessam as conexões; na volta, pulsos mais escuros retornam, e as conexões engrossam ou afinam. Uma pequena curva de loss no canto cai um degrau a cada volta. Em "milhões de vezes": o ciclo acelera até virar um borrão, e a curva despenca. |
 | 03.4 | "von Neumann já virou peça de coleção." | "John von Neumann… risca de laranja." | O apêndice C do `bureau`, como no clipe. Em "Se até ele virou peça de coleção": a folha entra numa vitrine de museu desenhada em linha fina, com a etiqueta "John von Neumann · 1903–1957". Em "o aparelho em que você vê este vídeo": o diagrama sai da vitrine, e as caixas ganham nomes de hoje (processador, memória, entrada e saída); em "risca de laranja": o risco do clipe, reaproveitado. |
