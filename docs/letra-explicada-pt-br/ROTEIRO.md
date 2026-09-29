@@ -230,14 +230,14 @@ O texto escreve algumas palavras do jeito que devem soar. Na tela, use a grafia 
 | a gê i | AGI |
 | i á | IA |
 | Chat gê pê tê, gê pê tê quatro | ChatGPT, GPT-4 |
-| eme ele pê | MLP |
+| eme éle pê | MLP |
 | cê dê erre | CDR, `cdr` |
-| erre ele agá efe | RLHF |
+| erre éle agá éfe | RLHF |
 | um ê trinta | 1E30 |
 | Ília | Ilya |
 | Clód | Claude |
 | Opus cinco ponto cinco | Opus 5.5 |
-| gê ele esse ele | GLSL |
+| gê éle ésse éle | GLSL |
 
 A transcrição das gravações anteriores (faster-whisper) mostrou que "Ilya" saiu uma vez como "Ilha" (agora "Ília")
 e que "o fum do começo" soava como "o fundo começo" (reescrito).
@@ -259,7 +259,7 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 | Bloco | Trecho | Narração | Imagem |
 |---|---|---|---|
 | 00.1 | o fim do clipe (ver "A transição") | "Você acabou de ouvir uma música de amor sobre o fim do mundo." | O primeiro quadro; a régua se desenha e a faísca acende em 0:00, pausada. |
-| 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | A faixa de raio X do `shoggoth` atravessa a tela e, por onde passa, a imagem vira o próprio código-fonte (arquivo e linha reais, rolando na velocidade da faixa). Primeiro sobre o quadro parado; depois, a cada batida da trilha, sobre quatro cenas do clipe: a caneta plotando o unicórnio, a explosão do FOOM, o shoggoth girando, a treliça de clipes. Em "nada de After Effects": uma linha de formulário do `bureau`, "programa de edição: nenhum", recebe um carimbo. Em "TypeScript e gê ele esse ele": os dois nomes rotulam o código que rola (`.ts` e os blocos `/* glsl */`); em "página web", o código recua até caber num retângulo de linha fina com `localhost:5173` no alto. Em "vinte mil linhas": o odômetro do `ascent` rola até 22.608. Em "Clód Opus cinco ponto cinco": o nome em Archivo, grande, escrito pela faísca. **Novo.** |
+| 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | A faixa de raio X do `shoggoth` atravessa a tela e, por onde passa, a imagem vira o próprio código-fonte (arquivo e linha reais, rolando na velocidade da faixa). Primeiro sobre o quadro parado; depois, a cada batida da trilha, sobre quatro cenas do clipe: a caneta plotando o unicórnio, a explosão do FOOM, o shoggoth girando, a treliça de clipes. Em "nada de After Effects": uma linha de formulário do `bureau`, "programa de edição: nenhum", recebe um carimbo. Em "TypeScript e gê éle ésse éle": os dois nomes rotulam o código que rola (`.ts` e os blocos `/* glsl */`); em "página web", o código recua até caber num retângulo de linha fina com `localhost:5173` no alto. Em "vinte mil linhas": o odômetro do `ascent` rola até 22.608. Em "Clód Opus cinco ponto cinco": o nome em Archivo, grande, escrito pela faísca. **Novo.** |
 | 00.3 | — | "Mas antes, a letra… acabar com a humanidade." | A faísca corre a régua e acende os tiques das referências, um a um, com um contador que chega a ~30. Uma cena nova de ~1 s para cada isca: as grades do `prompt` sydney fechando na cara da câmera; a máscara se virando para a câmera e sorrindo; a tarja REDIGIDO carimbando a tela inteira; um clipe se duplicando até encher o quadro. |
 | 00.4 | — | "Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe." | Uma lente macro passeia, fora de foco, por detalhes que ainda vão aparecer (um token com probabilidade, uma etiqueta, um adesivo), sem deixar ler nenhum. A lente se afasta até a régua, com a faísca em 0:00. |
 | 00.5 | — | "Primeiro, o título… com essa chance de cair?" | *P*(doom) se monta como no cartão final; o P e o doom se afastam e cada um ganha sua chamada (probabilidade, ruína). Em "quase três mil pesquisadores": um campo de 2.778 pontos cai no quadro, como a grade de GPUs do `dense`; em "Metade", metade deles acende em laranja: "≥ 5%". "Grace et al., out. 2023". No avião: o campo encolhe até 20 pontos, um laranja. **Novo.** |
@@ -292,7 +292,7 @@ sincronizada na tela; a imagem do trecho pode ser a cena original ou uma versão
 |---|---|---|---|
 | 03.1 | "Aumento meu P(doom), / ouço o basilisco: BUM!" (o refrão rola até 0,42) | "O basilisco de Roko…" | Close extremo na pupila da serpente. Refletida nela, uma lista em Plex Mono se datilografa; em "agora você também está na lista", termina com "você", e a pupila se estreita. "LessWrong, 2010". |
 | 03.2 | "NVIDIA pra Lua: ZUM! / Ponto Ômega em três, dois, um. / Um E trinta FLOPs por segundo," (só música) | "Um ê trinta flops…" | No trecho, o clipe como é, com legendas integradas: "NVIDIA · a empresa mais valiosa do mundo", gravada como letra de cédula no gráfico que sobe até a lua, e "Ponto Ômega · Teilhard de Chardin · a evolução rumo a uma consciência suprema", em Cormorant, nas linhas que convergem. No bloco: a câmera viaja por uma régua logarítmica, como a do `outro`, de 10⁰ a 10³⁰, passando por "GPT-4, treino inteiro ≈ 2×10²⁵" até "1 segundo = 10³⁰"; o último salto é marcado "× 50.000". **Novo.** |
-| 03.3 | "MLP: vai, volta, repetição," | "Eme ele pê…" | O diagrama do anexo B do `bureau`, com profundidade: na ida, pulsos laranja atravessam as conexões; na volta, pulsos mais escuros retornam, e as conexões engrossam ou afinam. Uma pequena curva de loss no canto cai um degrau a cada volta. Em "milhões de vezes": o ciclo acelera até virar um borrão, e a curva despenca. |
+| 03.3 | "MLP: vai, volta, repetição," | "Eme éle pê…" | O diagrama do anexo B do `bureau`, com profundidade: na ida, pulsos laranja atravessam as conexões; na volta, pulsos mais escuros retornam, e as conexões engrossam ou afinam. Uma pequena curva de loss no canto cai um degrau a cada volta. Em "milhões de vezes": o ciclo acelera até virar um borrão, e a curva despenca. |
 | 03.4 | "von Neumann já virou peça de coleção." | "John von Neumann… risca de laranja." | O apêndice C do `bureau`, como no clipe. Em "Se até ele virou peça de coleção": a folha entra numa vitrine de museu desenhada em linha fina, com a etiqueta "John von Neumann · 1903–1957". Em "o aparelho em que você vê este vídeo": o diagrama sai da vitrine, e as caixas ganham nomes de hoje (processador, memória, entrada e saída); em "risca de laranja": o risco do clipe, reaproveitado. |
 | 03.5 | "Guinada à esquerda, já tá sem freio," | "A guinada à esquerda…" | Vista de cima do mapa do `leftturn`; a faísca anda numa estrada reta rotulada "comportamento desejado", ao lado de um medidor de "capacidade" que sobe. No salto, a faísca vira 90° e sai da estrada, e a câmera faz o whip junto. Em "alinhamento": a estrada ganha uma guia, que acaba logo adiante. |
 | 03.6 | "sem um só CDR no meio." | "Cê dê erre é piada dupla…" | O Gantt do `leftturn`, como no clipe, com o CDR piscando vazio. Em "No Lisp": um terminal de Lisp em Plex Mono, `(cdr '(a b c))` → `(b c)`, e a lista perde a cabeça. **Novo.** Em "Na engenharia": o Gantt de volta, com a chamada "CDR · revisão crítica de projeto"; a faísca passa direto pelo CDR até LANÇAMENTO; em "não realizada", o carimbo do clipe, "SITUAÇÃO: NÃO REALIZADA". |

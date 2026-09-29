@@ -2,7 +2,7 @@ O basilisco de Roko é um experimento mental da internet: uma superinteligência
 
 Um ê trinta flops são um seguido de trinta zeros de contas, por segundo. Em um segundo, dezenas de milhares de vezes o que se estima pro treino inteiro do gê pê tê quatro.
 
-Eme ele pê é um tipo de rede neural, e vai, volta, repetição é como ela aprende. A informação vai, e sai uma resposta. O erro volta, ajustando cada conexão um pouquinho. E repete, milhões de vezes. É isso que faz a loss despencar.
+Eme éle pê é um tipo de rede neural, e vai, volta, repetição é como ela aprende. A informação vai, e sai uma resposta. O erro volta, ajustando cada conexão um pouquinho. E repete, milhões de vezes. É isso que faz a loss despencar.
 
 John von Neumann foi um dos maiores gênios do século vinte. Se até ele virou peça de coleção, imagina o resto de nós. E tem mais: o aparelho em que você vê este vídeo segue uma arquitetura com o nome dele. É ela que o vídeo risca de laranja.
 
