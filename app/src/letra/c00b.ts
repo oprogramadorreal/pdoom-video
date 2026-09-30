@@ -10,7 +10,7 @@ import { norm, type Line } from '../engine/lyrics';
 import { drawReadout } from '../engine/hud';
 import { sparkHead } from '../scenes/_motifs';
 import { Block, type BlockFactory, type BlockOut } from './block';
-import { S, camPass, RX0, RY, fmtPT, type Cam } from './kit';
+import { S, camPass, fmtPT, type Cam } from './kit';
 import { verseLines } from './montage';
 import { callout, hot, outline, traceContours, type P2 } from './draw';
 
@@ -162,11 +162,23 @@ const DETAILS: { id: string; s: number; cam: Cam }[] = [
   { id: 'ilya', s: 131.75, cam: { x: 1180, y: 430, zoom: 2.1 } },
 ];
 
+/** The title as 00.5 sets it: P(doom), in Cormorant, its outlines for the spark to trace. */
+function titleLayout() {
+  const S0 = 250, fP = F.serif(600, true), fT = F.serif(600);
+  const wP = measure('P', fP, S0), wDoom = measure('(doom)', fT, S0), gap = 0.05 * S0;
+  const x = W / 2 - (wP + gap + wDoom) / 2, y = 470;
+  return { P: outline('P', fP, S0, x, y), doom: outline('(doom)', fT, S0, x + wP + gap, y), xP: x, xDoom: x + wP + gap, wP, wDoom, y, S: S0 };
+}
+let penCache: P2 | null = null;
+/** Where the spark starts writing the title (the P's first contour). */
+const titlePen = () => (penCache ??= titleLayout().P[0]![0]!);
+
 /**
  * 00.4 "Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe." A macro lens drifts,
  * out of focus, over details still to come (the token "Claude, 0,12", a shinigami tag, the laptop's
- * stickers), one a beat, never readable; on "quase ninguém percebe" the picture shrinks into the spark at
- * 0:00 on the ruler.
+ * stickers), one a beat, never readable; on "quase ninguém percebe" the picture shrinks into a spark, the one
+ * that writes the title in 00.5 (it waits where the P starts). The ruler fades out as the block starts, its
+ * cursor running back to 0:00.
  */
 class B004 extends Block {
   private cuts: number[] = [];
@@ -192,12 +204,16 @@ class B004 extends Block {
     // the lens breathes but never quite focuses; the image drifts
     const blur = 19 + 5 * Math.sin(lt * 2.3 + i);
     const r0: [number, number, number, number] = [0, 0, W, H];
-    const r1: [number, number, number, number] = [RX0 - 3, RY - 2, RX0 + 3, RY + 2];
+    const pen = titlePen();
+    const r1: [number, number, number, number] = [pen.x - 3, pen.y - 2, pen.x + 3, pen.y + 2];
     const rect = r0.map((v, j) => lerp(v, r1[j]!, pull)) as [number, number, number, number];
     camPass(renderer, R[0]!.texture, out, { ...d.cam, x: d.cam.x! + 22 * lt, y: d.cam.y! + 8 * lt, blur, rect, alpha: 1 - prog(pull, 0.85, 1), dim: 0.9 }, true);
-    // (00.3 left the cursor on the paperclips verse)
+    const lb = S().lines; lb.clear();
+    const k = prog(pull, 0.7, 1);
+    if (k > 0) { sparkHead(lb, pen.x, pen.y, t, 0.5 + 0.4 * k, k); lb.render(renderer, out); }
+    // (00.3 left the cursor on the paperclips verse: it runs back to 0:00 as the ruler fades)
     const pos = lerp(this.from, 0, ease.inOutCubic(prog(t, this.e.start, this.e.start + 0.7)));
-    return { post: { ...clipPost(post), bloom: 0.5, shake: [0, 0], zoom: 1, flash: 0, frame: 0 }, regua: { pos, mark: [0, prog(t, this.e.end - 0.25, this.e.end - 0.05)] } };
+    return { post: { ...clipPost(post), bloom: 0.5, shake: [0, 0], zoom: 1, flash: 0, frame: 0 }, regua: { pos } };
   }
 }
 
@@ -217,10 +233,7 @@ class B005 extends Block {
   private rank: number[] = [];
 
   override init() {
-    const S0 = 250, fP = F.serif(600, true), fT = F.serif(600);
-    const wP = measure('P', fP, S0), wDoom = measure('(doom)', fT, S0), gap = 0.05 * S0;
-    const x = W / 2 - (wP + gap + wDoom) / 2, y = 470;
-    this.eq = { P: outline('P', fP, S0, x, y), doom: outline('(doom)', fT, S0, x + wP + gap, y), xP: x, xDoom: x + wP + gap, wP, wDoom, y, S: S0 };
+    this.eq = titleLayout();
     this.tTrace = this.at('título') - 0.25;
     this.tP = this.at('Pê dum'); this.tDoom = this.at('dum', 0);
     this.tProb = this.at('probabilidade'); this.tRuin = this.at('ruína');
@@ -275,6 +288,8 @@ class B005 extends Block {
     comp.draw(renderer, L.upload(), out);
     const lb = S().lines; lb.clear();
     const k = t - this.tTrace;
+    // the spark 00.4's picture shrank into, waiting where the P starts until it writes it
+    if (k < 0) { const p = g.P[0]![0]!; sparkHead(lb, p.x, p.y, t, 0.9, 1); }
     traceContours(lb, g.P, k, t, { k0: 0, dur: 0.5, stagger: 0.04, width: 2.2, tf, alpha: 1 - prog(t, this.tTrace + 0.9, this.tTrace + 1.3) });
     traceContours(lb, g.doom, k, t, { k0: 0.12, dur: 0.5, stagger: 0.04, width: 2.2, tf, alpha: 1 - prog(t, this.tTrace + 0.9, this.tTrace + 1.3) });
     // "Pê" and "dum": each part flashes hot along its outline as it is named
