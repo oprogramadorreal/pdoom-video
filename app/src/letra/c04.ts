@@ -13,6 +13,34 @@ import { callout, typed, type P2 } from './draw';
 import { caption, clipPost, remap } from './c02';
 
 /** A paperclip, drawn as a hairline (centre x, y; length L; angle). */
+/** The same wire as points (centred, unrotated), in the order it is bent: for the spark to trace. */
+function paperclipPts(L: number): P2[] {
+  const w = 0.3 * L, out: P2[] = [];
+  const line = (x0: number, y0: number, x1: number, y1: number) => { for (let i = 0; i <= 8; i++) out.push({ x: lerp(x0, x1, i / 8), y: lerp(y0, y1, i / 8) }); };
+  const arc = (cx: number, cy: number, r: number, a0: number, a1: number) => { for (let i = 0; i <= 24; i++) { const a = lerp(a0, a1, i / 24); out.push({ x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r }); } };
+  line(L / 2 - 0.25 * w, w / 2, -L / 2 + w / 2, w / 2);
+  arc(-L / 2 + w / 2, 0, w / 2, Math.PI / 2, 1.5 * Math.PI);
+  line(-L / 2 + w / 2, -w / 2, L / 2 - 0.4 * w, -w / 2);
+  arc(L / 2 - 0.4 * w, -0.1 * w, 0.4 * w, -Math.PI / 2, Math.PI / 2);
+  line(L / 2 - 0.4 * w, 0.3 * w, -L / 2 + 0.55 * w, 0.3 * w);
+  arc(-L / 2 + 0.55 * w, 0.05 * w, 0.25 * w, Math.PI / 2, 1.5 * Math.PI);
+  line(-L / 2 + 0.55 * w, -0.2 * w, L / 2 - 0.8 * w, -0.2 * w);
+  return out;
+}
+/** The point at k (0..1 of its length) along a polyline, and the polyline up to it. */
+function alongPts(pts: P2[], k: number): { head: P2; done: P2[] } {
+  let total = 0;
+  for (let i = 1; i < pts.length; i++) total += Math.hypot(pts[i]!.x - pts[i - 1]!.x, pts[i]!.y - pts[i - 1]!.y);
+  let left = clamp(k) * total;
+  const done: P2[] = [pts[0]!];
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1]!, b = pts[i]!, len = Math.hypot(b.x - a.x, b.y - a.y);
+    if (left <= len) { const u = len > 0 ? left / len : 0; const h = { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) }; done.push(h); return { head: h, done }; }
+    left -= len; done.push(b);
+  }
+  return { head: pts[pts.length - 1]!, done };
+}
+
 function paperclip(c: CanvasRenderingContext2D, x: number, y: number, L: number, a: number) {
   const w = 0.3 * L;
   c.save(); c.translate(x, y); c.rotate(a);
@@ -42,7 +70,8 @@ function cursor(c: CanvasRenderingContext2D, x: number, y: number, s = 1) {
 // ---------------------------------------------------------------- 04.1
 /**
  * 04.1 "Chegamos à fábrica de clipes do começo…" — the chorus rolls to 0.81; "tudo vira clipe, um a um",
- * as the clip has it. "Imagine uma superinteligência com uma única meta": its goal typed at the top,
+ * as the clip has it. "Imagine": the clip's field of paperclips pulls back into the dark, and the spark bends
+ * one new wire into a clip, big, in the middle (CLIPES 0 → 1). "uma superinteligência com uma única meta": its goal typed at the top,
  * maximizar(clipes), and a field of paperclips doubling on the beat, a counter racing; "constrói fábricas,
  * busca metal, energia": the plan's lines tick. "o planeta, e a gente": the planet, made of clips, turning —
  * "você: ~7 × 10²⁷ átomos"; "que poderiam virar clipe": it turns orange from one side. "Ela não precisa
@@ -70,7 +99,8 @@ class B041 extends Block {
     const { renderer, comp } = this.ctx;
     const t = f.t;
     if (t < this.tClip) return { post: clipPost(this.clips.render('hook3', remap(t, [[this.e.start, 96.25], [this.e.start + 0.45, 97.05], [this.tClip, 97.1]]), out)) };
-    if (t < this.tField) return { post: clipPost(this.clips.render('paperclips', remap(t, [[this.tClip, 97.44], [this.tField, 98.95]]), out)) };
+    // (held at 98.8 s: just after it, the clip's out-of-office reply pops up)
+    if (t < this.tField) return { post: clipPost(this.clips.render('paperclips', remap(t, [[this.tClip, 97.44], [this.tField, 98.8]]), out)) };
     if (t >= this.tOne) {
       const R = S().rt;
       const post = this.clips.render('paperclips', 97.52 + (t - this.tOne) * 0.01, R[0]!, undefined);
@@ -88,38 +118,55 @@ class B041 extends Block {
       comp.draw(renderer, L.upload(), out);
       return { post: { ...clipPost(post), shake: [0, 0], zoom: 1 } };
     }
-    clearRT(renderer, out, LIN.ink);
+    // the way in: the clip's field of paperclips pulls back into the dark (no cut to black)
+    const kOut = prog(t, this.tField, this.tField + 0.6, ease.inOutCubic);
+    if (kOut < 1) {
+      const R = S().rt;
+      this.clips.render('paperclips', 98.8, R[0]!);
+      camPass(renderer, R[0]!.texture, out, { zoom: lerp(1, 0.8, kOut), dim: 1 - kOut });
+    } else clearRT(renderer, out, LIN.ink);
     const L = S().ui; L.clear(); const c = L.ctx;
     c.textBaseline = 'alphabetic';
+    let spark: { head: P2; at: (tb: number) => P2 | null } | null = null;
     if (t < this.tPlanet) {
-      // the field: clips doubling on the beat, the view pulling back
+      // the field: clips doubling on the beat, the view pulling back. The first one is bent by the spark as
+      // the clip's field goes, and shown big until the doubling starts
       const beats = this.n.beatsIn(this.tMax, t).length;
       const n = t < this.tMax ? 1 : Math.min(4096, 2 ** beats);
       const zoom = 1 / n ** 0.36;
-      const L0 = 240 * zoom;
+      const big = 1 + 0.9 * (1 - ease.inOutCubic(prog(t, this.tMax - 0.3, this.tMax + 0.25)));
+      const L0 = 240 * zoom * big;
       const cols = Math.ceil(Math.sqrt(n * 2));
-      c.strokeStyle = rgba('bone', 0.8); c.lineWidth = Math.max(0.8, 3 * zoom);
+      const bend = (tb: number) => ease.inOutCubic(prog(tb, this.tField + 0.15, this.tField + 1.35));
+      c.strokeStyle = rgba('bone', 0.8); c.lineWidth = Math.max(0.8, 3 * zoom * Math.sqrt(big)); c.lineCap = 'round'; c.lineJoin = 'round';
       for (let i = 0; i < n; i++) {
         const col = i % cols, row = Math.floor(i / cols);
         const x = W / 2 + (col - (cols - 1) / 2) * L0 * 1.15, y = H / 2 + 40 + (row - (Math.ceil(n / cols) - 1) / 2) * L0 * 0.45;
         if (x < -100 || x > W + 100 || y < -100 || y > H + 100) continue;
         c.strokeStyle = i === 0 ? rgba('signal') : rgba('bone', 0.75);
-        paperclip(c, x, y, L0, 0);
+        const kb = i === 0 ? bend(t) : 1;
+        if (kb >= 1) { paperclip(c, x, y, L0, 0); continue; }
+        if (kb <= 0) continue;
+        const wire = paperclipPts(L0), { head, done } = alongPts(wire, kb);
+        c.beginPath(); done.forEach((q, j) => (j ? c.lineTo(x + q.x, y + q.y) : c.moveTo(x + q.x, y + q.y))); c.stroke();
+        spark = { head: { x: x + head.x, y: y + head.y }, at: (tb) => { const kk = bend(tb); return kk > 0 && kk < 1 ? (({ head: h }) => ({ x: x + h.x, y: y + h.y }))(alongPts(wire, kk)) : null; } };
       }
-      c.fillStyle = rgba('ink', 0.88); c.fillRect(0, 0, W, 300);
+      c.lineCap = 'butt';
+      // (a band under the header, once the field is big enough to reach it)
+      c.fillStyle = rgba('ink', 0.88 * prog(t, this.tMax, this.tMax + 0.5)); c.fillRect(0, 0, W, 300);
       c.font = font(F.mono(400), 36); c.fillStyle = rgba('bone');
       typed(c, 'meta: maximizar(clipes)', 150, 150, prog(t, this.tGoal, this.tGoal + 0.7), { caret: t < this.tGoal + 0.9 });
       this.tPlan.forEach((tp, i) => {
         c.font = font(F.mono(400), 26); c.fillStyle = rgba('ash');
         typed(c, ['+ construir fábricas', '+ buscar metal', '+ buscar energia'][i]!, 150 + i * 380, 220, prog(t, tp, tp + 0.4));
       });
-      c.textAlign = 'right';
+      c.textAlign = 'right'; c.globalAlpha = kOut;
       c.font = font(F.mono(500), 18); c.letterSpacing = '3px'; c.fillStyle = rgba('ash'); c.fillText('CLIPES', W - 150, 110);
       c.letterSpacing = '0px';
       c.font = font(F.mono(400), 64); c.fillStyle = rgba('signal');
-      const count = t < this.tMax ? 1 : beats <= 12 ? 2 ** beats : 4096 * 3 ** (beats - 12);
+      const count = t < this.tMax ? (bend(t) < 1 ? 0 : 1) : beats <= 12 ? 2 ** beats : 4096 * 3 ** (beats - 12);
       c.fillText(count.toLocaleString('pt-BR'), W - 150, 180);
-      c.textAlign = 'left';
+      c.textAlign = 'left'; c.globalAlpha = 1;
     } else {
       // the planet, made of clips, turning; the conversion front sweeps it
       const R = 330, cx = W / 2 + 150, cy = H / 2 + 30;
@@ -148,6 +195,13 @@ class B041 extends Block {
       }
     }
     comp.draw(renderer, L.upload(), out);
+    // the spark bending the first wire
+    if (spark) {
+      const lb = S().lines; lb.clear();
+      sparkParticles(lb, t, spark.at, { rate: 70, speed: 180, seed: 41 });
+      sparkHead(lb, spark.head.x, spark.head.y, t, 1, 1);
+      lb.render(renderer, out);
+    }
     return { post: { bloom: 0.5, ca: 0.5, frame: 0 } };
   }
 }
