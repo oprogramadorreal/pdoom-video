@@ -25,7 +25,8 @@ const RECAP: [string, string, number, number][] = [
  * 06.1 "Máquinas que aprendem rápido…" — the chapter's four ideas in four remounted shots: the loss
  * plunging, the question cards from the slot, the mask smiling, the clip duplicating. "É disso que a
  * música fala": the outro's end card, from "= ∞" to "NaN¹ · estimativa não mais definida", in two seconds;
- * the counter breaks without a word, and NaN lights on the ruler.
+ * the counter breaks without a word. The lyric has been explained: the ruler fades out on the first cut, and
+ * only comes back where it is the subject (06.3, 06.7).
  */
 class B061 extends Block {
   private cuts: number[] = []; private tCard = 0;
@@ -36,14 +37,16 @@ class B061 extends Block {
   }
   render(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const t = f.t;
+    // the lyric has been explained: the ruler fades out with the chapter's first cut
+    const regua = { alpha: 1 - prog(t, this.e.start, this.e.start + 0.8, ease.inOutCubic) };
     if (t >= this.tCard) {
       const post = this.clips.render('outro', remap(t, [[this.tCard, 150.85], [this.endOf('música fala.') - 0.1, 153.2], [this.e.end, 153.3]]), out);
-      return { post: clipPost(post) };
+      return { post: clipPost(post), regua };
     }
     const i = this.cuts.filter((x) => t >= x).length - 1;
     const [, id, s0, s1] = RECAP[i]!;
     const t1 = i + 1 < this.cuts.length ? this.cuts[i + 1]! : this.tCard;
-    return { post: clipPost(this.clips.render(id, lerp(s0, s1, prog(t, this.cuts[i]!, t1)), out)) };
+    return { post: clipPost(this.clips.render(id, lerp(s0, s1, prog(t, this.cuts[i]!, t1)), out)), regua };
   }
 }
 
@@ -60,11 +63,11 @@ const REVISIONS = [
 const LOOP = ['descreve a ideia', 'a IA escreve o código', 'ele assiste', 'pede ajustes'];
 
 /**
- * 06.2 "E a promessa do começo…" — the end of the ruler flashes (where 00.2 pointed); "Não foi com um
- * prompt só": one prompt, typed — "faça um clipe pra essa música" — and struck out. "O clipe original, em
- * inglês": its repository, "github.com/mexicat/pdoom-video · Giacomo Magnanini + Claude", its first
- * commit. "conversando com o Clód, cena por cena": a loop — describe, the AI writes the code, he watches,
- * he asks for adjustments — each step lit on its words, while the real adjustments scroll by.
+ * 06.2 "E a promessa do começo…" — the question in type. "Não foi com um prompt só": one prompt, typed —
+ * "faça um clipe pra essa música" — and struck out. "O clipe original, em inglês": its repository,
+ * "github.com/mexicat/pdoom-video · Giacomo Magnanini + Claude", its first commit. "conversando com o Clód,
+ * cena por cena": a loop — describe, the AI writes the code, he watches, he asks for adjustments — each step
+ * lit on its words, while the real adjustments scroll by.
  */
 class B062 extends Block {
   private tPrompt = 0; private tRepo = 0; private tLoop = 0; private tSteps: number[] = [];
@@ -79,9 +82,7 @@ class B062 extends Block {
     clearRT(renderer, out, LIN.ink);
     const L = S().ui; L.clear(); const c = L.ctx;
     c.textBaseline = 'alphabetic';
-    let mark: [number, number] | undefined;
     if (t < this.tRepo) {
-      mark = [CLIP_END, 1 - prog(t, this.e.start + 0.8, this.e.start + 1.4)];
       // the promise, as a question
       const kq = ease.outCubic(prog(t, this.at('como uma') - 0.1, this.at('como uma') + 0.4)) * (1 - prog(t, this.tPrompt - 0.2, this.tPrompt));
       if (kq > 0) {
@@ -160,17 +161,18 @@ class B062 extends Block {
       sparkHead(lb, p.x, p.y, t, 0.9, 1);
     }
     lb.render(renderer, out);
-    return { post: { bloom: 0.45, ca: 0.5, frame: 0 }, regua: mark ? { mark } : undefined };
+    return { post: { bloom: 0.45, ca: 0.5, frame: 0 }, regua: { alpha: 0 } };
   }
 }
 
 // ---------------------------------------------------------------- 06.3
 /**
  * 06.3 "O truque é que cada quadro é uma função do tempo." — quadro = render(t), in type, t running. "Você
- * dá o segundo exato da música": the ruler becomes the control — the spark drags t back and forth and the
- * frame above follows, with render(42,37) under it. "Sempre a mesma": the same t twice, side by side, "=".
- * "pausar, voltar e desenhar por cima": the pause, a step back on the ruler, and the frame splits into its
- * layers — the clip, this explanation's drawings, the ruler — like sheets of glass.
+ * dá o segundo exato da música": the ruler draws itself back in as the control — the spark drags t back and
+ * forth and the frame above follows, with render(42,37) under it. "Sempre a mesma": the same t twice, side by
+ * side, "=". "pausar, voltar e desenhar por cima": the pause, a step back on the ruler, and the frame splits
+ * into its layers — the clip, this explanation's drawings, the ruler — like sheets of glass. The ruler fades
+ * out with the block.
  */
 class B063 extends Block {
   private tFn = 0; private tSec = 0; private tSame = 0; private tPause = 0; private tBack = 0; private tDraw = 0;
@@ -252,7 +254,8 @@ class B063 extends Block {
     }
     comp.draw(renderer, L.upload(), out);
     const play = t >= this.tSec && t < this.tPause ? 1 : 0;
-    return { post: { bloom: 0.45, ca: 0.5, frame: 0 }, regua: { pos: s, play, label: t >= this.tSec && !same && layers <= 0 ? [`t = ${fmtTime(s)}`, 1] : undefined } };
+    const draw = prog(t, this.tSec - 0.15, this.tSec + 0.75, ease.inOutCubic), alpha = 1 - prog(t, this.e.end - 0.5, this.e.end);
+    return { post: { bloom: 0.45, ca: 0.5, frame: 0 }, regua: { pos: s, play, draw, alpha, label: t >= this.tSec && !same && layers <= 0 ? [`t = ${fmtTime(s)}`, 1] : undefined } };
   }
 }
 
@@ -295,7 +298,7 @@ class B064 extends Block {
       c.globalAlpha = 1;
     });
     comp.draw(renderer, L.upload(), out);
-    return { post: { bloom: 0.4, ca: 0.4, frame: 0 } };
+    return { post: { bloom: 0.4, ca: 0.4, frame: 0 }, regua: { alpha: 0 } };
   }
 }
 
@@ -403,7 +406,7 @@ class B065 extends Block {
       c2.beginPath(); c2.arc(M.x, M.y + MASK.smileCY * M.r, MASK.smileR * M.r, MASK.smileA0, MASK.smileA1); c2.stroke();
       comp.draw(renderer, L2.upload(), out);
     }
-    return { post: { bloom: 0.5, ca: 0.5, frame: 0 } };
+    return { post: { bloom: 0.5, ca: 0.5, frame: 0 }, regua: { alpha: 0 } };
   }
 }
 
@@ -456,14 +459,14 @@ class B066 extends Block {
     c.restore();
     if (t >= this.tLeave) caption(c, 'o seu número vai nos comentários', prog(t, this.tLeave, this.tLeave + 0.8), 380, 880);
     comp.draw(renderer, L.upload(), out);
-    return { post: { bloom: 0.5, ca: 0.4, frame: 0 } };
+    return { post: { bloom: 0.5, ca: 0.4, frame: 0 }, regua: { alpha: 0 } };
   }
 }
 
 // ---------------------------------------------------------------- 06.7
 /**
  * 06.7 "E agora, ouve de novo. Aposto que vai ser outra música." — the clip's first frame again, the crop
- * marks back; on "ouve de novo" the spark runs back to 0:00. When the mixagem ends, the pause turns to play,
+ * marks back, and the ruler fades back in at 2:35; on "ouve de novo" the spark runs back to 0:00. When the mixagem ends, the pause turns to play,
  * the ruler fades, and the song restarts with the clip (replay.ts).
  */
 class B067 extends Block {
@@ -477,7 +480,7 @@ class B067 extends Block {
     const post = this.clips.render('open', 0, out);
     const pos = lerp(CLIP_END, 0, ease.inOutCubic(prog(t, this.tBack, this.tBack + 0.9)));
     const play = prog(t, this.tEnd - 0.7, this.tEnd - 0.5);
-    const alpha = 1 - prog(t, this.tEnd - 0.4, this.tEnd - 0.02);
+    const alpha = prog(t, this.e.start, this.e.start + 0.35) * (1 - prog(t, this.tEnd - 0.4, this.tEnd - 0.02));
     return { post: { ...post, frame: 1 }, regua: { pos, play, alpha }, verse: 0 };
   }
 }
