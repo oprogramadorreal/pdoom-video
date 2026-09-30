@@ -5,11 +5,11 @@ import { W, H, clearRT } from '../engine/gl';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, measure } from '../engine/type';
 import { clamp, ease, hash, lerp, mulberry32, prog, pulse, TAU } from '../engine/util';
-import { drawMask2D, MASK, sparkHead, sparkParticles } from '../scenes/_motifs';
+import { drawMask2D, MASK, sparkHead, sparkParticles, sparkProbe } from '../scenes/_motifs';
 import { Block, type BlockFactory, type BlockOut } from './block';
-import { S, camPass, fmtTime, Regua, type Cam } from './kit';
+import { S, camPass, camToScreen, fmtTime, Regua, type Cam } from './kit';
 import { INK } from './paper';
-import { callout, typed } from './draw';
+import { callout, typed, type P2 } from './draw';
 import { caption, clipPost, remap } from './c02';
 
 /** A paperclip, drawn as a hairline (centre x, y; length L; angle). */
@@ -248,7 +248,7 @@ class B042 extends Block {
 }
 
 // ---------------------------------------------------------------- 04.3
-/** The spark in the clip: scene, song time, where it is on screen (measured on rendered frames). */
+/** The spark in the clip: scene, song time, and where it is on screen if a frame draws none (the fallback). */
 const SPARKS: { q: string; id: string; s: number; x: number; y: number }[] = [
   { q: 'desenhou', id: 'open', s: 4.2, x: 623, y: 421 },
   { q: 'traçou', id: 'loss', s: 10.25, x: 785, y: 354 },
@@ -259,11 +259,20 @@ const SPARKS: { q: string; id: string; s: number; x: number; y: number }[] = [
 ];
 /**
  * 04.3 "Agora, repara no ponto laranja…" — the verse, the fuse burning. "repara no ponto laranja": the
- * spark circled. Then a match cut on it: the spark stays put in the middle of the frame while the world
+ * camera closes in on the spark as it burns along the fuse, and a circle is drawn round it, following it.
+ * Then a match cut on it: the spark stays put in the middle of the frame, inside the circle, while the world
  * around it changes on every phrase — it drew the unicorn, traced the loss, became the price, bent into the
  * first clip, is the fuse — each with its time in the song. "Aceso desde o primeiro segundo": the ignition
- * at 0:01, and the whole ruler lights up like a fuse.
+ * at 0:01, and the whole ruler lights up like a fuse. Where the spark is comes from the clip frame itself
+ * (sparkProbe: where the scene drew its brightest spark head), so the circle is always on it.
  */
+/** The circle round the spark, drawn in over k (0..1): a light line on a dark one, so it reads on paper and in the glare too. */
+function ring(c: CanvasRenderingContext2D, x: number, y: number, r: number, k: number) {
+  const a1 = -Math.PI / 2 + TAU * k;
+  c.strokeStyle = rgba('ink', 0.85); c.lineWidth = 6; c.beginPath(); c.arc(x, y, r, -Math.PI / 2, a1); c.stroke();
+  c.strokeStyle = rgba('bone', 0.95); c.lineWidth = 2; c.beginPath(); c.arc(x, y, r, -Math.PI / 2, a1); c.stroke();
+}
+
 class B043 extends Block {
   private tLook = 0; private cuts: number[] = []; private tFuse = 0;
   override async init() {
@@ -271,6 +280,13 @@ class B043 extends Block {
     this.tLook = this.at('repara');
     this.cuts = SPARKS.map((s) => this.at(s.q) - 0.06);
     this.tFuse = this.at('Aceso');
+  }
+  /** Render a clip frame into `rt` and find its spark (screen px of that frame); `fb` if it draws none. */
+  private renderFindingSpark(id: string, s: number, rt: THREE.WebGLRenderTarget, fb: P2) {
+    sparkProbe.on = true; sparkProbe.w = 0;
+    const post = this.clips.render(id, s, rt);
+    sparkProbe.on = false;
+    return { post, spark: sparkProbe.w > 0 ? { x: sparkProbe.x, y: sparkProbe.y } : fb };
   }
   render(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const { renderer, comp } = this.ctx;
@@ -280,26 +296,29 @@ class B043 extends Block {
     const L = S().ui; L.clear(); const c = L.ctx;
     const fuse = prog(t, this.tFuse + 0.2, this.tFuse + 1.4);
     if (i < 0) {
+      // the fuse burning; the camera closes in on its spark, and the circle is drawn round it, following it
       const s = remap(t, [[this.e.start, 102.95], [this.tLook, 104.1], [this.cuts[0]!, 104.35]]);
-      const post = this.clips.render('fuse', s, R[0]!);
-      const z = lerp(1, 1.35, ease.inOutCubic(prog(t, this.tLook, this.cuts[0]!)));
-      const sp = { x: 916, y: 545 };
-      const cam: Cam = { x: lerp(W / 2, sp.x + 120, prog(t, this.tLook, this.cuts[0]!)), y: lerp(H / 2, sp.y + 30, prog(t, this.tLook, this.cuts[0]!)), zoom: z };
+      const { post, spark } = this.renderFindingSpark('fuse', s, R[0]!, { x: 916, y: 545 });
+      const k = ease.inOutCubic(prog(t, this.tLook - 0.1, this.tLook + 0.9));
+      const cam: Cam = { x: lerp(W / 2, spark.x, k), y: lerp(H / 2, spark.y, k), zoom: lerp(1, 1.35, k) };
       camPass(renderer, R[0]!.texture, out, cam);
-      const k = prog(t, this.tLook + 0.4, this.tLook + 0.9);
-      if (k > 0) { c.strokeStyle = rgba('bone', 0.9); c.lineWidth = 2; c.beginPath(); c.arc(W / 2, H / 2, 70, -Math.PI / 2, -Math.PI / 2 + TAU * ease.inOutCubic(k)); c.stroke(); }
+      const kc = prog(t, this.tLook + 0.3, this.tLook + 0.8);
+      if (kc > 0) {
+        const p = camToScreen(cam, spark.x, spark.y);
+        ring(c, p.x, p.y, 60 + 10 * (1 - k), ease.inOutCubic(kc));
+      }
       comp.draw(renderer, L.upload(), out);
       return { post: { ...clipPost(post), shake: [0, 0], zoom: 1 } };
     }
     const sp = SPARKS[i]!;
     const lt = t - this.cuts[i]!;
-    const post = this.clips.render(sp.id, sp.s + lt * 0.005, R[0]!);
-    // the view keeps the spark at the frame's centre; a slow push
-    camPass(renderer, R[0]!.texture, out, { x: sp.x, y: sp.y, zoom: 1.25 + 0.04 * lt });
-    c.strokeStyle = rgba('bone', 0.8); c.lineWidth = 1.5;
-    c.beginPath(); c.arc(W / 2, H / 2, 60, 0, TAU); c.stroke();
-    c.font = font(F.mono(500), 28); c.fillStyle = rgba('signal');
-    c.fillText(fmtTime(sp.s), W / 2 + 80, H / 2 - 60);
+    const { post, spark } = this.renderFindingSpark(sp.id, sp.s + lt * 0.005, R[0]!, sp);
+    // the view keeps the spark at the frame's centre, inside the circle; a slow push
+    camPass(renderer, R[0]!.texture, out, { x: spark.x, y: spark.y, zoom: 1.25 + 0.04 * lt });
+    ring(c, W / 2, H / 2, 60, 1);
+    c.font = font(F.mono(500), 28); c.lineWidth = 5; c.strokeStyle = rgba('ink', 0.6); c.lineJoin = 'round';
+    c.strokeText(fmtTime(sp.s), W / 2 + 80, H / 2 - 60);
+    c.fillStyle = rgba('signal'); c.fillText(fmtTime(sp.s), W / 2 + 80, H / 2 - 60);
     comp.draw(renderer, L.upload(), out);
     return { post: { ...clipPost(post), shake: [0, 0], zoom: 1, flash: 0 }, regua: { fuse } };
   }
