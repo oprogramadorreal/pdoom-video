@@ -1,9 +1,10 @@
 // The YouTube thumbnail of the full pt-BR video ("Opus 5.5 criou esse vídeo"). The clip's shoggoth, every
 // eye open and staring at the viewer, the assistant's mask held up beside it; the title in the video's own
 // type, on the dark to the left. Variants (thumb.html?v=):
-//   hino    "O HINO DA IA", under the line the narration opens with.
-//   codigo  "100% CÓDIGO": an x-ray band (the explainer's, 00.2 and 02.5) has crossed half the creature,
-//           which is left made of its own shader code.
+//   hino         "O HINO DA IA", under the line the narration opens with.
+//   codigo       "100% CÓDIGO": an x-ray band (the explainer's, 00.2 and 02.5) has crossed half the
+//                creature, which is left made of its own shader code.
+//   hino-codigo  the title of hino over the creature of codigo, under "FEITO 100% COM CÓDIGO".
 // (Outside app/src on purpose: the explainer counts and lists the video's code from there.)
 import * as THREE from 'three';
 import { Scene, type Frame, type PostOverrides } from '../src/engine/scene';
@@ -30,6 +31,8 @@ const toScreen = (c: Cam, x: number, y: number) => ({ x: (x - c.x) * c.zoom + W 
 interface Tag { eye: number | 'mask'; name: string; conf: string; below?: boolean }
 interface Variant {
   kicker: string;
+  /** The kicker's size (px; default 30): a short one can be read larger. */
+  kickSize?: number;
   lines: string[];
   /** Where the signal colour starts in each line (-1: none). */
   hot: number[];
@@ -48,6 +51,7 @@ const CAM: Cam = { x: 934, y: 500, zoom: 0.95 };
 const VARIANTS: Record<string, Variant> = {
   hino: { kicker: 'UMA MÚSICA DE AMOR SOBRE O FIM DO MUNDO', lines: ['O HINO', 'DA IA'], hot: [-1, 3] },
   codigo: { kicker: 'NENHUM QUADRO FOI DESENHADO À MÃO', lines: ['100%', 'CÓDIGO'], hot: [0, -1], band: 1130 },
+  'hino-codigo': { kicker: 'FEITO 100% COM CÓDIGO', lines: ['O HINO', 'DA IA'], hot: [-1, 3], band: 1130, kickSize: 44 },
 };
 
 /**
@@ -181,10 +185,10 @@ export default class Thumb extends Scene {
     const X = 96, maxW = 780;
     const fam = F.archivo(62, 900);
     const size = Math.min(360, ...v.lines.map((l) => (maxW / measure(l, fam, 100)) * 100));
-    const cap = size * 0.72, lead = size * 0.9, kick = 30, gap = 52;
+    const cap = size * 0.72, lead = size * 0.9, kick = v.kickSize ?? 30, gap = kick * 1.7;
     const top = (H - (kick + gap + cap + lead * (v.lines.length - 1))) / 2;
     c.textBaseline = 'alphabetic';
-    c.font = font(F.mono(500), kick); c.letterSpacing = '3px';
+    c.font = font(F.mono(500), kick); c.letterSpacing = `${kick / 10}px`;
     c.fillStyle = rgba('signal');
     c.fillText(v.kicker, X + 4, top + kick * 0.72);
     c.letterSpacing = '0px';
