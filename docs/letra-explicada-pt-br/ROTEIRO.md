@@ -117,7 +117,8 @@ Por que assim:
   explode é o "fim do mundo". A explosão cai no corte e emenda nos flashes do clipe.
 - **A régua espera.** Ela só entra no fim de 00.2, em "inteligência artificial" (~23,7 s), pouco antes de ser usada:
   em "No final", a faísca corre até a ponta dela, e em 00.3 ela varre a letra inteira. Antes disso, o assunto é o vídeo
-  ser código, não a letra, e a régua só disputaria espaço com os flashes e o código.
+  ser código, não a letra, e a régua só disputaria espaço com os flashes e o código. Daí em diante, ela aparece sob
+  demanda (ver "Régua").
 - **A primeira frase não depende da tela.** Ela resume o que a pessoa acabou de ver, com ironia, e funciona até
   para quem está só ouvindo. O gancho do título vem logo depois, uns 4 s mais tarde.
 - **Nada de "Espera".** No YouTube, a barra de progresso e os capítulos já mostram que o vídeo continua.
@@ -191,18 +192,23 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
   o depoimento), e gráficos. Tipografia com a fonte na tela, não capturas de tela.
 - **Régua**: faixa fina no pé da tela, como a de um player: a música de 0:00 a 2:35, um tique por verso e os refrões
   marcados com o valor do P(doom). O cursor é a faísca, com um símbolo de pausa ao lado enquanto a narração fala.
-  Com tanta imagem nova, é a âncora: diz em que ponto da música estamos. Pode sair de cena em momentos de tela cheia
-  e volta no verso seguinte. Em 04.3, a régua inteira acende como estopim.
-  Entra no fim de 00.2, em "inteligência artificial", pouco antes do primeiro uso ("No final" e a varredura de 00.3).
-  Sai no começo de 06.1, quando a letra já foi explicada, e volta só onde é o assunto: em 06.3, como o controle do
-  tempo, e em 06.7, para voltar a 0:00 e dar play.
+  Com tanta imagem nova, é a âncora: diz em que ponto da música estamos. Em 04.3, a régua inteira acende como estopim.
+  *Sob demanda:* a régua não fica na tela o tempo todo, porque sob as animações novas ela só polui. Ela aparece
+  quando muda a parte da música de que se fala: entra ~1,2 s antes de cada corte para um verso novo (a faísca corre
+  até ele), fica ~3,5 s depois do corte (o verso entra e é lido; no começo de cada capítulo, o valor do refrão acende)
+  e sai. Também fica onde um bloco a usa: do fim de 00.2 ao fim de 00.3 ("No final", a varredura, as iscas), em 00.6
+  (os pulos de refrão em refrão), em 02.3 (a máscara voando para o canto dela), no fim de 04.3 (o estopim), em 06.3
+  (o controle do tempo) e em 06.7 (volta a 0:00 e play). Duas aparições a menos de 5 s uma da outra viram uma só,
+  para ela não piscar. Não volta nos blocos sem verso novo (02.5, 05.4) nem no capítulo 06, fora 06.3 e 06.7. No
+  total, 29 aparições curtas: fica na tela cerca de um terço do tempo depois de entrar, em vez de quase todo. A lista de montagem
+  (`montage.ts`) diz onde cada bloco a usa; os tempos saem das palavras e dos cortes (`Regua.visible` em `kit.ts`).
   *Como ficou:* a régua é desenhada na camada do HUD (a das marcas de corte), então o tremor, os zooms, a inversão e as
   franjas de cor das cenas não a atingem; um degradê de tinta suave por baixo a mantém legível sobre qualquer imagem.
   A parte já tocada da linha fica laranja. Embaixo da ponta esquerda, "▮▮ 0:23 / 2:35". Sobre o cursor pode aparecer
   uma etiqueta curta ("cap. 02 · Sydney") e uma posição pode piscar na régua (o fim, em 00.2; cada refrão, em 00.6).
 - **Verso na régua**: em todo bloco que tem verso, o verso entra logo acima da régua, à esquerda, em Archivo, em até
-  ~0,4 s, com a palavra explicada em laranja, e fica ali durante o bloco, como o "tocando agora" de um player. É a
-  forma fixa de o verso estar sempre na tela; a cena, quando é a do clipe no tempo do verso, também o mostra no estilo dela.
+  ~0,4 s, com a palavra explicada em laranja, como o "tocando agora" de um player, e sai com a régua. A cena, quando é
+  a do clipe no tempo do verso, também o mostra no estilo dela.
 - **Código**: em 00.2, 02.5 e 06.2–06.3, trechos reais de `app/src`, em Plex Mono, ligados à cena que desenham.
 
 ## Duração
@@ -301,8 +307,8 @@ animação nova.
 | 00.1 | o fim do clipe (ver "A transição") | "Você acabou de ouvir uma música de amor sobre o fim do mundo." | O primeiro quadro, com as marcas de corte. Em "Você", a faísca desenha um coração num traço só; em "amor", ele se enche de laranja e bate duas vezes; na batida seguinte, vira a Terra, um globo pontilhado com o Atlântico de frente. Em "fim do mundo", ela racha a partir de um ponto e esquenta; no corte para 00.2, explode (ver "Como a explicação começa"). Ainda sem régua. **Novo.** |
 | 00.2 | — | "E tudo que você viu no vídeo é código… No final, eu te mostro melhor." | Em "tudo que você viu", o clipe passa em flashes, um quadro por batida (o unicórnio, o FOOM, os olhos do shoggoth, os clipes se multiplicando). Em "é código", a faixa de raio X do `shoggoth` atravessa o último e o deixa desenhado pelo próprio código-fonte (`paperclips-glsl.ts`, rolando), com a imagem acesa nos caracteres; as marcas de corte saem. Em "Nenhum quadro foi…", essa imagem feita de código recua (mais escura, desfocada) e uma **tira de filme** entra pela direita: quatro quadros vazios, com as perfurações, e a legenda "NENHUM QUADRO FOI…". Cada jeito de fazer imagem é desenhado pela faísca num quadro quando a voz o nomeia, com o nome embaixo: um lápis e o risco que acabou de fazer ("desenhado à mão"), uma claquete que bate ("filmado"), um vídeo com as três estrelinhas das ferramentas de IA ("gerado por IA de vídeo"), uma linha do tempo de edição com o cursor andando ("programa de edição"); e cada quadro é riscado com um X laranja, de lápis de cera, quando a voz o nega. Em "nada de After Effects", "After Effects" é digitado embaixo e riscado. Em "São mais de", a tira sai pela esquerda e começa um voo por toda a listagem do clipe, arquivo por arquivo, com um contador grande no meio ("LINHAS DE CÓDIGO", "app/src · 57 arquivos"): ele acelera, passa de 20.000 em "vinte mil" e desacelera até pousar na contagem real (medida no próprio código), que pisca em laranja e fica até "TypeScript". O voo pousa em `open.ts`: em "TypeScript" e "GLSL", chamadas saem do fim das linhas, com colchetes na margem (o TypeScript em osso, o bloco `/* glsl */` em laranja); em "shaders", a câmera se aproxima do bloco GLSL e, ao lado, abre-se uma janela com o que ele desenha (a folha quadriculada do começo). Em "página web", tudo encolhe numa janela com `localhost:5173/?lang=pt-BR` e o clipe rodando dentro. Em "Escritas por", a janela se afasta e `// escrito por` é digitado; em "Clód Opus cinco ponto cinco", a faísca traça "Claude Opus 5.5" em Archivo, e o nome se preenche. Em "No final", a faísca sai do nome e corre até o fim da régua, que pisca. |
 | 00.3 | — | "Mas antes, a letra… acabar com a humanidade." | A letra inteira, os 46 versos em três colunas, com o tempo de cada um. Em "esconde umas trinta referências", a faísca corre a régua de 0:00 a 2:35; cada verso por que ela passa acende, com a referência sublinhada em laranja, e um contador chega a 30 (as referências do guia da letra). Depois, um trecho do clipe para cada isca, e o cursor pula para onde ela está na música, com a etiqueta do capítulo que a explica: as grades do `prompt` Sydney fechando ("cap. 02 · Sydney"); a máscara, e a faixa de raio X revelando o monstro atrás do sorriso ("cap. 02 · shoggoth"); o laptop com a tela CENSURADO ("cap. 05 · Ilya"); um clipe que se duplica e, em "que poderia acabar com a humanidade", a treliça fechando em "NÃO TEM PRA ONDE ESCAPAR" ("cap. 04 · clipes"). |
-| 00.4 | — | "Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe." | O cursor volta a 0:00. Uma lente macro passeia, fora de foco, por detalhes que ainda vão aparecer, um por batida: a distribuição com "Claude, 0,12", uma etiqueta dos olhos do shoggoth, os adesivos do laptop. Em "quase ninguém percebe", a imagem encolhe até sumir na faísca em 0:00. |
-| 00.5 | — | "Primeiro, o título… com essa chance de cair?" | *P*(doom) composto como no cartão final do `outro` e traçado pela faísca; em "Pê" e "dum", cada parte acende; em "probabilidade" e "ruína", uma chamada sob cada parte. Em "A chance…", a equação sobe e o mostrador de P(doom) do clipe aparece embaixo, sem conseguir parar num valor ("?", os dígitos correndo em "catástrofe"). Em "dois mil e vinte e três": "PESQUISA · OUT. 2023"; em "quase três mil pesquisadores", 2.778 pontos caem na tela, fileira por fileira, com o contador; em "pergunta parecida", a pergunta, citada em Cormorant. Em "Metade", metade dos pontos acende em laranja: "≥ 5%". Em "avião", os pontos voam para os 20 assentos de um avião pequeno, visto de cima, um deles laranja: "1 em 20 · 5% de chance de cair". Fonte na tela: Grace et al., 2024. |
+| 00.4 | — | "Vamos parar em cada uma. Tem coisa na imagem que quase ninguém percebe." | O cursor volta a 0:00. Uma lente macro passeia, fora de foco, por detalhes que ainda vão aparecer, um por batida: a distribuição com "Claude, 0,12", uma etiqueta dos olhos do shoggoth, os adesivos do laptop. Em "quase ninguém percebe", a imagem encolhe até sumir numa faísca, a que vai escrever o título em 00.5. A régua sai no começo do bloco, com o cursor voltando a 0:00. |
+| 00.5 | — | "Primeiro, o título… com essa chance de cair?" | Sem régua. A faísca de 00.4 espera onde o P começa; em "título", *P*(doom), composto como no cartão final do `outro`, é traçado por ela; em "Pê" e "dum", cada parte acende; em "probabilidade" e "ruína", uma chamada sob cada parte. Em "A chance…", a equação sobe e o mostrador de P(doom) do clipe aparece embaixo, sem conseguir parar num valor ("?", os dígitos correndo em "catástrofe"). Em "dois mil e vinte e três": "PESQUISA · OUT. 2023"; em "quase três mil pesquisadores", 2.778 pontos caem na tela, fileira por fileira, com o contador; em "pergunta parecida", a pergunta, citada em Cormorant. Em "Metade", metade dos pontos acende em laranja: "≥ 5%". Em "avião", os pontos voam para os 20 assentos de um avião pequeno, visto de cima, um deles laranja: "1 em 20 · 5% de chance de cair". Fonte na tela: Grace et al., 2024. |
 | 00.6 | — | "No vídeo, esse número sobe… Vamos subir junto." | O mostrador de P(doom) do clipe, grande, em 0,02. Em "sobe a cada refrão", a faísca pula de refrão em refrão na régua, um por batida, e cada pulo mostra o número como o clipe o exibe (0,15, 0,42, 0,81, 0,999…). Em "junto", de volta a 0,02 e a 0:00. |
 
 ### 01 · P(doom) 0,02 · Faíscas
@@ -366,7 +372,7 @@ no fim de 06.1 (abaixo).
 
 | Bloco | Verso | Narração | Imagem |
 |---|---|---|---|
-| 06.1 | — | "Máquinas que aprendem rápido…" | A régua se apaga no primeiro corte: a letra já foi explicada. Quatro planos remontados do clipe, um por trecho da frase: a loss despencando ("que aprendem rápido"), o quarto chinês com os cartões saindo da fresta ("que a gente mal entende"), a máscara sorrindo ("que sorriem por fora"), o clipe se duplicando ("cujos objetivos ninguém garante"). Em "É disso que a música fala", o cartão final do `outro`, de "= ∞" até "NaN¹ · estimativa não mais definida", comprimido em ~2 s. O contador quebra sem explicação. |
+| 06.1 | — | "Máquinas que aprendem rápido…" | Sem régua: a letra já foi explicada. Quatro planos remontados do clipe, um por trecho da frase: a loss despencando ("que aprendem rápido"), o quarto chinês com os cartões saindo da fresta ("que a gente mal entende"), a máscara sorrindo ("que sorriem por fora"), o clipe se duplicando ("cujos objetivos ninguém garante"). Em "É disso que a música fala", o cartão final do `outro`, de "= ∞" até "NaN¹ · estimativa não mais definida", comprimido em ~2 s. O contador quebra sem explicação. |
 | 06.2 | — | "E a promessa do começo…" | Em "como uma I-Á fez este vídeo?", a pergunta em tipografia. Em "Não foi com um prompt só", um campo de prompt digita "faça um clipe pra essa música" e ele é riscado: "não foi assim". Em "O clipe original, em inglês", o repositório: "github.com/mexicat/pdoom-video · Giacomo Magnanini + Claude Opus 5.5 · setembro de 2026" e o primeiro commit (c4299a2 "I'm Upping My P(doom): code-rendered music video"). Em "cena por cena", um ciclo de quatro estações — descreve a ideia → a IA escreve o código → ele assiste → pede ajustes —, cada uma acendendo na sua palavra, a faísca correndo entre elas; ao lado, os ajustes que o `TREATMENT.md` registra (rev. 2: saiu o olho humano realista; rev. 4: marcas de corte só nas pontas; rev. 5: adesivos um terço mais escuros…), que acendem em "pedia ajustes". |
 | 06.3 | — | "O truque é que cada quadro é uma função do tempo…" | `quadro = render(t)` em tipografia, com t correndo. Em "Você dá o segundo exato da música", a régua volta, desenhando-se, e vira o controle: a faísca arrasta t para a frente e para trás pelo clipe, e o quadro acima acompanha, com `render(47,99)` embaixo e uma linha ligando o quadro ao cursor. Em "Sempre a mesma", o mesmo t duas vezes, lado a lado, com um "=" laranja. Em "pausar", o símbolo vira pausa; em "voltar", a faísca recua; em "desenhar por cima", o quadro se separa em três folhas de vidro: o clipe, os desenhos da explicação, a régua. A régua se apaga com o fim do bloco. **Novo.** |
 | 06.4 | — | "A letra, não…" | Créditos em tipografia: "A letra foi escrita por gente." — LETRA: osmarks, MusicPerson e o Discord da EleutherAI; + Claude (o final e o último refrão), em laranja, em "Com uma ajudinha do próprio Clód"; MÚSICA: Suno, versão "Claude-Pop" de deckard; VOZ: ElevenLabs; VERSÃO EM PORTUGUÊS: O Programador Real. |
@@ -382,7 +388,8 @@ O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem
 
 - A régua é desenhada no HUD, não na cena: fica firme sob os tremores, zooms e franjas de cor das cenas do clipe.
 - O tempo da música aparece como "▮▮ 0:00 / 2:35" embaixo da ponta esquerda, em vez de "0:00" e "2:35" nas pontas: na ponta esquerda, os dois rótulos e a pausa se amontoavam sobre o cursor.
-- O verso de cada bloco fica acima da régua, à esquerda, durante o bloco inteiro: é a âncora fixa de "onde estamos na música", mesmo quando a imagem é nova.
+- O verso de cada bloco entra acima da régua, à esquerda: é a âncora de "onde estamos na música", mesmo quando a imagem é nova.
+- A régua aparece sob demanda (ver "Régua"): na primeira montagem ela ficava na tela quase o tempo todo e, sob as animações novas (diagramas, papéis, mapas), só poluía. Agora ela marca cada mudança de verso e fica só onde um bloco a usa; aparições muito próximas se juntam, para ela não piscar.
 - Os cortes entre blocos caem na primeira batida da trilha dentro do silêncio entre os parágrafos; sem batida no silêncio, num golpe forte da percussão; sem os dois, a 40% do silêncio.
 - A grade de batidas vem das batidas rastreadas da trilha, não de um andamento fixo: a trilha do Suno oscila até ~70 ms contra uma grade rígida.
 
@@ -397,7 +404,7 @@ O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem
 - 00.2: o GLSL aparece ao lado do que desenha (a folha quadriculada), e a "página web" é uma janela com o endereço do servidor de desenvolvimento e o clipe rodando dentro.
 - 00.2: "No final, eu te mostro melhor": a faísca corre do nome até o fim da régua — o "final" é o fim da explicação.
 - 00.3: as ~30 referências são as do guia da letra, sublinhadas numa folha com a letra inteira enquanto a faísca varre a régua; as iscas são trechos do clipe remontados, cada um com o cursor no seu verso e a etiqueta do capítulo — mostram onde cada isca vai ser paga.
-- 00.4: sem a pausa de meio segundo depois de "Claude, 0,12" (fica para 01.4); a lente termina encolhendo a imagem até a faísca em 0:00.
+- 00.4: sem a pausa de meio segundo depois de "Claude, 0,12" (fica para 01.4); a lente termina encolhendo a imagem até uma faísca — não mais a da régua, que sai no começo do bloco, mas a que escreve o título de 00.5, no ponto onde o P começa.
 - 00.5: em "A chance de a IA causar uma catástrofe", o mostrador de P(doom) do clipe sem conseguir parar num valor — a definição vira imagem, sem repetir a frase na tela.
 - 00.5: o avião é um mapa de 20 assentos visto de cima, um laranja ("1 em 20") — 5% vira algo que se enxerga.
 - 00.6: os números de cada refrão aparecem como o clipe os mostra (quadros das cenas `hook`), um por batida, com o cursor pulando.
@@ -461,7 +468,7 @@ O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem
 **06 · Como uma IA fez este vídeo**
 
 - 06.1: os quatro planos são trechos do clipe como ele é, só com o tempo remapeado; o cartão final é o do `outro`, acelerado.
-- 06.1: a régua sai aqui: o capítulo 06 fala de como o vídeo foi feito, não da letra. Por isso o NaN não acende mais nela, e a ponta dela não pisca em 06.2. Ela volta só em 06.3 (o controle do tempo) e em 06.7 (voltar a 0:00 e dar play).
+- 06: sem régua (a última aparição é o verso de 05.5): o capítulo fala de como o vídeo foi feito, não da letra. Por isso o NaN não acende mais nela, e a ponta dela não pisca em 06.2. Ela volta só em 06.3 (o controle do tempo) e em 06.7 (voltar a 0:00 e dar play).
 - 06.2: no lugar do `git log` rolando: o repositório original tem só 11 commits (o primeiro já é o clipe inteiro), então o processo "cena por cena" é mostrado como um ciclo, com os ajustes reais registrados nas revisões do `TREATMENT.md`.
 - 06.3: sem as barras com as linhas de cada arquivo (a contagem já está em 00.2); a régua vira o controle do tempo, e as "camadas" são três folhas deslocadas em diagonal, sem perspectiva 3D.
 - 06.4: os créditos seguem o README (letra, música, voz, versão em português); o Claude aparece em laranja na linha da letra, na palavra "Clód".
