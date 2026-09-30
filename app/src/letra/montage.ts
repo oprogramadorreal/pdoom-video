@@ -9,8 +9,6 @@ import type { Lyrics, Line } from '../engine/lyrics';
 export interface VerseSpec {
   /** Song lines, found by their Portuguese text (a hook line by its chorus number: 'hook:1'…'hook:4'). */
   lines: string[];
-  /** The word(s) the narration explains, highlighted in the verse. */
-  key: string;
 }
 export interface BlockSpec {
   id: string;
@@ -21,7 +19,7 @@ export interface BlockSpec {
   ruler?: 'block' | { from: string };
 }
 
-const V = (key: string, ...lines: string[]): VerseSpec => ({ lines, key });
+const V = (...lines: string[]): VerseSpec => ({ lines });
 
 export const MONTAGE: BlockSpec[] = [
   { id: '00.1', pos: 0 },
@@ -30,37 +28,37 @@ export const MONTAGE: BlockSpec[] = [
   { id: '00.4', pos: 0 }, { id: '00.5', pos: 0 },
   // the spark jumping from chorus to chorus
   { id: '00.6', pos: 0, ruler: 'block' },
-  { id: '01.1', verse: V('faiscar', 'Vejo AGI faiscar') },
-  { id: '01.2', verse: V('circuitos', 'teus circuitos me dão') },
-  { id: '01.3', verse: V('loss', 'Tua loss de treino') },
-  { id: '01.4', verse: V('ChatGPT,', 'ChatGPT, não me engole') },
-  { id: '02.1', verse: V('FOOM.', 'hook:1', 'pois o futuro faz FOOM') },
-  { id: '02.2', verse: V('quarto chinês,', 'Preso no quarto chinês', 'cogumelos pra um mês') },
+  { id: '01.1', verse: V('Vejo AGI faiscar') },
+  { id: '01.2', verse: V('teus circuitos me dão') },
+  { id: '01.3', verse: V('Tua loss de treino') },
+  { id: '01.4', verse: V('ChatGPT, não me engole') },
+  { id: '02.1', verse: V('hook:1', 'pois o futuro faz FOOM') },
+  { id: '02.2', verse: V('Preso no quarto chinês', 'cogumelos pra um mês') },
   // "Guarda essa máscara": it flies into the ruler's corner
-  { id: '02.3', verse: V('shoggoth', 'Desmascara o shoggoth'), ruler: { from: 'Guarda' } },
-  { id: '02.4', verse: V('olhos de shinigami.', 'com teus olhos de shinigami') },
+  { id: '02.3', verse: V('Desmascara o shoggoth'), ruler: { from: 'Guarda' } },
+  { id: '02.4', verse: V('com teus olhos de shinigami') },
   { id: '02.5', pos: 'keep' },
-  { id: '02.6', verse: V('singularidade', 'mas a singularidade começou') },
-  { id: '02.7', verse: V('Sydney,', 'Sydney, por favor') },
-  { id: '03.1', verse: V('basilisco:', 'hook:2', 'ouço o basilisco') },
-  { id: '03.2', verse: V('Um E trinta FLOPs', 'NVIDIA pra Lua', 'Ponto Ômega em três', 'Um E trinta FLOPs') },
-  { id: '03.3', verse: V('MLP:', 'MLP: vai, volta') },
-  { id: '03.4', verse: V('von Neumann', 'von Neumann já virou') },
-  { id: '03.5', verse: V('Guinada à esquerda,', 'Guinada à esquerda') },
-  { id: '03.6', verse: V('CDR', 'sem um só CDR') },
-  { id: '03.7', verse: V('Gato,', 'Gato, por favor') },
-  { id: '04.1', verse: V('clipe,', 'hook:3', 'tudo vira clipe') },
-  { id: '04.2', verse: V('Quem desliga', 'Quem desliga foi viajar', 'não tem pra onde escapar') },
+  { id: '02.6', verse: V('mas a singularidade começou') },
+  { id: '02.7', verse: V('Sydney, por favor') },
+  { id: '03.1', verse: V('hook:2', 'ouço o basilisco') },
+  { id: '03.2', verse: V('NVIDIA pra Lua', 'Ponto Ômega em três', 'Um E trinta FLOPs') },
+  { id: '03.3', verse: V('MLP: vai, volta') },
+  { id: '03.4', verse: V('von Neumann já virou') },
+  { id: '03.5', verse: V('Guinada à esquerda') },
+  { id: '03.6', verse: V('sem um só CDR') },
+  { id: '03.7', verse: V('Gato, por favor') },
+  { id: '04.1', verse: V('hook:3', 'tudo vira clipe') },
+  { id: '04.2', verse: V('Quem desliga foi viajar', 'não tem pra onde escapar') },
   // "Aceso desde o primeiro segundo": the whole ruler burns as a fuse
-  { id: '04.3', verse: V('estopim,', 'acendemos o estopim'), ruler: { from: 'Aceso' } },
-  { id: '04.4', verse: V('ortogonalidade:', 'tese da ortogonalidade') },
-  { id: '04.5', verse: V('transformers,', 'transformers, é simples', 'aprendeu a dizer') },
-  { id: '04.6', verse: V('RLHF', 'Pós-Chinchilla', 'pula a cerca', 'Cem mil GPU', 'RLHF deu chabu') },
-  { id: '05.1', verse: V('Loom.', 'hook:4', 'como previu o Loom') },
-  { id: '05.2', verse: V('pré-treino', 'Do pré-treino preditivo', 'ao auto-upgrade recursivo') },
-  { id: '05.3', verse: V('Ilya', 'O que Ilya viu') },
+  { id: '04.3', verse: V('acendemos o estopim'), ruler: { from: 'Aceso' } },
+  { id: '04.4', verse: V('tese da ortogonalidade') },
+  { id: '04.5', verse: V('transformers, é simples', 'aprendeu a dizer') },
+  { id: '04.6', verse: V('Pós-Chinchilla', 'pula a cerca', 'Cem mil GPU', 'RLHF deu chabu') },
+  { id: '05.1', verse: V('hook:4', 'como previu o Loom') },
+  { id: '05.2', verse: V('Do pré-treino preditivo', 'ao auto-upgrade recursivo') },
+  { id: '05.3', verse: V('O que Ilya viu') },
   { id: '05.4', pos: 'keep' },
-  { id: '05.5', verse: V('pra inglês ver?', 'Foi tudo só pra inglês') },
+  { id: '05.5', verse: V('Foi tudo só pra inglês') },
   { id: '06.1', pos: 'end' }, { id: '06.2', pos: 'end' },
   // the ruler as the time control; the rewind to 0:00 and the play
   { id: '06.3', pos: 'end', ruler: { from: 'Você dá' } },

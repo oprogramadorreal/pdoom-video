@@ -479,7 +479,7 @@ class B067 extends Block {
     const pos = lerp(CLIP_END, 0, ease.inOutCubic(prog(t, this.tBack, this.tBack + 0.9)));
     const play = prog(t, this.tEnd - 0.7, this.tEnd - 0.5);
     const alpha = 1 - prog(t, this.tEnd - 0.4, this.tEnd - 0.02);
-    return { post: { ...post, frame: 1 }, regua: { pos, play, alpha }, verse: 0 };
+    return { post: { ...post, frame: 1 }, regua: { pos, play, alpha } };
   }
 }
 

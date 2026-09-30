@@ -58,7 +58,7 @@ class B003 extends Block {
     const ly = this.ctx.lyrics;
     this.lines = ly.lines;
     for (const [q, key] of REFS) {
-      const line = verseLines(ly, { lines: [q], key })[0]!;
+      const line = verseLines(ly, { lines: [q] })[0]!;
       const ks = key.split(/\s+/).map(norm);
       const w0 = line.words.findIndex((_, i) => ks.every((k, j) => norm(line.words[i + j]?.w ?? '') === k));
       if (w0 < 0) throw new Error(`reference not found: ${key} in "${line.text}"`);
@@ -70,7 +70,7 @@ class B003 extends Block {
     this.cuts = BAITS.map((b) => {
       const w = this.at(b.q);
       const nb = this.n.nearestBeat(w - 0.03);
-      return { t: Math.abs(nb - w) < 0.22 ? nb : w - 0.04, b, pos: verseLines(ly, { lines: [b.line], key: '' })[0]!.start };
+      return { t: Math.abs(nb - w) < 0.22 ? nb : w - 0.04, b, pos: verseLines(ly, { lines: [b.line] })[0]!.start };
     });
     this.tJump = this.n.nearestBeat(this.at('que poderia'));
   }
@@ -186,7 +186,7 @@ class B004 extends Block {
   private from = 0;
   override async init() {
     await Promise.all(DETAILS.map((d) => this.clips.load(d.id)));
-    this.from = verseLines(this.ctx.lyrics, { lines: [BAITS[BAITS.length - 1]!.line], key: '' })[0]!.start;
+    this.from = verseLines(this.ctx.lyrics, { lines: [BAITS[BAITS.length - 1]!.line] })[0]!.start;
     const b = this.n.beatsIn(this.e.start + 0.5, this.at('quase') - 0.2);
     this.cuts = [this.e.start, b[1] ?? this.e.start + 1.1, b[3] ?? this.e.start + 2.1];
     this.tPull = this.at('quase');

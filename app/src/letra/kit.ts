@@ -1,11 +1,11 @@
 // The explainer's shared kit: scratch GPU resources (shared by every block: only one or two blocks render
 // per frame, each finishing before the next), the camera pass over a rendered frame, the ruler (the
-// song as a paused player at the foot of the frame) and the docked verse.
+// song as a paused player at the foot of the frame, shown on demand).
 import * as THREE from 'three';
 import { FSPass, Layer2D, W, H, makeRT } from '../engine/gl';
 import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
-import { F, font, layout, textPathCommands } from '../engine/type';
+import { F, font, textPathCommands } from '../engine/type';
 import { clamp, ease, lerp, prog } from '../engine/util';
 import type { Lyrics, Line } from '../engine/lyrics';
 import type { Narration } from './narration';
@@ -129,8 +129,7 @@ export const RX0 = 150, RX1 = W - 150, RY = H - 62;
 const SONG = CLIP_END;
 /**
  * When the ruler comes and goes: it fades in LEAD s before each cut to a new verse (a beat before the spark
- * runs to it), holds HOLD s after the cut (the verse docks and is read; a chorus's value lights; the mask
- * leaves in 04.6), and fades out. Where a block uses it (BlockSpec.ruler) it stays. Two showings closer than
+ * runs to it), holds HOLD s after the cut (a chorus's value lights; the mask leaves in 04.6), and fades out. Where a block uses it (BlockSpec.ruler) it stays. Two showings closer than
  * MIN_GAP s merge, so it never blinks.
  */
 const LEAD = 1.2, HOLD = 3.5, MIN_GAP = 5, FADE_IN = 0.3, FADE_OUT = 0.5;
@@ -202,7 +201,7 @@ export class Regua {
       else this.shown.push(x);
     }
   }
-  /** How much of the ruler (and the verse docked on it) is on screen at video time t, 0..1. */
+  /** How much of the ruler is on screen at video time t, 0..1. */
   visible(t: number) {
     let v = 0;
     for (const [a, b] of this.shown) v = Math.max(v, ease.inOutCubic(clamp((t - a) / FADE_IN)) * (1 - ease.inOutCubic(clamp((t - b) / FADE_OUT))));
@@ -242,11 +241,13 @@ export class Regua {
     const xEnd = lerp(RX0, RX1, ease.inOutCubic(clamp(st.draw)));
     const xc = Math.min(rulerX(st.pos), xEnd);
     c.save();
-    // a soft ink gradient under the player keeps it legible over any image (not on paper: ink on bone reads)
+    // a soft dark gradient under the player keeps it legible over any image (not on paper: ink on bone reads).
+    // (Pure black, not ink: the HUD is composited as premultiplied, so at the gradient's near-zero alpha its
+    // colour would come through at full strength and draw the dither as a dotted line.)
     if (!ink) {
-      const g = c.createLinearGradient(0, H - 190, 0, H);
-      g.addColorStop(0, rgba('ink', 0)); g.addColorStop(0.55, rgba('ink', 0.5 * st.alpha)); g.addColorStop(1, rgba('ink', 0.72 * st.alpha));
-      c.fillStyle = g; c.fillRect(0, H - 190, W, 190);
+      const g = c.createLinearGradient(0, H - 150, 0, H);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.5, `rgba(0,0,0,${0.5 * st.alpha})`); g.addColorStop(1, `rgba(0,0,0,${0.72 * st.alpha})`);
+      c.fillStyle = g; c.fillRect(0, H - 150, W, 150);
     }
     c.globalAlpha = st.alpha;
     c.fillStyle = col(0.3);
@@ -321,41 +322,6 @@ export class Regua {
       c.globalAlpha = st.alpha * sa;
       hudSpark(c, xc, RY + 0.5, t, 1);
     }
-    c.restore();
-  }
-
-  /** The block's verse, docked above the ruler: in fast (≤0.4 s) at the block's start, key word in signal. */
-  drawVerse(c: CanvasRenderingContext2D, i: number, t: number, alpha: number, paper: number) {
-    const lines = this.verses[i];
-    const spec = this.specs[i]!.verse;
-    if (!lines || !spec || alpha <= 0.002) return;
-    const t0 = this.cuts[i]!;
-    const words = lines.flatMap((l, li) => l.words.map((w, wi) => ({ w: w.w, br: li > 0 && wi === 0 })));
-    const keyWords = spec.key.split(/\s+/);
-    let k0 = -1;
-    for (let j = 0; j + keyWords.length <= words.length && k0 < 0; j++)
-      if (keyWords.every((kw, q) => words[j + q]!.w.toLowerCase() === kw.toLowerCase())) k0 = j;
-    const fam = F.archivo(100, 500), size = 30;
-    const sp = layout(' ', fam, size).width;
-    c.save();
-    c.font = font(fam, size);
-    c.textBaseline = 'alphabetic';
-    let x = RX0;
-    const y = RY - 46;
-    words.forEach((wd, j) => {
-      const a = ease.outCubic(prog(t, t0 + j * 0.028, t0 + j * 0.028 + 0.22));
-      if (wd.br) {
-        c.globalAlpha = alpha * a;
-        c.fillStyle = paper > 0.5 ? rgba('ink', 0.35) : rgba('bone', 0.35);
-        c.fillText('/', x, y + (1 - a) * 12);
-        x += layout('/', fam, size).width + sp;
-      }
-      const isKey = k0 >= 0 && j >= k0 && j < k0 + keyWords.length;
-      c.globalAlpha = alpha * a;
-      c.fillStyle = isKey ? rgba('signal') : paper > 0.5 ? rgba('ink', 0.88) : rgba('bone', 0.9);
-      c.fillText(wd.w, x, y + (1 - a) * 12);
-      x += layout(wd.w, fam, size).width + sp;
-    });
     c.restore();
   }
 }

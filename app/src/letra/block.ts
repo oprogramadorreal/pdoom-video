@@ -1,5 +1,5 @@
 // A block of the explainer: one narration paragraph and its image. The Letra scene (scene.ts) runs the
-// block and draws the ruler and the docked verse over it.
+// block and draws the ruler over it.
 import type * as THREE from 'three';
 import type { Frame, PostOverrides, SceneCtx } from '../engine/scene';
 import type { NBlock, NWord, Narration } from './narration';
@@ -34,8 +34,6 @@ export interface BlockOut {
   post?: PostOverrides;
   /** Overrides of the ruler's state (the Letra scene fills in the rest). */
   regua?: Partial<ReguaState>;
-  /** Opacity of the docked verse (default: the ruler's). */
-  verse?: number;
 }
 
 export abstract class Block {
