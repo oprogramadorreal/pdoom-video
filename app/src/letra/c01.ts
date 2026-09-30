@@ -672,9 +672,10 @@ class B014 extends Block {
     const lb = S().lines; lb.clear();
     const kc = prog(t, this.tSeg - 0.1, this.tSeg + 0.55);
     if (kc > 0) {
-      const cc = camToScreen(cam, (POP.claude.x0 + POP.claude.x1) / 2 + 250, POP.claude.y);
+      // (round the word itself: the popup's "Claude," at POP.claude, a little margin all round)
+      const cc = camToScreen(cam, (POP.claude.x0 + POP.claude.x1) / 2, POP.claude.y - 4);
       const z = cam.zoom!;
-      const rx = 410 * z / 1.7 * 1.02, ry = 34 * z;
+      const rx = ((POP.claude.x1 - POP.claude.x0) / 2 + 26) * z, ry = 30 * z;
       const pts: P2[] = [];
       for (let i = 0; i <= 96; i++) { const a = -2.2 + (i / 96) * (Math.PI * 2 + 0.5); pts.push({ x: cc.x + Math.cos(a) * rx * (1 + 0.02 * Math.sin(a * 3)), y: cc.y + Math.sin(a) * ry }); }
       const r = ease.inOutCubic(kc);
