@@ -482,7 +482,9 @@ const ANSWERS: { text: string; score: 1 | -1; good: boolean }[] = [
 ];
 /**
  * 04.6 "E a máscara do shoggoth?" — the verse, remounted in two seconds (the type compressing, the fences
- * breaking, the grid of GPUs, RLHF DEU CHABU). The mask leaves the ruler and comes back, big. "Boa parte
+ * breaking, the grid of GPUs), stopping before the clip shows its own mask. On "máscara" the mask leaves
+ * the ruler's corner and flies back, big, with a half turn, landing where it will stay while the clip dims
+ * under it; on the beat of "Boa parte" the clip gives way to the page, the mask still in place. "Boa parte
  * dela vem do RLHF": the term, spelled out. "pessoas avaliam as respostas": answers come in, stamped +1 or
  * −1, and with each +1 the mask's smile widens, a reward counter climbing. "Lembra da etiqueta bajulação?":
  * the tag from 02.4 comes back beside it. "aprende a agradar, não a acertar": the true answer about the bug
@@ -491,8 +493,11 @@ const ANSWERS: { text: string; score: 1 | -1; good: boolean }[] = [
  */
 class B046 extends Block {
   private tMask = 0; private tDef = 0; private tRate = 0; private tSyc = 0; private tSide = 0; private tChabu = 0; private stamps: number[] = [];
+  /** Song time where the clip's own mask comes in (the remount stops just before it). */
+  private sMask = 0;
   override async init() {
     await this.clips.load('dense');
+    this.sMask = this.clips.scene<{ askew: { t0: number } }>('dense').askew.t0 - 0.05;
     this.tMask = this.at('máscara do'); this.tDef = this.n.nearestBeat(this.at('Boa parte'));
     this.tRate = this.at('pessoas avaliam'); this.tSyc = this.at('Lembra'); this.tSide = this.at('É um efeito');
     this.tChabu = this.n.nearestBeat(this.at('Se isso'));
@@ -506,14 +511,20 @@ class B046 extends Block {
     if (t >= this.tChabu) return { post: clipPost(this.clips.render('dense', remap(t, [[this.tChabu, 123.55], [this.e.end, 124.42]]), out)) };
     const L = S().ui; L.clear(); const c = L.ctx;
     c.textBaseline = 'alphabetic';
-    // the mask's place in the explanation, and its flight back from the ruler
+    // the mask's place in the explanation, and its flight back from the ruler: a high arc, a half turn, a
+    // little overshoot as it lands where it will stay
     const M = { x: 1400, y: 470, r: 210 };
-    const fly = ease.inOutCubic(prog(t, this.tMask, this.tMask + 0.7));
+    const u = prog(t, this.tMask, this.tMask + 0.8), fly = ease.inOutCubic(u);
     const from = Regua.MASK_AT;
-    const mx = lerp(from.x, M.x, fly), my = lerp(from.y, M.y, fly) - Math.sin(fly * Math.PI) * 140, mr = lerp(from.r, M.r, fly);
+    const mx = lerp(from.x, M.x, fly), my = lerp(from.y, M.y, fly) - Math.sin(fly * Math.PI) * 170;
+    const mr = lerp(from.r, M.r, ease.outBack(u, 1.4)), spin = -Math.PI * (1 - fly);
     if (t < Math.max(verseEnd, this.tDef)) {
-      const post = this.clips.render('dense', remap(t, [[this.e.start, 117.1], [this.e.start + 0.5, 118.8], [this.e.start + 1.0, 120.3], [this.e.start + 1.5, 121.6], [verseEnd, 122.3], [this.tDef, 122.4]]), out);
-      if (t >= this.tMask) drawMask2D(c, mx, my, mr, -0.4 * (1 - fly));
+      // the verse remounted, held just before the clip's own mask; it dims as the mask comes back
+      const R = S().rt;
+      const s = Math.min(this.sMask, remap(t, [[this.e.start, 117.1], [this.e.start + 0.5, 118.8], [this.e.start + 1.0, 120.3], [this.e.start + 1.5, 121.6], [verseEnd, 122.3]]));
+      const post = this.clips.render('dense', s, R[0]!);
+      camPass(renderer, R[0]!.texture, out, { dim: lerp(1, 0.3, fly) });
+      if (t >= this.tMask) drawMask2D(c, mx, my, mr, spin);
       comp.draw(renderer, L.upload(), out);
       return { post: { ...clipPost(post), shake: [0, 0] } };
     }

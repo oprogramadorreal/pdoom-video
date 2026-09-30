@@ -186,7 +186,7 @@ export class Regua {
       ...['0,15', '0,42', '0,81', '0,99'].map((v, i) => ({ s: hookLines[i]!, v, lit: at(`0${i + 2}.1`) })),
       { s: ly.get('Was it all for show').end, v: 'NaN', lit: at('06.1') + 7.5 },
     ];
-    this.mask = [n.word('02.3', 'Guarda').start + 0.62, at('04.6') + 0.6];
+    this.mask = [n.word('02.3', 'Guarda').start + 0.62, n.word('04.6', 'máscara do').start];
     const w: [number, number][] = [];
     MONTAGE.forEach((b, i) => {
       const t0 = this.cuts[i]!, t1 = this.cuts[i + 1] ?? MIX_AT + n.mixDuration;
