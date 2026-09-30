@@ -139,7 +139,7 @@ com a música; a imagem e o som somem juntos nos últimos 2,5 s. O vídeo termin
 ## A segunda passada
 
 Na primeira vez, o espectador viu o clipe. Na segunda, a música é a mesma, mas a imagem serve à explicação.
-O que liga as duas é pouco e fixo: a régua (em que ponto da música estamos), o verso com a letra na tela,
+O que liga as duas é pouco e fixo: a régua (em que ponto da música estamos), o verso que abre cada bloco,
 a paleta e as fontes. O resto é livre. Um trecho pode voltar exatamente como no clipe; voltar com outra câmera,
 outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou dar lugar a uma animação nova.
 
@@ -195,20 +195,21 @@ outro enquadramento ou outra velocidade, com partes isoladas ou rearranjadas; ou
   Com tanta imagem nova, é a âncora: diz em que ponto da música estamos. Em 04.3, a régua inteira acende como estopim.
   *Sob demanda:* a régua não fica na tela o tempo todo, porque sob as animações novas ela só polui. Ela aparece
   quando muda a parte da música de que se fala: entra ~1,2 s antes de cada corte para um verso novo (a faísca corre
-  até ele), fica ~3,5 s depois do corte (o verso entra e é lido; no começo de cada capítulo, o valor do refrão acende)
-  e sai. Também fica onde um bloco a usa: do fim de 00.2 ao fim de 00.3 ("No final", a varredura, as iscas), em 00.6
+  até ele), fica ~3,5 s depois do corte (no começo de cada capítulo, o valor do refrão acende nesse tempo) e sai. Também fica onde um bloco a usa: do fim de 00.2 ao fim de 00.3 ("No final", a varredura, as iscas), em 00.6
   (os pulos de refrão em refrão), em 02.3 (a máscara voando para o canto dela), no fim de 04.3 (o estopim), em 06.3
   (o controle do tempo) e em 06.7 (volta a 0:00 e play). Duas aparições a menos de 5 s uma da outra viram uma só,
   para ela não piscar. Não volta nos blocos sem verso novo (02.5, 05.4) nem no capítulo 06, fora 06.3 e 06.7. No
   total, 29 aparições curtas: fica na tela cerca de um terço do tempo depois de entrar, em vez de quase todo. A lista de montagem
   (`montage.ts`) diz onde cada bloco a usa; os tempos saem das palavras e dos cortes (`Regua.visible` em `kit.ts`).
   *Como ficou:* a régua é desenhada na camada do HUD (a das marcas de corte), então o tremor, os zooms, a inversão e as
-  franjas de cor das cenas não a atingem; um degradê de tinta suave por baixo a mantém legível sobre qualquer imagem.
+  franjas de cor das cenas não a atingem; um degradê escuro suave por baixo a mantém legível sobre qualquer imagem.
   A parte já tocada da linha fica laranja. Embaixo da ponta esquerda, "▮▮ 0:23 / 2:35". Sobre o cursor pode aparecer
   uma etiqueta curta ("cap. 02 · Sydney") e uma posição pode piscar na régua (o fim, em 00.2; cada refrão, em 00.6).
-- **Verso na régua**: em todo bloco que tem verso, o verso entra logo acima da régua, à esquerda, em Archivo, em até
-  ~0,4 s, com a palavra explicada em laranja, como o "tocando agora" de um player, e sai com a régua. A cena, quando é
-  a do clipe no tempo do verso, também o mostra no estilo dela.
+- **Nada de texto sobre a régua**: a primeira montagem punha o verso do bloco logo acima da régua, em Archivo, com a
+  palavra explicada em laranja. Saiu: a maioria dos blocos abre com o próprio clipe cantando o verso, na tipografia
+  dele, e a cópia em cima da régua só repetia texto a cada troca de verso. Sobre a régua ficam só as marcas dela (os
+  valores do P(doom) nos refrões, "▮▮ 0:23 / 2:35") e, onde o bloco aponta para ela, uma etiqueta curta ("cap. 02 ·
+  Sydney" em 00.3, "t = 0:34" em 06.3).
 - **Código**: em 00.2, 02.5 e 06.2–06.3, trechos reais de `app/src`, em Plex Mono, ligados à cena que desenham.
 
 ## Duração
@@ -340,7 +341,7 @@ animação nova.
 | 03.2 | "NVIDIA pra Lua: ZUM! / Ponto Ômega em três, dois, um. / Um E trinta FLOPs por segundo," | "Um ê trinta flops…" | O verso em time-lapse do clipe (a cédula da NVIDIA, o Ponto Ômega) até o odômetro rolando até 1 seguido de trinta zeros, sob "um seguido de trinta zeros de contas". Em "Em um segundo", um voo por uma régua logarítmica, de 10⁰ a 10³⁰ em menos de um segundo, que pousa em "1 segundo · a 1E30 FLOP por segundo". Em "dezenas de milhares de vezes", um arco volta até 2 × 10²⁵: "× 50.000"; em "o treino inteiro do GPT-4", o marcador "GPT-4 · treino inteiro ≈ 2E25", com a fonte na tela (Epoch AI). **Novo.** |
 | 03.3 | "MLP: vai, volta, repetição," | "MLP…" | O anexo B do `bureau`, com as palavras do verso acendendo junto com a voz ("vai", "volta", "repetição"). Depois, a rede em papel, maior: em "A informação vai", pulsos laranja atravessam as camadas; em "sai uma resposta", a saída acende: → resposta: "gato". Em "O erro volta", ← erro: era "cachorro", e pulsos escuros voltam camada por camada; em "ajustando cada conexão um pouquinho", as conexões engrossam ou afinam ("cada conexão: um pouquinho mais grossa ou mais fina"). Em "E repete", o ciclo de novo, com um contador de passos; em "milhões de vezes", cada vez mais rápido, até virar um borrão ("1.000.000+"). Uma curva de loss no canto cai um degrau por ciclo e despenca em "É isso que faz a loss despencar". |
 | 03.4 | "von Neumann já virou peça de coleção." | "John von Neumann… risca de laranja." | O apêndice C do `bureau`, antes do risco ("John von Neumann · 1903–1957"). Em "Se até ele virou peça de coleção", a folha está atrás do vidro de uma vitrine de museu, desenhada em linha fina, com a etiqueta "JOHN VON NEUMANN · 1903–1957 · arquitetura de computador, 1945 · peça de coleção". Em "imagina o resto de nós", a câmera passa para a vitrine ao lado, vazia: "O RESTO DE NÓS · — · em breve". Em "E tem mais", o diagrama sai da vitrine; as caixas têm os nomes do relatório de 1945 (órgão de controle, órgão aritmético, memória, entrada, saída) e, em "o aparelho em que você vê este vídeo", ganham à mão, em laranja, os nomes de hoje: processador, memória RAM, toque e câmera, tela e som. Em "É ela que o vídeo risca de laranja", o X laranja do clipe. |
-| 03.5 | "Guinada à esquerda, já tá sem freio," | "A guinada à esquerda…" | A guinada do clipe, sincronizada com "esquerda". Depois, um mapa visto de cima: uma estrada reta, "COMPORTAMENTO DESEJADO", a faísca andando nela; ao lado, um medidor de CAPACIDADE, baixo ("fraca · bem-comportada"). Em "num salto de capacidade", o medidor salta; em "o bom comportamento fique pra trás", a faísca vira 90° à esquerda e sai da estrada, e a câmera gira junto (whip). Em "Evitar isso é o trabalho do alinhamento", de volta à estrada, que ganha guard-rails laranja, ALINHAMENTO; em "fazer a I-Á querer o que a gente quer", eles acabam logo adiante: "FIM DA PROTEÇÃO". |
+| 03.5 | "Guinada à esquerda, já tá sem freio," | "A guinada à esquerda…" | A guinada do clipe, sincronizada com "esquerda". Depois, um mapa visto de cima: uma estrada reta, "COMPORTAMENTO DESEJADO", a faísca andando nela; ao lado, um medidor de CAPACIDADE, baixo ("fraca · bem-comportada"). Em "num salto de capacidade", o medidor salta e a faísca acelera; em "o bom comportamento fique pra trás", ela faz uma curva de 90° para a esquerda e sai da estrada, a câmera girando junto, e segue pelo terreno, com a estrada ficando para trás. Em "Evitar isso", ela faz uma curva larga e volta para a estrada, entrando nela de novo; em "o trabalho do alinhamento", guard-rails laranja crescem ao longo da estrada a partir de onde ela voltou, ALINHAMENTO; em "fazer a I-Á querer o que a gente quer", eles acabam logo adiante: "FIM DA PROTEÇÃO". O medidor continua alto. Um caminho só, sem cortes: um rastro laranja atrás da faísca mostra a saída e a volta. |
 | 03.6 | "sem um só CDR no meio." | "CDR é piada dupla…" | O Gantt do clipe, com o CDR piscando vazio. Em "No Lisp", uma sessão de Lisp digita `(cdr '(a b c))` e a lista aparece em células (a → b → c), com "cabeça (car)" e "resto (cdr)"; "Lisp · John McCarthy · 1958". Em "pega o resto de uma lista", a célula "a" cai e sai `(B C)`. Em "Na engenharia", o Gantt de volta; a nota do próprio clipe, "* CDR: revisão crítica de projeto", entra em "revisão", e o carimbo "SITUAÇÃO: NÃO REALIZADA" em "No vídeo". **Novo** (o Lisp). |
 | 03.7 | "Gato, por favor, não solta a minha mão." | "E Gato, sim, esse é o nome…" | O `prompt` Gato digitando "Gato," com as candidatas. Em "é um modelo da DeepMind", uma grade de 604 células, uma por tarefa, com os nomes em Plex Mono minúsculo ("Gato · DeepMind · 2022"); acendem as conversas em "conversava", os jogos de Atari em "jogava videogame", o braço robótico em "mexia um braço robótico", e depois todas: "604 tarefas · uma rede". Em "Com Sydney, o pedido era me solta", a tela se divide: à esquerda, o pedido de Sydney atrás das grades ("SYDNEY · 2023"); em "Agora é: não solta a minha mão", à direita, o de Gato com as letras se afastando ("GATO · 2022"), que toma o quadro. |
 
@@ -388,7 +389,7 @@ O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem
 
 - A régua é desenhada no HUD, não na cena: fica firme sob os tremores, zooms e franjas de cor das cenas do clipe.
 - O tempo da música aparece como "▮▮ 0:00 / 2:35" embaixo da ponta esquerda, em vez de "0:00" e "2:35" nas pontas: na ponta esquerda, os dois rótulos e a pausa se amontoavam sobre o cursor.
-- O verso de cada bloco entra acima da régua, à esquerda: é a âncora de "onde estamos na música", mesmo quando a imagem é nova.
+- Sem o verso escrito acima da régua (ver "Nada de texto sobre a régua"): a posição do cursor e o clipe cantando o verso bastam para dizer onde estamos na música.
 - A régua aparece sob demanda (ver "Régua"): na primeira montagem ela ficava na tela quase o tempo todo e, sob as animações novas (diagramas, papéis, mapas), só poluía. Agora ela marca cada mudança de verso e fica só onde um bloco a usa; aparições muito próximas se juntam, para ela não piscar.
 - Os cortes entre blocos caem na primeira batida da trilha dentro do silêncio entre os parágrafos; sem batida no silêncio, num golpe forte da percussão; sem os dois, a 40% do silêncio.
 - A grade de batidas vem das batidas rastreadas da trilha, não de um andamento fixo: a trilha do Suno oscila até ~70 ms contra uma grade rígida.
@@ -442,6 +443,7 @@ O que mudou em relação à proposta, e por quê (as tabelas acima já descrevem
 - 03.4: uma segunda vitrine, vazia, para "imagina o resto de nós" — a piada da frase vira imagem.
 - 03.4: os nomes de 1945 ("órgãos", como no relatório de von Neumann) recebem à mão os nomes de hoje, em vez de trocarem: fica claro que é a mesma arquitetura.
 - 03.5: o mapa é novo, visto de cima, com a estrada vertical (em vez do mapa do `leftturn`): a guinada e o guard-rail que acaba pedem uma estrada reta e longa.
+- 03.5: a volta para a estrada era um corte seco (a faísca reaparecia na estrada, a câmera desvirava e o medidor caía de uma vez). Agora é um caminho contínuo, com velocidade que só muda suavemente e a câmera seguindo a direção da faísca; o medidor fica alto, porque o alinhamento é sobre o caminho, não sobre a capacidade.
 - 03.6: a chamada "CDR · revisão crítica de projeto" é a nota que o próprio clipe já traz, trazida para o momento da voz.
 - 03.7: a grade tem 604 células com nomes ilustrativos (conversa, legenda, jogos de Atari, braço robótico, simulações); a proporção entre eles não é a do artigo.
 - 03.7: na tela dividida, cada lado é o clipe como ele é (as grades de Sydney, as letras de Gato se afastando), com o ano de cada um.
