@@ -241,7 +241,7 @@ export default class Paperclips extends Scene {
         sparkParticles(this.sparks, t, headAt, { rate: 140, speed: 220, intensity: 1, seed: 9 });
         sparkHead(this.sparks, h.x, h.y, t, 1.1, 1 - prog(t, T.db1 - 0.03, T.db1 + 0.08));
       }
-      this.drawLyricA(c, t);
+      if (!f.remix?.bare) this.drawLyricA(c, t); // (opt-in: the YouTube thumbnail has its own title)
     } else {
       // ------------------------------------------------ phases B–D (raymarched lattice)
       const u = this.march.u;

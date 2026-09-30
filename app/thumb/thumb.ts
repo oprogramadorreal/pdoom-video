@@ -7,6 +7,8 @@
 //   hino-codigo  the title of hino over the creature of codigo, under "FEITO 100% COM CÓDIGO".
 //   simples      the title alone, a little larger, and the creature alone beside it: no mask, no tags
 //                (too small to read in a feed, and larger ones crowd the title).
+//   clipe        the title of simples beside a single paperclip instead of the creature: the first one of
+//                the paperclips plate, the spark that bent it still glowing at its end.
 // (Outside app/src on purpose: the explainer counts and lists the video's code from there.)
 import * as THREE from 'three';
 import { Scene, type Frame, type PostOverrides } from '../src/engine/scene';
@@ -25,13 +27,18 @@ const MASK_R = 0.34;
 /** What the thumbnail needs of the shoggoth scene (see scenes/shoggoth.ts). */
 interface ShogLike { eyeScr: { x: number; y: number; r: number; vis: boolean }[]; maskW: THREE.Vector3; project(p: THREE.Vector3, squash?: number): { x: number; y: number; s: number } }
 
-/** The clip's frame reframed: the source point at the centre of the screen, and the zoom. */
-interface Cam { x: number; y: number; zoom: number }
-const toScreen = (c: Cam, x: number, y: number) => ({ x: (x - c.x) * c.zoom + W / 2, y: (y - c.y) * c.zoom + H / 2 });
+/** The clip's frame reframed: the source point at the centre of the screen, the zoom, and a roll (radians, clockwise). */
+interface Cam { x: number; y: number; zoom: number; roll?: number }
+function toScreen(c: Cam, x: number, y: number) {
+  const dx = (x - c.x) * c.zoom, dy = (y - c.y) * c.zoom, cr = Math.cos(c.roll ?? 0), sr = Math.sin(c.roll ?? 0);
+  return { x: cr * dx - sr * dy + W / 2, y: sr * dx + cr * dy + H / 2 };
+}
 
 /** A detector box as the clip draws them (scenes/shoggoth.ts, box()), twice the size: on an eye or on the mask. */
 interface Tag { eye: number | 'mask'; name: string; conf: string; below?: boolean }
 interface Variant {
+  /** The clip scene behind the title and its song time (default: the shoggoth at SHOG_T). */
+  scene?: { id: string; t: number };
   /** The line above the title (none: the title alone). */
   kicker?: string;
   /** The kicker's size (px; default 30): a short one can be read larger. */
@@ -65,6 +72,8 @@ const VARIANTS: Record<string, Variant> = {
   'hino-codigo': { kicker: 'FEITO 100% COM CÓDIGO', lines: ['O HINO', 'DA IA'], hot: [-1, 3], band: 1130, kickSize: 44 },
   // (the creature right, with the tentacle that held the mask reaching out of the frame's top-right corner)
   simples: { lines: ['O HINO', 'DA IA'], hot: [-1, 3], titleW: 820, titleX: 125, tags: [], mask: false, cam: { x: 735, y: 525, zoom: 1.05 } },
+  // (the first paperclip of the paperclips plate, just bent by the spark and still hot, turned to rise on the right)
+  clipe: { lines: ['O HINO', 'DA IA'], hot: [-1, 3], titleW: 820, titleX: 125, scene: { id: 'paperclips', t: 97.65 }, cam: { x: 545, y: 126, zoom: 0.78, roll: -0.7 } },
 };
 
 /**
@@ -74,13 +83,22 @@ const VARIANTS: Record<string, Variant> = {
  * The band's furniture is the x-ray's (letra/xray.ts): hairline edges, a signal glow on the leading edge.
  */
 const view = new FSPass(/* glsl */ `
-  uniform sampler2D tex, codeTex; uniform vec3 cam; uniform float band;
+  uniform sampler2D tex, codeTex; uniform vec4 cam; uniform float band, fill;
   void main() {
     vec2 sp = vec2(vUv.x * ${W.toFixed(1)}, (1.0 - vUv.y) * ${H.toFixed(1)});
-    vec2 p = (sp - 0.5 * vec2(${W.toFixed(1)}, ${H.toFixed(1)})) / cam.z + cam.xy;
-    vec2 uv = vec2(p.x / ${W.toFixed(1)}, 1.0 - p.y / ${H.toFixed(1)});
-    uv = 1.0 - abs(1.0 - abs(uv));
+    vec2 d = (sp - 0.5 * vec2(${W.toFixed(1)}, ${H.toFixed(1)})) / cam.z;
+    float cr = cos(cam.w), sr = sin(cam.w);
+    vec2 p = vec2(cr * d.x + sr * d.y, -sr * d.x + cr * d.y) + cam.xy;
+    vec2 raw = vec2(p.x / ${W.toFixed(1)}, 1.0 - p.y / ${H.toFixed(1)});
+    vec2 uv = 1.0 - abs(1.0 - abs(raw));
     vec3 sc = texture(tex, uv).rgb;
+    if (fill > 0.5) {
+      // a turned frame reaches far past its edges, where a mirror would repeat the picture: the background
+      // there instead (the corners' colour), faded in over the last 24 px
+      vec3 bg = 0.25 * (texture(tex, vec2(0.01)).rgb + texture(tex, vec2(0.99, 0.01)).rgb + texture(tex, vec2(0.01, 0.99)).rgb + texture(tex, vec2(0.99)).rgb);
+      vec2 e = min(p, vec2(${W.toFixed(1)}, ${H.toFixed(1)}) - p);
+      sc = mix(bg, texture(tex, clamp(raw, 0.0, 1.0)).rgb, smoothstep(0.0, 24.0, min(e.x, e.y)));
+    }
     vec3 col = sc;
     if (band > 0.0) {
       vec4 cd = texture(codeTex, vUv);
@@ -105,7 +123,7 @@ const view = new FSPass(/* glsl */ `
       col += C_SIGNAL * 0.7 * exp(-max(sp.x - bx - bw, 0.0) / 6.0) * step(bx + bw - 1.0, sp.x);
     }
     fragColor = vec4(col, 1.0);
-  }`, { tex: { value: null }, codeTex: { value: null }, cam: { value: new THREE.Vector3(W / 2, H / 2, 1) }, band: { value: 0 } });
+  }`, { tex: { value: null }, codeTex: { value: null }, cam: { value: new THREE.Vector4(W / 2, H / 2, 1, 0) }, band: { value: 0 }, fill: { value: 0 } });
 
 export default class Thumb extends Scene {
   private clips!: Clips;
@@ -118,7 +136,7 @@ export default class Thumb extends Scene {
   override async init() {
     this.v = VARIANTS[String(this.ctx.params.variant)] ?? VARIANTS.hino!;
     this.clips = new Clips(this.ctx);
-    await this.clips.load('shoggoth');
+    await this.clips.load(this.v.scene?.id ?? 'shoggoth');
     if (this.v.band) {
       // the creature's shader, as one dense run of its real source filling every row (large enough to read
       // as code in the thumbnail), from its first line of GLSL
@@ -136,28 +154,34 @@ export default class Thumb extends Scene {
   override render(_f: Frame, out: THREE.WebGLRenderTarget): PostOverrides {
     const { renderer, comp } = this.ctx;
     const v = this.v, CAM = v.cam ?? DEFAULT_CAM;
-    // the creature alone: no lyric, tags or boxes (drawn here, bigger), and its mask drawn here too, so it
-    // can sit whole in the frame (in the clip's shot it runs off the top edge)
-    this.clips.render('shoggoth', SHOG_T, this.rt, { bare: true, hideMask: true });
+    const id = v.scene?.id ?? 'shoggoth', shog = id === 'shoggoth';
+    // the clip's picture without its lyric; the shoggoth also without its tags and boxes (drawn here,
+    // bigger) and without its mask (drawn here too, so it can sit whole in the frame: in the clip's shot
+    // it runs off the top edge)
+    const sp = this.clips.render(id, v.scene?.t ?? SHOG_T, this.rt, shog ? { bare: true, hideMask: true } : { bare: true });
     const u = view.u;
     u.tex!.value = this.rt.texture;
     u.codeTex!.value = this.code.texture;
-    (u.cam!.value as THREE.Vector3).set(CAM.x, CAM.y, CAM.zoom);
+    (u.cam!.value as THREE.Vector4).set(CAM.x, CAM.y, CAM.zoom, CAM.roll ?? 0);
     u.band!.value = v.band ?? 0;
+    u.fill!.value = CAM.roll ? 1 : 0;
     view.render(renderer, out);
 
-    const sc = this.clips.scene<ShogLike>('shoggoth');
     const L = this.ui; L.clear(); const c = L.ctx;
-    const m = sc.project(sc.maskW), mp = toScreen(CAM, m.x, m.y);
-    if (v.mask !== false) engravedMask(c, mp.x, mp.y, MASK_R * m.s * CAM.zoom);
-    if (this.debug) {
-      c.font = font(F.mono(700), 22); c.fillStyle = rgba('acid'); c.strokeStyle = rgba('acid');
-      sc.eyeScr.forEach((e, i) => { const p = toScreen(CAM, e.x, e.y); c.fillText(String(i), p.x + 6, p.y - 6); c.beginPath(); c.arc(p.x, p.y, e.r * CAM.zoom, 0, TAU); c.stroke(); });
+    if (shog) {
+      const sc = this.clips.scene<ShogLike>('shoggoth');
+      const m = sc.project(sc.maskW), mp = toScreen(CAM, m.x, m.y);
+      if (v.mask !== false) engravedMask(c, mp.x, mp.y, MASK_R * m.s * CAM.zoom);
+      if (this.debug) {
+        c.font = font(F.mono(700), 22); c.fillStyle = rgba('acid'); c.strokeStyle = rgba('acid');
+        sc.eyeScr.forEach((e, i) => { const p = toScreen(CAM, e.x, e.y); c.fillText(String(i), p.x + 6, p.y - 6); c.beginPath(); c.arc(p.x, p.y, e.r * CAM.zoom, 0, TAU); c.stroke(); });
+      }
+      this.drawTags(c, sc);
     }
-    this.drawTags(c, sc);
     this.drawTitle(c);
     comp.draw(renderer, L.upload(), out);
-    return { bloom: 0.7, bloomThreshold: 0.82, ca: 0.6, grain: 0.04, vignette: 0.45, hud: 0, frame: 0, shake: [0, 0], zoom: 1 };
+    // (the scene's own bloom: the hot clip glows by it)
+    return { bloom: sp.bloom ?? 0.7, bloomThreshold: sp.bloomThreshold ?? 0.82, ca: 0.6, grain: 0.04, vignette: 0.45, hud: 0, frame: 0, shake: [0, 0], zoom: 1 };
   }
 
   private drawTags(c: CanvasRenderingContext2D, sc: ShogLike) {

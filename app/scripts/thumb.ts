@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // The YouTube thumbnail of the full pt-BR video: renders thumb.html (src/thumb/) at 3840x2160 and
 // downsamples it 3x to YouTube's 1280x720.
-//   bun scripts/thumb.ts [--v hino,codigo,hino-codigo,simples] [--out ../out/thumb] [--samples 36] [--scale 2] [--debug]
+//   bun scripts/thumb.ts [--v hino,codigo,hino-codigo,simples,clipe] [--out ../out/thumb] [--samples 36] [--scale 2] [--debug]
 // Writes <variant>.png (1280x720), <variant>.jpg (the upload: YouTube takes up to 2 MB) and <variant>-4k.png.
 import { chromium } from 'playwright-core';
 import { mkdirSync } from 'node:fs';
@@ -12,7 +12,7 @@ const opt = (k: string, d?: string) => { const i = argv.indexOf(`--${k}`); retur
 const flag = (k: string) => argv.includes(`--${k}`);
 const APP = path.resolve(import.meta.dir, '..');
 const OUT = path.resolve(opt('out', path.join(APP, '../out/thumb'))!);
-const VARIANTS = opt('v', 'hino,codigo,hino-codigo,simples')!.split(',');
+const VARIANTS = opt('v', 'hino,codigo,hino-codigo,simples,clipe')!.split(',');
 const SCALE = Math.max(1, Math.round(+opt('scale', '2')!));
 const SAMPLES = +opt('samples', '36')!;
 
