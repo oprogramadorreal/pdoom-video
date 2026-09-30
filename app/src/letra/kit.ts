@@ -11,7 +11,7 @@ import type { Lyrics, Line } from '../engine/lyrics';
 import type { Narration } from './narration';
 import { MONTAGE, verseLines, type BlockSpec } from './montage';
 import { blockCuts } from './timeline';
-import { CLIP_END } from './soundtrack';
+import { CLIP_END, MIX_AT } from './soundtrack';
 import { Sheet } from './paper';
 import { drawMask2D } from '../scenes/_motifs';
 
@@ -127,12 +127,19 @@ export const fmtPT = (v: number, d = 2) => v.toFixed(d).replace('.', ',');
 // ---------------------------------------------------------------- the ruler
 export const RX0 = 150, RX1 = W - 150, RY = H - 62;
 const SONG = CLIP_END;
+/**
+ * When the ruler comes and goes: it fades in LEAD s before each cut to a new verse (a beat before the spark
+ * runs to it), holds HOLD s after the cut (the verse docks and is read; a chorus's value lights; the mask
+ * leaves in 04.6), and fades out. Where a block uses it (BlockSpec.ruler) it stays. Two showings closer than
+ * MIN_GAP s merge, so it never blinks.
+ */
+const LEAD = 1.2, HOLD = 3.5, MIN_GAP = 5, FADE_IN = 0.3, FADE_OUT = 0.5;
 export const rulerX = (s: number) => RX0 + (RX1 - RX0) * clamp(s / SONG);
 
 export interface ReguaState {
   /** 0..1: the ruler drawn in from the left (1 = whole). */
   draw: number;
-  /** Overall opacity. */
+  /** Overall opacity (times Regua.visible). */
   alpha: number;
   /** The cursor: song seconds. */
   pos: number;
@@ -158,6 +165,8 @@ export class Regua {
   pos: number[];
   /** "Guarda essa máscara" (02.3): the mask waits in the ruler's corner until RLHF takes it back (04.6). */
   mask: [number, number];
+  /** When the ruler is on screen: [from, to] in video time (fading in after `from`, out after `to`). */
+  shown: [number, number][] = [];
   constructor(public ly: Lyrics, public n: Narration) {
     this.ticks = ly.lines.map((l) => l.start);
     this.cuts = blockCuts(n);
@@ -179,6 +188,25 @@ export class Regua {
       { s: ly.get('Was it all for show').end, v: 'NaN', lit: at('06.1') + 7.5 },
     ];
     this.mask = [n.word('02.3', 'Guarda').start + 0.62, at('04.6') + 0.6];
+    const w: [number, number][] = [];
+    MONTAGE.forEach((b, i) => {
+      const t0 = this.cuts[i]!, t1 = this.cuts[i + 1] ?? MIX_AT + n.mixDuration;
+      if (b.verse) w.push([t0 - LEAD, t0 + HOLD]);
+      if (b.ruler === 'block') w.push([t0, t1]);
+      else if (b.ruler) w.push([n.word(b.id, b.ruler.from).start - 0.5, t1]);
+    });
+    w.sort((a, b) => a[0] - b[0]);
+    for (const x of w) {
+      const last = this.shown[this.shown.length - 1];
+      if (last && x[0] - last[1] < MIN_GAP) last[1] = Math.max(last[1], x[1]);
+      else this.shown.push(x);
+    }
+  }
+  /** How much of the ruler (and the verse docked on it) is on screen at video time t, 0..1. */
+  visible(t: number) {
+    let v = 0;
+    for (const [a, b] of this.shown) v = Math.max(v, ease.inOutCubic(clamp((t - a) / FADE_IN)) * (1 - ease.inOutCubic(clamp((t - b) / FADE_OUT))));
+    return v;
   }
   /** Where the kept mask sits (screen px) and its radius. */
   static readonly MASK_AT = { x: RX1 + 52, y: RY - 4, r: 15 };

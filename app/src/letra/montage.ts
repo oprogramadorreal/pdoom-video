@@ -2,7 +2,8 @@
 // Each block opens with its verse (the song line it explains) and puts the ruler's cursor on it; the
 // image of each block is built in the chapter modules (c00.ts … c06.ts). Timing never lives here:
 // blocks start and end in the silences of the narration (timeline.ts), and images change on the
-// narration's words (NBlock.words) and the track's beats.
+// narration's words (NBlock.words) and the track's beats. The ruler comes and goes on its own (see
+// Regua.visible): it shows each change of verse, and stays where a block says it uses it (`ruler`).
 import type { Lyrics, Line } from '../engine/lyrics';
 
 export interface VerseSpec {
@@ -16,19 +17,27 @@ export interface BlockSpec {
   verse?: VerseSpec;
   /** Where the ruler's cursor sits during the block when there is no verse: song seconds or 'keep'. */
   pos?: number | 'keep' | 'end';
+  /** The block uses the ruler: all through, or from a word of its narration to its end. */
+  ruler?: 'block' | { from: string };
 }
 
 const V = (key: string, ...lines: string[]): VerseSpec => ({ lines, key });
 
 export const MONTAGE: BlockSpec[] = [
-  { id: '00.1', pos: 0 }, { id: '00.2', pos: 0 }, { id: '00.3', pos: 0 }, { id: '00.4', pos: 0 }, { id: '00.5', pos: 0 }, { id: '00.6', pos: 0 },
+  { id: '00.1', pos: 0 },
+  // "No final": the spark runs to the ruler's end; the sweep across the lyric and the teasers' jumps
+  { id: '00.2', pos: 0, ruler: { from: 'artificial' } }, { id: '00.3', pos: 0, ruler: 'block' },
+  { id: '00.4', pos: 0 }, { id: '00.5', pos: 0 },
+  // the spark jumping from chorus to chorus
+  { id: '00.6', pos: 0, ruler: 'block' },
   { id: '01.1', verse: V('faiscar', 'Vejo AGI faiscar') },
   { id: '01.2', verse: V('circuitos', 'teus circuitos me dão') },
   { id: '01.3', verse: V('loss', 'Tua loss de treino') },
   { id: '01.4', verse: V('ChatGPT,', 'ChatGPT, não me engole') },
   { id: '02.1', verse: V('FOOM.', 'hook:1', 'pois o futuro faz FOOM') },
   { id: '02.2', verse: V('quarto chinês,', 'Preso no quarto chinês', 'cogumelos pra um mês') },
-  { id: '02.3', verse: V('shoggoth', 'Desmascara o shoggoth') },
+  // "Guarda essa máscara": it flies into the ruler's corner
+  { id: '02.3', verse: V('shoggoth', 'Desmascara o shoggoth'), ruler: { from: 'Guarda' } },
   { id: '02.4', verse: V('olhos de shinigami.', 'com teus olhos de shinigami') },
   { id: '02.5', pos: 'keep' },
   { id: '02.6', verse: V('singularidade', 'mas a singularidade começou') },
@@ -42,7 +51,8 @@ export const MONTAGE: BlockSpec[] = [
   { id: '03.7', verse: V('Gato,', 'Gato, por favor') },
   { id: '04.1', verse: V('clipe,', 'hook:3', 'tudo vira clipe') },
   { id: '04.2', verse: V('Quem desliga', 'Quem desliga foi viajar', 'não tem pra onde escapar') },
-  { id: '04.3', verse: V('estopim,', 'acendemos o estopim') },
+  // "Aceso desde o primeiro segundo": the whole ruler burns as a fuse
+  { id: '04.3', verse: V('estopim,', 'acendemos o estopim'), ruler: { from: 'Aceso' } },
   { id: '04.4', verse: V('ortogonalidade:', 'tese da ortogonalidade') },
   { id: '04.5', verse: V('transformers,', 'transformers, é simples', 'aprendeu a dizer') },
   { id: '04.6', verse: V('RLHF', 'Pós-Chinchilla', 'pula a cerca', 'Cem mil GPU', 'RLHF deu chabu') },
@@ -51,8 +61,10 @@ export const MONTAGE: BlockSpec[] = [
   { id: '05.3', verse: V('Ilya', 'O que Ilya viu') },
   { id: '05.4', pos: 'keep' },
   { id: '05.5', verse: V('pra inglês ver?', 'Foi tudo só pra inglês') },
-  { id: '06.1', pos: 'end' }, { id: '06.2', pos: 'end' }, { id: '06.3', pos: 'end' }, { id: '06.4', pos: 'end' },
-  { id: '06.5', pos: 'end' }, { id: '06.6', pos: 'end' }, { id: '06.7', pos: 0 },
+  { id: '06.1', pos: 'end' }, { id: '06.2', pos: 'end' },
+  // the ruler as the time control; the rewind to 0:00 and the play
+  { id: '06.3', pos: 'end', ruler: { from: 'Você dá' } },
+  { id: '06.4', pos: 'end' }, { id: '06.5', pos: 'end' }, { id: '06.6', pos: 'end' }, { id: '06.7', pos: 0, ruler: 'block' },
 ];
 
 /** A verse's song lines. */

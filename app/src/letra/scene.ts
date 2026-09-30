@@ -33,7 +33,8 @@ export default class Letra extends Scene {
   override render(f: Frame, out: THREE.WebGLRenderTarget): PostOverrides {
     const r = this.blk.render(f, out) ?? {};
     const post: PostOverrides = { ...(r.post ?? {}) };
-    const st: ReguaState = { draw: 1, alpha: 1, pos: this.regua.cursor(f.t), play: 0, paper: post.paper ?? 0, fuse: 0, ...r.regua };
+    // (the ruler shows itself on demand; a block's own alpha only fades it further)
+    const st: ReguaState = { draw: 1, pos: this.regua.cursor(f.t), play: 0, paper: post.paper ?? 0, fuse: 0, ...r.regua, alpha: this.regua.visible(f.t) * (r.regua?.alpha ?? 1) };
     const verse = r.verse ?? st.alpha * Math.max(0, Math.min(1, st.draw * 2 - 1));
     const t = f.t, i = this.index, regua = this.regua;
     // the player lives in the HUD: steady under the image's shake, zoom and fringes
