@@ -5,27 +5,28 @@ import { W, H, clearRT } from '../engine/gl';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, measure } from '../engine/type';
 import { clamp, ease, lerp, prog, pulse } from '../engine/util';
-import { makeDigitAtlas, makeOdoPass, drumX } from '../scenes/ascent-odo';
 import { Block, type BlockFactory, type BlockOut } from './block';
-import { CLIP_END, MIX_AT } from './soundtrack';
-import { S, camPass, RX1, RY, type Cam } from './kit';
+import { CLIP_END } from './soundtrack';
+import { S, camPass, mixRgba, RX1, RY, type Cam } from './kit';
 import { xray } from './xray';
 import { CLIP_FILES, docIndex, drawDoc, drawListing, lineCount, source } from './code';
-import { INK, type Stamp } from './paper';
 import { callout, hot, outline, traceContours, typed, type P2 } from './draw';
 import { sparkHead } from '../scenes/_motifs';
+import { Opening } from './opening';
+import { FilmStrip } from './filmstrip';
 
 /**
- * 00.1 "Você acabou de ouvir uma música de amor sobre o fim do mundo." The clip's first frame, held:
- * black, the crop marks. When the mixagem starts (0.6 s in) the ruler draws itself in along the foot of
- * the frame, inside the crop marks, and the spark lights at 0:00 as its cursor, paused.
+ * 00.1 "Você acabou de ouvir uma música de amor sobre o fim do mundo." The clip's first frame (black, the
+ * crop marks), and on it the opening (opening.ts): the spark draws a heart from the first word, it beats on
+ * "amor", rounds into the Earth, cracks on "fim do mundo" and blows up on the cut to 00.2. No ruler yet: it
+ * comes in at the end of 00.2, just before it is first used.
  */
 class B001 extends Block {
-  override async init() { await this.clips.load('open'); }
-  render(f: Frame, out: THREE.WebGLRenderTarget) {
+  private op!: Opening;
+  override async init() { await this.clips.load('open'); this.op = new Opening(this.n, this.e.end); }
+  render(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const post = this.clips.render('open', 0, out);
-    const draw = prog(f.t, MIX_AT, MIX_AT + 1.5, ease.inOutCubic);
-    return { post, regua: { draw, pos: 0 } };
+    return { post: { ...post, ...this.op.render(this.ctx, f.t, out) }, regua: { draw: 0, pos: 0 } };
   }
 }
 
@@ -39,53 +40,60 @@ const SHOTS: Shot[] = [
 ];
 
 /**
- * 00.2 "E tudo que você viu no vídeo é código…" — on "tudo que você viu", the clip flashes past, one
- * plate a beat; on "é código" the shoggoth's x-ray band crosses the last one and leaves it drawn by its
- * own source (the glyphs lit by the image). A technical sheet (the `bureau`'s paper) slides in and is filled
- * as the voice denies each way of making pictures (0, 0, 0), then stamped NENHUM on "After Effects"; behind
- * it, the plates keep changing, each shown as its code. "vinte mil linhas": a flight down the whole
- * listing while the `ascent` odometer rolls to the real count; it lands on `open.ts`, where TypeScript and
- * a GLSL block get their callouts; the shader stands beside what it draws; both shrink into a page at
- * localhost; "Clód Opus cinco ponto cinco" is traced by the spark.
+ * 00.2 "E tudo que você viu no vídeo é código…" — the last of the Earth's debris; on "tudo que você viu",
+ * the clip flashes past, one plate a beat; on "é código" the shoggoth's x-ray band crosses the last one and
+ * leaves it drawn by its own source (the glyphs lit by the image). "Nenhum quadro foi…": the plate recedes
+ * and a strip of film slides in, four frames, one per way of making a picture (filmstrip.ts), each drawn
+ * as the voice names it and crossed out as it denies it; "After Effects" is struck through. "vinte mil
+ * linhas": the strip leaves and the camera flies down the whole listing while a counter climbs, through
+ * 20.000 on "vinte mil", to the real count; the flight lands on `open.ts`, where TypeScript and a GLSL block
+ * get their callouts; the shader stands beside what it draws; both shrink into a page at localhost; "Clód
+ * Opus cinco ponto cinco" is traced by the spark. The ruler draws itself in on "inteligência artificial",
+ * just before "No final" sends the spark to its end.
  */
 class B002 extends Block {
-  private odo = makeOdoPass(makeDigitAtlas());
   private count = lineCount(CLIP_FILES);
   private name: P2[][] = [];
   private nameBox = { x0: 0, x1: 0, y0: 0, y1: 0 };
+  private opening!: Opening;
+  private strip!: FilmStrip;
   // times
   private tRecap: number[] = [];
-  private tX0 = 0; private tX1 = 0;
-  private tForm = 0; private tType: number[] = []; private tStamp = 0;
-  private tFlight = 0; private tLand = 0; private tOdo0 = 0; private tOdo1 = 0; private tTS = 0; private tGLSL = 0;
+  private tX0 = 0; private tX1 = 0; private tStrip = 0;
+  private tFlight = 0; private tLand = 0; private tMil = 0; private tOdo1 = 0; private tTS = 0; private tGLSL = 0;
   private tShader = 0; private tPage = 0; private tWeb = 0; private tAuthor = 0; private tName = 0; private tFinal = 0;
-  private cycle: { t: number; shot: number }[] = [];
+  private tRuler = 0;
   private landAt = 0;
 
   override async init() {
     await Promise.all(['open', ...SHOTS.map((s) => s.id)].map((id) => this.clips.load(id)));
     const n = this.n;
     const nb = (t: number) => n.nextBeat(t - 0.02);
+    this.opening = new Opening(n, this.e.start);
     // the recap: a plate per beat from "tudo"; the last one is x-rayed on "é código"
     const b0 = nb(this.at('tudo'));
     this.tRecap = [b0, nb(b0 + 0.1), nb(nb(b0 + 0.1) + 0.1), nb(nb(nb(b0 + 0.1) + 0.1) + 0.1)];
     this.tX0 = this.at('é código') - 0.06; this.tX1 = this.at('código') + 0.42;
-    // the sheet, and the plates behind it (code views) changing on the downbeats
-    this.tForm = n.prevBeat(this.at('Nenhum'));
-    this.tType = [this.at('desenhado'), this.at('filmado'), this.at('gerado')];
-    this.tStamp = this.at('After');
     this.tFlight = n.nearestBeat(this.at('São'));
-    this.cycle = [{ t: this.tRecap[3]!, shot: 3 }];
-    let k = 0;
-    for (const d of n.downbeats) if (d > this.tForm + 0.3 && d < this.tFlight - 0.3) this.cycle.push({ t: d, shot: k++ % 3 });
-    // the flight through the code and the odometer
-    this.tOdo0 = this.at('vinte'); this.tOdo1 = this.endOf('vinte mil linhas');
+    // the film strip: each way of making a picture, named and crossed out
+    this.tStrip = this.at('Nenhum');
+    const tIcon = [this.at('desenhado'), this.at('filmado'), this.at('gerado'), this.at('programa')];
+    this.strip = new FilmStrip({
+      tIn: this.tStrip, tIcon, tSnap: tIcon[1]! + 0.38,
+      tCross: [this.at('mão') + 0.02, tIcon[1]! + 0.6, this.at('vídeo', 1), this.at('teve')],
+      tAE: this.at('After'), tAEx: this.at('Effects') + 0.12, tOut: this.tFlight,
+    });
+    // the flight through the code and the counter
+    this.tMil = this.at('mil');
+    this.tOdo1 = this.tMil + (this.count - 20000) * (this.tMil - this.tFlight) / 20000;
     this.tTS = this.at('TypeScript'); this.tGLSL = this.at('GLSL');
     this.tLand = this.tTS - 0.05;
     this.landAt = docIndex('open.ts', 30);
     this.tShader = this.at('shaders') - 0.35;
     this.tPage = n.prevBeat(this.at('rodando')); this.tWeb = this.at('página');
     this.tAuthor = this.at('Escritas'); this.tName = this.at('Clód'); this.tFinal = this.at('No final');
+    // the ruler: in on the downbeat at "inteligência artificial", once the page has moved aside
+    this.tRuler = n.prevBeat(this.at('artificial'));
     // the name, traced by the spark
     const fam = F.archivo(100, 700), size = 150;
     const text = 'Claude Opus 5.5';
@@ -95,41 +103,35 @@ class B002 extends Block {
     this.nameBox = { x0: x, x1: x + w, y0: y - size * 0.72, y1: y };
   }
 
-  render(f: Frame, out: THREE.WebGLRenderTarget) {
+  render(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const t = f.t;
-    if (t < this.tFlight) return this.partSheet(f, out);
-    if (t < this.tPage) return this.partCode(f, out);
-    return this.partPage(f, out);
+    const r = t < this.tFlight ? this.partSheet(f, out) : t < this.tPage ? this.partCode(f, out) : this.partPage(f, out);
+    return { ...r, regua: { ...r.regua, draw: prog(t, this.tRuler, this.tRuler + 1.5, ease.inOutCubic) } };
   }
 
-  /** Which clip moment is up at t (recap / x-ray / code views), and its song time. */
-  private shotAt(t: number): { shot: Shot; s: number } | null {
-    if (t < this.tRecap[0]!) return null;
+  /** Which clip moment is up at t (the recap, then the x-rayed plate held behind the strip), and its song time. */
+  private shotAt(t: number): { shot: Shot; s: number } {
     let i = 0, t0 = this.tRecap[0]!;
     for (let k = 0; k < 4; k++) if (t >= this.tRecap[k]!) { i = k; t0 = this.tRecap[k]!; }
-    if (t >= this.tRecap[3]!) {
-      for (const c of this.cycle) if (t >= c.t) { i = c.shot; t0 = c.t; }
-    }
     const shot = SHOTS[i]!;
-    return { shot, s: shot.s + (t - t0) * shot.rate };
+    // (behind the strip the plate slows to a drift)
+    const s = t < this.tStrip ? shot.s + (t - t0) * shot.rate : shot.s + (this.tStrip - t0) * shot.rate + (t - this.tStrip) * shot.rate * 0.4;
+    return { shot, s };
   }
 
-  // ---------------------------------------------------------------- 1. recap, x-ray, the technical sheet
-  private partSheet(f: Frame, out: THREE.WebGLRenderTarget): { post: PostOverrides } {
+  // ---------------------------------------------------------------- 1. the blast's debris, recap, x-ray, the film strip
+  private partSheet(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const { renderer } = this.ctx;
     const t = f.t;
+    if (t < this.tRecap[0]!) {
+      const post = this.clips.render('open', 0, out);
+      return { post: { ...post, ...this.opening.render(this.ctx, t, out) } };
+    }
     const sh = this.shotAt(t);
     const R = S().rt;
-    let post: PostOverrides = {};
-    if (!sh) {
-      post = this.clips.render('open', 0, out);
-      return { post: { ...post, frame: 1 } };
-    }
-    // the plate, pushed right once the sheet is in (it takes the left third)
-    const formK = ease.inOutCubic(prog(t, this.tForm, this.tForm + 0.45));
     const clipPost = this.clips.render(sh.shot.id, sh.s, R[0]!);
     const flash = t < this.tX0 ? pulse(t, [...this.tRecap].reverse().find((x) => t >= x) ?? 0, 0.06) : 0;
-    camPass(renderer, R[0]!.texture, R[1]!, { x: W / 2 - 250 * formK, zoom: 1 + 0.03 * prog(t, this.tRecap[0]!, this.tFlight) });
+    camPass(renderer, R[0]!.texture, R[1]!, { zoom: 1 + 0.03 * prog(t, this.tRecap[0]!, this.tFlight) });
     // the code over it: its own source, scrolling
     const L = S().ui; L.clear();
     const file = source(sh.shot.file);
@@ -137,12 +139,13 @@ class B002 extends Block {
     drawListing(L.ctx, file, { x: 48, y: 60, w: W - 60, h: H - 120, scroll, size: 17, colors: { code: rgba('bone', 0.9), comment: rgba('ash', 0.75), glsl: rgba('ember', 1), num: rgba('ash', 0.45) } });
     const band = t >= this.tX0 && t < this.tX1;
     const bx = lerp(-120, W + 120, ease.inOutQuad(prog(t, this.tX0, this.tX1)));
-    xray(renderer, R[1]!.texture, L.upload(), out, { x: bx, w: 70, on: band ? 1 : 0, all: t >= this.tX1 ? 1 : 0, t, dim: 0.07 });
+    // once the strip comes, the plate made of code recedes: dimmer, softer, a little further away
+    const back = ease.inOutCubic(prog(t, this.tStrip - 0.05, this.tStrip + 0.5));
+    xray(renderer, R[1]!.texture, L.upload(), back > 0 ? R[2]! : out, { x: bx, w: 70, on: band ? 1 : 0, all: t >= this.tX1 ? 1 : 0, t, dim: 0.07 });
+    if (back > 0) camPass(renderer, R[2]!.texture, out, { dim: lerp(1, 0.3, back), blur: 2.5 * back, zoom: lerp(1, 0.965, back) });
     if (band) this.bandHeader(out, bx);
-    // the technical sheet
-    if (t >= this.tForm) this.drawForm(out, t, formK);
-    post = { ...pick(clipPost, 'bloom', 'bloomThreshold'), flash: 0.35 * flash, ca: 0.8, shake: [0, 0], frame: 1 - prog(t, this.tX0, this.tX0 + 0.5, ease.inOutCubic) };
-    if (t >= this.tStamp) post.shake = [7 * pulse(t, this.tStamp, 0.06) * Math.sin(t * 91), 7 * pulse(t, this.tStamp, 0.06) * Math.cos(t * 77)];
+    let post: PostOverrides = { ...pick(clipPost, 'bloom', 'bloomThreshold'), flash: 0.35 * flash, ca: 0.8, shake: [0, 0], frame: 1 - prog(t, this.tX0, this.tX0 + 0.5, ease.inOutCubic) };
+    if (t >= this.tStrip - 0.1) post = { ...post, bloom: 0.45, bloomThreshold: 0.9, ca: 0.6, ...this.strip.render(this.ctx, t, out) };
     return { post };
   }
 
@@ -159,72 +162,8 @@ class B002 extends Block {
     this.ctx.comp.draw(this.ctx.renderer, L.upload(), out);
   }
 
-  private stampAt(t: number): Stamp {
-    const k = prog(t, this.tStamp, this.tStamp + 0.05, ease.outQuad);
-    return { x: 330, y: 598, hw: 250, hh: 70, rot: -0.09, strength: 1 + 0.5 * (1 - k) };
-  }
-
-  /** "Ficha técnica" — the video's own spec sheet, filled in by the voice. */
-  private drawForm(out: THREE.WebGLRenderTarget, t: number, k: number) {
-    const cam = { x: lerp(860 + 760, 860, k), y: 400 + 8 * Math.sin(t * 0.7), zoom: 1, roll: -0.012 + 0.004 * Math.sin(t * 0.5) };
-    const stampOn = t >= this.tStamp;
-    const st = this.stampAt(t);
-    S().sheet.render(this.ctx.renderer, out, cam, [0, 0, 640, 760], (c) => {
-      c.textBaseline = 'alphabetic';
-      c.fillStyle = INK.print(1);
-      c.fillRect(0, 0, 640, 84);
-      c.globalCompositeOperation = 'difference';
-      c.font = font(F.archivo(125, 900), 46);
-      c.fillText('FICHA TÉCNICA', 26, 58);
-      c.globalCompositeOperation = 'lighter';
-      c.font = font(F.mono(500), 12); c.letterSpacing = '2px';
-      c.fillStyle = INK.print(0.6);
-      c.fillText('OBRA', 26, 116); c.fillText('PREENCHIDO POR', 340, 116);
-      c.fillStyle = INK.print(0.95); c.font = font(F.mono(500), 16);
-      c.fillText('AUMENTO MEU P(DOOM)', 26, 140); c.fillText('O PRÓPRIO VÍDEO', 340, 140);
-      c.fillRect(0, 160, 640, 1.5);
-      c.fillRect(322, 100, 1.2, 50);
-      const fields = ['QUADROS DESENHADOS À MÃO', 'QUADROS FILMADOS', 'QUADROS GERADOS POR IA DE VÍDEO', 'PROGRAMA DE EDIÇÃO'];
-      fields.forEach((lab, i) => {
-        const y = 222 + i * 118;
-        c.fillStyle = INK.print(1); c.font = font(F.mono(700), 15); c.letterSpacing = '2px';
-        c.fillText(`${i + 1}.`, 26, y); c.fillText(lab, 62, y);
-        c.letterSpacing = '0px';
-        c.fillStyle = INK.print(0.35); c.fillRect(62, y + 58, 540, 1.2);
-        if (i < 3) {
-          const tt = this.tType[i]!;
-          if (t >= tt) {
-            const fresh = pulse(t, tt, 0.04);
-            c.fillStyle = INK.type(0.95);
-            c.font = font(F.mono(500), 44);
-            c.fillText('0', 540, y + 50 - 4 * fresh);
-          }
-        }
-      });
-      c.fillStyle = INK.print(0.7); c.font = font(F.mono(400), 13);
-      c.fillText('* Um quadro = uma função do tempo. Ver cap. 06.', 26, 728);
-      if (stampOn) {
-        c.save();
-        c.translate(st.x, st.y); c.rotate(st.rot);
-        const sc = lerp(1.08, 1, prog(t, this.tStamp, this.tStamp + 0.05, ease.outQuad));
-        c.scale(sc, sc);
-        const hw = st.hw - 10, hh = st.hh - 10;
-        c.strokeStyle = INK.orange(1);
-        c.lineWidth = 9; c.strokeRect(-hw, -hh, hw * 2, hh * 2);
-        c.lineWidth = 2.5; c.strokeRect(-hw + 13, -hh + 13, hw * 2 - 26, hh * 2 - 26);
-        c.fillStyle = INK.orange(1); c.textAlign = 'center';
-        c.font = font(F.archivo(75, 900), 70);
-        c.fillText('NENHUM', 0, 25);
-        c.font = font(F.mono(700), 12); c.letterSpacing = '4px';
-        c.fillText('NEM AFTER EFFECTS', 0, hh - 21);
-        c.letterSpacing = '0px';
-        c.restore();
-      }
-    }, { stamp: stampOn ? st : null, alpha: clamp(k * 3) });
-  }
-
   // ---------------------------------------------------------------- 2. the code, all of it
-  private partCode(f: Frame, out: THREE.WebGLRenderTarget): { post: PostOverrides } {
+  private partCode(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const { renderer, comp } = this.ctx;
     const t = f.t;
     const L = S().ui; L.clear(); const c = L.ctx;
@@ -265,6 +204,7 @@ class B002 extends Block {
       const a = toScreen(lineEnd(45), lineY(45));
       callout(c, a.x, a.y, 1240, a.y, 'blocos /* glsl */', kk, { title: 'GLSL', color: rgba('ember', 0.95), alpha: out1 });
     }
+    this.drawCounter(c, t);
     // (replace: the listing's transparent background comes out black)
     comp.draw(renderer, L.upload(), out, { mode: 'replace' });
     // the shader's output beside it: the sheet it paints, live
@@ -282,28 +222,56 @@ class B002 extends Block {
         comp.draw(renderer, L2.upload(), out);
       }
     }
-    // the odometer: every line of the clip, counted
-    const ok = prog(t, this.tOdo0 - 0.15, this.tOdo0 + 0.1) * (1 - prog(t, this.tTS - 0.1, this.tTS + 0.2));
-    if (ok > 0) this.drawOdometer(out, t, ok);
-    return { post: { bloom: 0.45, bloomThreshold: 0.95, ca: 0.6, frame: 0 } };
+    return { post: { bloom: 0.45, bloomThreshold: 0.95, ca: 0.6, frame: 0, zoom: 1 + 0.012 * pulse(t, this.tOdo1, 0.1) } };
   }
 
-  private drawOdometer(out: THREE.WebGLRenderTarget, t: number, alpha: number) {
-    const { renderer } = this.ctx;
-    const k = ease.outCubic(prog(t, this.tOdo0, this.tOdo1));
-    const v = this.count * k;
-    const dv = this.count * (ease.outCubic(prog(t + 1 / 60, this.tOdo0, this.tOdo1)) - k);
-    const u = this.odo.u;
-    const pos = u.uPos!.value as number[], blur = u.uBlur!.value as number[];
-    for (let j = 0; j < 31; j++) { pos[j] = (v / 10 ** j) % 10; blur[j] = Math.min(6, Math.abs(dv / 10 ** j) * 1.5); }
-    const zoom = 1.8, ox = (drumX(0) + drumX(5)) / 2 + 60;
-    (u.uCam!.value as THREE.Vector2).set(ox, 0);
-    u.uZoom!.value = zoom; u.uT!.value = t; u.uHot!.value = 0; u.uSheen!.value = lerp(-400, 1200, prog(t, this.tOdo1 - 0.2, this.tOdo1 + 0.4)); u.uThunk!.value = pulse(t, this.tOdo1, 0.08);
-    const R = S().rt[2]!;
-    this.odo.render(renderer, R);
-    // a window on the counter's last two drum groups (the leading zeros of its 31 drums stay out)
-    const xl = W / 2 + (545 - ox) * zoom, xr = W / 2 + (953 + 22 - ox) * zoom;
-    camPass(renderer, R.texture, out, { rect: [xl, H / 2 - 230, xr, H / 2 + 230], mask: true, alpha, feather: 60 }, true);
+  /**
+   * The counted lines at t: speeding up from the start of the flight to 20.000 on "mil", then slowing at the
+   * same rate into the real count (a smooth landing, during "linhas").
+   */
+  private countAt(t: number) {
+    const T1 = this.tMil - this.tFlight, T2 = this.tOdo1 - this.tMil, r = 40000 / T1;
+    if (t <= this.tFlight) return 0;
+    if (t < this.tMil) return (r / (2 * T1)) * (t - this.tFlight) ** 2;
+    const x = Math.min(t - this.tMil, T2);
+    return 20000 + r * x - (r / (2 * T2)) * x * x;
+  }
+
+  /**
+   * The counter: every line of the clip's code, counted while the camera flies down the listing. It climbs
+   * (no random digits), passes 20.000 as the voice says "vinte mil", lands on the real count and holds it;
+   * on "TypeScript" it fades for the callouts.
+   */
+  private drawCounter(c: CanvasRenderingContext2D, t: number) {
+    const kin = ease.outCubic(prog(t, this.tFlight, this.tFlight + 0.25));
+    const kout = ease.inOutCubic(prog(t, this.tTS + 0.05, this.tTS + 0.4));
+    const a = kin * (1 - kout);
+    if (a <= 0) return;
+    const v = Math.min(this.count, Math.floor(this.countAt(t) + 1e-6));
+    const land = pulse(t, this.tOdo1, 0.14);
+    const cy = H / 2 + 20 + 30 * kout;
+    // a dark band across the listing, so the number reads over the code flying past
+    const g = c.createLinearGradient(0, cy - 290, 0, cy + 190);
+    g.addColorStop(0, rgba('ink', 0)); g.addColorStop(0.28, rgba('ink', 0.92 * a)); g.addColorStop(0.75, rgba('ink', 0.92 * a)); g.addColorStop(1, rgba('ink', 0));
+    c.fillStyle = g; c.fillRect(0, cy - 290, W, 480);
+    c.save();
+    c.globalAlpha = a;
+    c.textBaseline = 'alphabetic'; c.textAlign = 'center';
+    // the digits in fixed cells (they never jitter sideways while they run)
+    const fam = F.archivo(100, 800), size = 210 * (1 + 0.035 * land);
+    const cell = Math.max(...'0123456789'.split('').map((d) => measure(d, fam, size)));
+    const dot = measure('.', fam, size) * 1.2;
+    const txt = v.toLocaleString('pt-BR');
+    const w = [...txt].reduce((s, ch) => s + (ch === '.' ? dot : cell), 0);
+    c.font = font(fam, size);
+    c.fillStyle = land > 0.02 ? mixRgba(rgba('bone'), rgba('signal'), land) : rgba('bone');
+    let x = W / 2 - w / 2;
+    for (const ch of txt) { const cw = ch === '.' ? dot : cell; c.fillText(ch, x + cw / 2, cy + 40); x += cw; }
+    c.font = font(F.mono(500), 24); c.letterSpacing = '8px'; c.fillStyle = rgba('ash', 0.95);
+    c.fillText('LINHAS DE CÓDIGO', W / 2 + 4, cy + 110);
+    c.font = font(F.mono(400), 19); c.letterSpacing = '3px'; c.fillStyle = rgba('ash', 0.7);
+    c.fillText(`app/src · ${CLIP_FILES.length} arquivos`, W / 2 + 1.5, cy - 150);
+    c.restore();
   }
 
   // ---------------------------------------------------------------- 3. a page, and who wrote it

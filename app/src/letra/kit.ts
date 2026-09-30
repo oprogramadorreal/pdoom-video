@@ -64,6 +64,8 @@ class Shared {
   ui = new Layer2D();
   ui2 = new Layer2D();
   lines = new LineBatch(80000, { blend: 'add' });
+  /** Outlines (icons, a traced heart, crosses): blended by max, so their joints don't bead the way added ones do. */
+  solid = new LineBatch(20000, { blend: 'max' });
   view = new FSPass(VIEW, viewUniforms());
   viewOver = new FSPass(VIEW, viewUniforms(), { blending: THREE.CustomBlending, transparent: true });
   private sheetInst: Sheet | null = null;
