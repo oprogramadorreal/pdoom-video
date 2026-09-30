@@ -336,6 +336,9 @@ const UNKNOWN = ['neck', 'head', 'mane0', 'mane1', 'tail0', 'leg0', 'leg2', 'leg
  */
 class B012 extends Block {
   private tDive = 0; private tIso = 0; private tLens = 0; private tTrain = 0; private tQ = 0;
+  /** "Mapear isso…": the camera pulls back from the circuit to the whole drawing over PULL s; then the lens comes in. */
+  private readonly PULL = 1.3;
+  private get tL0() { return this.tLens + this.PULL - 0.1; }
   private route: P2[] = [];
   private L: Float32Array<ArrayBufferLike> = new Float32Array(0);
   private o!: OpenLike;
@@ -368,7 +371,7 @@ class B012 extends Block {
     const dive: OCam = { cx: pulse.x + 0.2, cy: pulse.y + 0.1, z: 430, roll: -0.02 };
     const whole: OCam = { cx: 0.35, cy: 0.75, z: 175, roll: 0 };
     const kd = ease.inOutCubic(prog(t, this.tDive, this.tDive + 0.8));
-    const kw = ease.inOutCubic(prog(t, this.tLens, this.tLens + 0.7));
+    const kw = ease.inOutQuad(prog(t, this.tLens, this.tLens + this.PULL));
     const mix = (a: OCam, b: OCam, k: number): OCam => ({ cx: lerp(a.cx, b.cx, k), cy: lerp(a.cy, b.cy, k), z: Math.exp(lerp(Math.log(a.z), Math.log(b.z), k)), roll: lerp(a.roll, b.roll, k) });
     return mix(mix(clip, dive, kd), whole, kw);
   }
@@ -388,17 +391,18 @@ class B012 extends Block {
     const post = this.clips.render('open', s, out, { cam, lyrics: t < this.tDive });
     const w2s = (p: P2) => { const [x, y] = this.o.w2s(cam, p.x, p.y); return { x, y }; };
     const lb = S().lines; lb.clear();
-    // the pulse, and the circuit it isolates (the rest of the drawing dims)
-    const iso = prog(t, this.tIso, this.tIso + 0.3) * (1 - prog(t, this.tLens, this.tLens + 0.5));
+    // the pulse, and the circuit it isolates (the rest of the drawing dims; it comes back as the camera pulls back)
+    const iso = prog(t, this.tIso, this.tIso + 0.3) * (1 - ease.inOutQuad(prog(t, this.tLens, this.tLens + this.PULL)));
     if (iso > 0) {
       const V = S().ui2; V.clear(rgba('ink', 0.62 * iso));
       comp.draw(renderer, V.upload(), out);
     }
-    if (t >= this.tDive + 0.3 && t < this.tLens + 0.4) {
+    if (t >= this.tDive + 0.3 && t < this.tLens + this.PULL) {
       const tot = this.L[this.L.length - 1]!;
       const k = ease.inOutQuad(prog(t, this.tDive + 0.3, this.tIso + 0.1));
       const head = (0.12 + 0.95 * k) * tot;
-      const glow = 1 - prog(t, this.tLens, this.tLens + 0.4);
+      // (the circuit keeps its glow while the camera pulls back, so it is seen to be the unicorn's body)
+      const glow = 1 - ease.inQuad(prog(t, this.tLens, this.tLens + this.PULL));
       for (let i = 1; i < this.route.length; i++) {
         const s0 = this.L[i - 1]!;
         let d = head - s0;
@@ -430,14 +434,16 @@ class B012 extends Block {
     }
     const parts = this.o.geometry(s).parts;
     const mid = (id: string) => { const pp = parts.find((q) => q.id === id)!.pts; const m = pp[Math.floor(pp.length * 0.3)]!; return w2s(m); };
-    let lens: { x: number; y: number; r: number } | null = null;
-    if (t >= this.tLens + 0.5 && t < this.tTrain) {
-      // the lens glides over body, legs, horn — naming each as it passes
-      const k = prog(t, this.tLens + 0.5, this.tTrain - 0.2);
+    let lens: { x: number; y: number; r: number; a: number } | null = null;
+    if (t >= this.tL0 && t < this.tTrain) {
+      // the lens grows in over the body once the camera has pulled back, then glides over body, legs, horn —
+      // naming each as it passes
+      const k = prog(t, this.tL0, this.tTrain - 0.2);
       const path = [mid('body'), mid('leg1'), mid('horn')];
       const seg = Math.min(1.999, k * 2), i = Math.floor(seg), u = ease.inOutCubic(seg - i);
       const a = path[i]!, b = path[i + 1]!;
-      lens = { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), r: 150 };
+      const kin = prog(t, this.tL0, this.tL0 + 0.45);
+      lens = { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), r: 150 * ease.outBack(kin, 1.2), a: ease.outCubic(kin) };
     }
     // found circuits (they stay), then the unknown ones
     const tagAt = (id: string, text: string, t0: number, col: string) => {
@@ -447,8 +453,8 @@ class B012 extends Block {
       const dx = p.x > W / 2 - 100 ? 90 : -90;
       callout(c, p.x, p.y, p.x + dx, p.y - 60, text, k, { color: col, size: text === '???' ? 30 : 26, align: dx > 0 ? 'left' : 'right' });
     };
-    const lensDur = this.tTrain - 0.2 - (this.tLens + 0.5);
-    FOUND.forEach(([id, text], i) => tagAt(id, text, this.tLens + 0.5 + lensDur * (i / 2) + 0.05, rgba('bone', 0.95)));
+    const lensDur = this.tTrain - 0.2 - this.tL0;
+    FOUND.forEach(([id, text], i) => tagAt(id, text, this.tL0 + lensDur * (i / 2) + 0.35, rgba('bone', 0.95)));
     UNKNOWN.forEach((id, i) => tagAt(id, '???', this.tQ + 0.05 + i * 0.12, rgba('signal', 0.95)));
     comp.draw(renderer, Lr.upload(), out);
     if (lens) {
@@ -456,8 +462,9 @@ class B012 extends Block {
       const R = S().rt;
       const wl = this.s2w(cam, lens.x, lens.y);
       this.clips.render('open', s, R[0]!, { cam: { ...cam, cx: wl.x, cy: wl.y, z: cam.z * 2 }, lyrics: false });
-      camPass(renderer, R[0]!.texture, out, { mask: true, x: W - lens.x, y: H - lens.y, circle: [lens.x, lens.y, lens.r], dim: 1.35 }, true);
+      camPass(renderer, R[0]!.texture, out, { mask: true, x: W - lens.x, y: H - lens.y, circle: [lens.x, lens.y, lens.r], dim: 1.35, alpha: lens.a }, true);
       const L2 = S().ui2; L2.clear(); const c2 = L2.ctx;
+      c2.globalAlpha = lens.a;
       c2.strokeStyle = rgba('bone', 0.85); c2.lineWidth = 1.5;
       c2.beginPath(); c2.arc(lens.x, lens.y, lens.r, 0, Math.PI * 2); c2.stroke();
       c2.lineWidth = 5; c2.beginPath(); c2.moveTo(lens.x + lens.r * 0.72, lens.y + lens.r * 0.72); c2.lineTo(lens.x + lens.r * 1.25, lens.y + lens.r * 1.25); c2.stroke();
