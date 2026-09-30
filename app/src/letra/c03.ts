@@ -72,28 +72,31 @@ class B031 extends Block {
     camPass(renderer, R[0]!.texture, out, cam);
     const L = S().ui; L.clear(); const c = L.ctx;
     caption(c, 'Basilisco de Roko · LessWrong · 2010', prog(t, this.at('experimento') - 0.1, this.at('experimento') + 0.6) * (1 - prog(t, this.tIn, this.tIn + 0.3)));
-    // the list, in the dark of the pupil
+    // the list, in the dark of the pupil (its box fits the longest line, with the same margin all round)
     if (t >= this.tList - 0.2) {
       c.save();
+      const lines = KNEW.map((n, i) => `${String(i + 1).padStart(2, '0')}  ${n}`);
+      const pad = 40, bw = Math.max(...lines.map((l) => measure(l, F.mono(400), 30))) + 2 * pad;
+      const bx = W / 2 - bw / 2, x0 = bx + pad;
       c.font = font(F.mono(500), 30); c.textBaseline = 'alphabetic';
       c.fillStyle = rgba('ink', 0.82 * prog(t, this.tList - 0.2, this.tList + 0.2));
-      c.fillRect(W / 2 - 330, 250, 660, 520);
+      c.fillRect(bx, 250, bw, 520);
       c.fillStyle = rgba('signal', 0.95); c.letterSpacing = '4px';
       c.font = font(F.mono(600), 20);
-      typed(c, 'QUEM FICOU SABENDO:', W / 2 - 290, 310, prog(t, this.tList, this.tList + 0.5));
+      typed(c, 'QUEM FICOU SABENDO:', x0, 310, prog(t, this.tList, this.tList + 0.5));
       c.letterSpacing = '0px';
-      KNEW.forEach((n, i) => {
+      lines.forEach((l, i) => {
         const t0 = this.tList + 0.4 + i * 0.5;
         c.font = font(F.mono(400), 30); c.fillStyle = rgba('bone', 0.9);
-        typed(c, `${String(i + 1).padStart(2, '0')}  ${n}`, W / 2 - 290, 370 + i * 50, prog(t, t0, t0 + 0.45));
+        typed(c, l, x0, 370 + i * 50, prog(t, t0, t0 + 0.45));
       });
       if (t >= this.tYou + 0.55) {
         c.font = font(F.mono(600), 34); c.fillStyle = rgba('signal');
-        typed(c, `${String(KNEW.length + 1).padStart(2, '0')}  você`, W / 2 - 290, 370 + KNEW.length * 50 + 6, prog(t, this.tYou + 0.55, this.tYou + 0.9));
+        typed(c, `${String(KNEW.length + 1).padStart(2, '0')}  você`, x0, 370 + KNEW.length * 50 + 6, prog(t, this.tYou + 0.55, this.tYou + 0.9));
       }
       if (t >= this.tSorry) {
         c.font = font(F.mono(400), 20); c.fillStyle = rgba('ash');
-        typed(c, '* foi mal.', W / 2 + 120, 370 + KNEW.length * 50 + 6, prog(t, this.tSorry, this.tSorry + 0.3));
+        typed(c, '* foi mal.', bx + bw - pad - measure('* foi mal.', F.mono(400), 20), 370 + KNEW.length * 50 + 6, prog(t, this.tSorry, this.tSorry + 0.3));
       }
       c.restore();
     }
