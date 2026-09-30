@@ -137,7 +137,7 @@ bun scripts/render.ts video --lang pt-BR --full --samples auto --shutter 0.2 --o
 - **4K:** add `--scale 2 --x264 aq-mode=3:rc-lookahead=30` (see [4K](#4k)).
 - **In parts:** `--from`/`--to` render a part, with its sound.
 
-Before publishing, replace the placeholder image in block 01.1, the GPT-4 unicorn figure, which is not in the repo (see "Imagens de fora" in the ROTEIRO).
+Block 01.1 shows GPT-4's unicorns from the *Sparks of AGI* paper, which are not in the repo: run `uv run analysis/figura_gpt4.py` once before rendering to extract them from the paper (without it, a marked placeholder stands in; see "Imagens de fora" in the ROTEIRO).
 
 ## Regenerate the timing data
 
