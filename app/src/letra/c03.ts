@@ -10,7 +10,7 @@ import { norm } from '../engine/lyrics';
 import { Block, type BlockFactory, type BlockOut } from './block';
 import { S, camPass, type Cam } from './kit';
 import { INK } from './paper';
-import { callout, hot, lineIn, typed } from './draw';
+import { callout, hot, lineIn, typed, type P2 } from './draw';
 import { caption, clipPost, remap } from './c02';
 
 /** A caption for bone paper: ink instead of bone. */
@@ -424,13 +424,22 @@ class B034 extends Block {
 /**
  * 03.5 "A guinada à esquerda…" — the clip's swerve on "esquerda". Then a map from above: a straight road,
  * "COMPORTAMENTO DESEJADO", the spark driving on it; beside it a capability gauge, low ("fraca"). "num
- * salto de capacidade": the gauge jumps; "o bom comportamento fique pra trás": the spark turns 90° left off
- * the road, the camera whips with it and the road is left behind. "o trabalho do alinhamento": back on the
- * road, guard rails drawn along it — ALINHAMENTO — "querer o que a gente quer": they end a little further on.
+ * salto de capacidade": the gauge jumps and the spark speeds up; "o bom comportamento fique pra trás": it
+ * turns 90° left off the road, the camera turning with it, and the road is left behind. "Evitar isso": it
+ * swings round in a wide curve and merges back onto the road; "o trabalho do alinhamento": guard rails grow
+ * along the road from where it merged — ALINHAMENTO — and "querer o que a gente quer": they end a little
+ * further on. One continuous path, at a speed that only changes smoothly, its trail glowing behind the
+ * spark; the camera follows the spark's heading.
  */
 class B035 extends Block {
   private tMap = 0; private tWeak = 0; private tJump = 0; private tTurn = 0; private tAlign = 0; private tWant = 0;
   private k: [number, number][] = [];
+  /** The path (world px; the road runs up, y decreasing) and its arc length at each point. */
+  private path: P2[] = []; private pathL: number[] = [];
+  /** Distance along the path, sampled every millisecond from tMap. */
+  private sTab = new Float32Array(0);
+  private tJoin = 0; private yJoin = 0; private railEnd = 0;
+
   override async init() {
     await this.clips.load('leftturn');
     const ly = this.ctx.lyrics;
@@ -439,66 +448,128 @@ class B035 extends Block {
     this.tMap = this.at('é o medo');
     this.tWeak = this.at('se comporte'); this.tJump = this.at('num salto'); this.tTurn = this.at('o bom');
     this.tAlign = this.n.nearestBeat(this.at('Evitar')); this.tWant = this.at('fazer a');
+    // the speed: steady; faster after the jump; faster still for the swing back; easing once on the road
+    const V0 = 170, V1 = 380, V2 = 620, V3 = 240, R = 160;
+    const ramp = (t: number, t0: number, d: number) => ease.inOutCubic(prog(t, t0, t0 + d));
+    const vOff = (t: number) => V0 + (V1 - V0) * ramp(t, this.tJump, 0.5) + (V2 - V1) * ramp(t, this.tAlign, 0.35);
+    const dt = 0.001, t1 = this.e.end + 0.5;
+    const integrate = (until: number) => { let s = 0; for (let t = this.tMap; t < until; t += dt) s += vOff(t) * dt; return s; };
+    // the path: up the road; a left arc off it; straight on into the terrain; a wide curve back (a cubic whose
+    // ends follow the headings); up the road again
+    const D1 = integrate(this.tTurn), D2 = D1 + (R * Math.PI) / 2, sA = integrate(this.tAlign);
+    const pts: P2[] = [];
+    for (let y = 0; y < D1; y += 10) pts.push({ x: 0, y: -y });
+    for (let i = 0; i <= 40; i++) { const f = (i / 40) * (Math.PI / 2); pts.push({ x: -R + R * Math.cos(f), y: -D1 - R * Math.sin(f) }); }
+    const P0 = { x: -R - Math.max(0, sA - D2), y: -D1 - R };
+    for (let x = -R - 10; x > P0.x; x -= 10) pts.push({ x, y: P0.y });
+    this.yJoin = P0.y - 480;
+    const P1 = { x: P0.x - 170, y: P0.y }, P2_ = { x: 0, y: this.yJoin + 300 }, P3 = { x: 0, y: this.yJoin };
+    for (let i = 0; i <= 80; i++) {
+      const u = i / 80, v = 1 - u;
+      pts.push({ x: v * v * v * P0.x + 3 * v * v * u * P1.x + 3 * v * u * u * P2_.x + u * u * u * P3.x, y: v * v * v * P0.y + 3 * v * v * u * P1.y + 3 * v * u * u * P2_.y + u * u * u * P3.y });
+    }
+    const iJoin = pts.length - 1;
+    for (let y = 10; y < 5000; y += 10) pts.push({ x: 0, y: this.yJoin - y });
+    this.path = pts;
+    this.pathL = [0];
+    for (let i = 1; i < pts.length; i++) this.pathL.push(this.pathL[i - 1]! + Math.hypot(pts[i]!.x - pts[i - 1]!.x, pts[i]!.y - pts[i - 1]!.y));
+    // s(t): off the road until it merges (tJoin), then easing down to the road speed
+    const sJoin = this.pathL[iJoin]!;
+    const n = Math.ceil((t1 - this.tMap) / dt) + 1;
+    this.sTab = new Float32Array(n);
+    let s = 0, vJ = 0;
+    this.tJoin = t1;
+    for (let i = 1; i < n; i++) {
+      const t = this.tMap + i * dt;
+      if (this.tJoin === t1 && s >= sJoin) { this.tJoin = t; vJ = vOff(t); }
+      s += (t < this.tJoin ? vOff(t) : lerp(vJ, V3, ramp(t, this.tJoin, 0.6))) * dt;
+      this.sTab[i] = s;
+    }
+    // the rails end a little ahead of where the spark is when the voice says "fazer a I-Á querer…"
+    this.railEnd = this.at_(this.tWant).y - 520;
   }
+  /** Distance along the path at video time t. */
+  private sAt(t: number) {
+    const x = Math.max(0, (t - this.tMap) * 1000), i = Math.min(this.sTab.length - 2, Math.floor(x));
+    return this.sTab[i]! + (this.sTab[i + 1]! - this.sTab[i]!) * Math.min(1, x - i);
+  }
+  /** The path's point at distance s. */
+  private pointAt(s: number): P2 {
+    const L = this.pathL, P = this.path;
+    let lo = 0, hi = L.length - 1;
+    if (s <= 0) return P[0]!;
+    if (s >= L[hi]!) return P[hi]!;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (L[m]! <= s) lo = m; else hi = m; }
+    const u = (s - L[lo]!) / (L[hi]! - L[lo]!);
+    return { x: lerp(P[lo]!.x, P[hi]!.x, u), y: lerp(P[lo]!.y, P[hi]!.y, u) };
+  }
+  private at_(t: number) { return this.pointAt(this.sAt(t)); }
+  /** The heading at time t: 0 = up the road, positive = turning right (radians), from the path around the spark. */
+  private heading(t: number) {
+    const s = this.sAt(t), a = this.pointAt(s - 40), b = this.pointAt(s + 40);
+    return Math.atan2(b.x - a.x, a.y - b.y);
+  }
+
   render(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const { renderer, comp } = this.ctx;
     const t = f.t;
     if (t < this.tMap) return { post: clipPost(this.clips.render('leftturn', remap(t, this.k), out)) };
     clearRT(renderer, out, LIN.ink);
-    // world: the road runs up (y decreasing); the spark's distance along it
-    const aligned = t >= this.tAlign;
-    const speed = 170;
-    const dist = aligned ? (t - this.tAlign) * speed * 1.3 : (t - this.tMap) * speed * lerp(1, 2.2, prog(t, this.tJump, this.tJump + 0.4));
-    const turnK = aligned ? 0 : ease.inOutCubic(prog(t, this.tTurn, this.tTurn + 0.8));
-    // spark position in world (x, y); after the turn it goes left
-    const dTurn = (this.tTurn - this.tMap) * speed * 1.6;
-    let sx = 0, sy = -dist;
-    if (!aligned && t > this.tTurn) {
-      const a = (Math.PI / 2) * turnK, R = 160;
-      const along = dist - dTurn;
-      sx = -R + R * Math.cos(a) - Math.max(0, along - R * a) * (turnK >= 1 ? 1 : 0);
-      sy = -dTurn - R * Math.sin(a);
-    }
-    const camRot = -Math.PI / 2 * turnK;
+    const s = this.sAt(t), p = this.pointAt(s), sx = p.x, sy = p.y;
+    const th = this.heading(t);
     const L = S().ui; L.clear(); const c = L.ctx;
     c.save();
-    c.translate(W / 2, H * 0.62); c.rotate(-camRot); c.translate(-sx, -sy);
-    // terrain: contour hairlines
+    // the camera sits behind the spark and turns with it
+    c.translate(W / 2, H * 0.62); c.rotate(-th); c.translate(-sx, -sy);
+    // terrain: contour hairlines, fixed to the world (they stream past, on the road or off it)
     c.strokeStyle = rgba('bone', 0.08); c.lineWidth = 1;
-    for (let k = -30; k < 30; k++) { c.beginPath(); for (let i = -40; i <= 40; i++) { const x = i * 60, y = k * 90 + Math.sin(i * 0.3 + k) * 30 + sy; if (i === -40) c.moveTo(x + sx, y); else c.lineTo(x + sx, y); } c.stroke(); }
+    const gx = Math.floor(sx / 60), gy = Math.floor(sy / 90);
+    for (let k = gy - 16; k < gy + 16; k++) {
+      c.beginPath();
+      for (let i = gx - 32; i <= gx + 32; i++) { const x = i * 60, y = k * 90 + Math.sin(i * 0.3 + k) * 30; if (i === gx - 32) c.moveTo(x, y); else c.lineTo(x, y); }
+      c.stroke();
+    }
     // the road
-    const y0 = 400, y1 = -6000;
+    const y0 = 400, y1 = this.yJoin - 5000;
     c.strokeStyle = rgba('bone', 0.8); c.lineWidth = 2;
     c.beginPath(); c.moveTo(-70, y0); c.lineTo(-70, y1); c.moveTo(70, y0); c.lineTo(70, y1); c.stroke();
     c.strokeStyle = rgba('bone', 0.4); c.setLineDash([30, 30]); c.beginPath(); c.moveTo(0, y0); c.lineTo(0, y1); c.stroke(); c.setLineDash([]);
     c.save(); c.translate(110, sy - 60); c.rotate(-Math.PI / 2);
     c.font = font(F.mono(600), 22); c.letterSpacing = '6px'; c.fillStyle = rgba('bone', 0.8);
     c.fillText('COMPORTAMENTO DESEJADO', 0, 0); c.letterSpacing = '0px'; c.restore();
-    // the rails
-    if (aligned) {
-      const kr = ease.outCubic(prog(t, this.tAlign, this.tAlign + 0.8));
-      const railEnd = -(this.tWant - this.tAlign) * speed * 1.3 - 900;
-      const top = lerp(y0, railEnd, kr);
-      c.strokeStyle = rgba('signal', 0.95); c.lineWidth = 4;
-      for (const x of [-100, 100]) { c.beginPath(); c.moveTo(x, y0); c.lineTo(x, top); c.stroke(); for (let y = y0; y > top; y -= 70) { c.fillStyle = rgba('signal'); c.fillRect(x - 5, y - 5, 10, 10); } }
-      if (t >= this.tWant) {
-        c.fillStyle = rgba('signal'); c.font = font(F.mono(600), 20);
-        c.fillText('FIM DA PROTEÇÃO', 120, railEnd + 10);
+    // the rails, growing both ways from where the spark merged
+    const kr = ease.outCubic(prog(t, this.tJoin - 0.15, this.tJoin + 0.9));
+    if (kr > 0) {
+      const top = lerp(this.yJoin, this.railEnd, kr), bot = lerp(this.yJoin, this.yJoin + 900, kr);
+      c.strokeStyle = rgba('signal', 0.95); c.lineWidth = 4; c.fillStyle = rgba('signal');
+      for (const x of [-100, 100]) {
+        c.beginPath(); c.moveTo(x, bot); c.lineTo(x, top); c.stroke();
+        for (let y = Math.floor(bot / 70) * 70; y > top; y -= 70) c.fillRect(x - 5, y - 5, 10, 10);
       }
-      c.save(); c.translate(-130, sy - 200); c.rotate(-Math.PI / 2);
+      const kw = prog(t, this.tWant, this.tWant + 0.3);
+      if (kw > 0) { c.globalAlpha = kw; c.font = font(F.mono(600), 20); c.fillText('FIM DA PROTEÇÃO', 120, this.railEnd + 10); c.globalAlpha = 1; }
+      c.save(); c.translate(-130, this.yJoin - 160); c.rotate(-Math.PI / 2);
       c.font = font(F.archivo(100, 800), 54); c.fillStyle = rgba('signal', kr); c.fillText('ALINHAMENTO', 0, 0); c.restore();
     }
+    // the spark's trail: the last stretch of its path, fading behind it
+    c.lineCap = 'round';
+    for (let k = 0; k < 48; k++) {
+      const a = this.pointAt(s - (k + 1) * 14), b = this.pointAt(s - k * 14);
+      c.strokeStyle = rgba('signal', 0.7 * (1 - k / 48) ** 1.5); c.lineWidth = 3 * (1 - k / 60);
+      c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+    }
     c.restore();
-    // the gauge (screen-fixed)
-    const cap = aligned ? 0.35 : t < this.tJump ? lerp(0.12, 0.22, prog(t, this.tMap, this.tJump)) : lerp(0.22, 0.95, ease.outExpo(prog(t, this.tJump, this.tJump + 0.5)));
-    const gx = 1650, gy0 = 830, gh = 560;
-    c.strokeStyle = rgba('bone', 0.7); c.lineWidth = 1.5; c.strokeRect(gx, gy0 - gh, 44, gh);
-    c.fillStyle = rgba('signal'); c.fillRect(gx + 6, gy0 - gh * cap, 32, gh * cap - 6);
+    // the gauge (screen-fixed): capability stays high once it has jumped; alignment is about the road
+    const cap = t < this.tJump ? lerp(0.12, 0.22, prog(t, this.tMap, this.tJump)) : lerp(0.22, 0.95, ease.outExpo(prog(t, this.tJump, this.tJump + 0.5)));
+    const gx0 = 1650, gy0 = 830, gh = 560;
+    c.strokeStyle = rgba('bone', 0.7); c.lineWidth = 1.5; c.strokeRect(gx0, gy0 - gh, 44, gh);
+    c.fillStyle = rgba('signal'); c.fillRect(gx0 + 6, gy0 - gh * cap, 32, gh * cap - 6);
     c.font = font(F.mono(500), 18); c.letterSpacing = '3px'; c.fillStyle = rgba('bone', 0.9); c.textAlign = 'right';
-    c.fillText('CAPACIDADE', gx + 44, gy0 + 34); c.letterSpacing = '0px';
+    c.fillText('CAPACIDADE', gx0 + 44, gy0 + 34); c.letterSpacing = '0px';
     c.font = font(F.mono(400), 22); c.fillStyle = rgba('ash');
-    if (!aligned && t >= this.tWeak && t < this.tJump) c.fillText('fraca · bem-comportada', gx - 20, gy0 - gh * cap);
-    if (!aligned && t >= this.tJump) c.fillText('salto', gx - 20, gy0 - gh * cap);
+    if (t >= this.tWeak && t < this.tJump) c.fillText('fraca · bem-comportada', gx0 - 20, gy0 - gh * cap);
+    const ks = 1 - prog(t, this.tAlign, this.tAlign + 0.4);
+    if (t >= this.tJump && ks > 0) { c.globalAlpha = ks; c.fillText('salto', gx0 - 20, gy0 - gh * cap); c.globalAlpha = 1; }
     c.textAlign = 'left';
     comp.draw(renderer, L.upload(), out);
     const lb = S().lines; lb.clear();
@@ -506,8 +577,9 @@ class B035 extends Block {
     sparkParticles(lb, t, () => ({ x: hx, y: hy }), { rate: 80, speed: 200, seed: 51 });
     sparkHead(lb, hx, hy, t, 1.1, 1);
     lb.render(renderer, out);
-    const whip = prog(t, this.tTurn, this.tTurn + 0.8) > 0 && prog(t, this.tTurn, this.tTurn + 0.8) < 1 ? 1 : 0;
-    return { post: { bloom: 0.5, ca: 0.6 + 3 * whip, frame: 0 } };
+    // colour fringes while the camera turns, as fast as it turns
+    const turn = Math.abs(this.heading(t + 1 / 60) - th) * 60;
+    return { post: { bloom: 0.5, ca: 0.6 + Math.min(3, turn * 1.2), frame: 0 } };
   }
 }
 
