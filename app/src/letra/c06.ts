@@ -301,19 +301,28 @@ class B064 extends Block {
 }
 
 // ---------------------------------------------------------------- 06.5
+/** The mask of 06.5, where 06.6 picks it up: centre and radius (px). */
+const FACE = { x: W / 2, y: 500, r: 300 };
+/** A point of the mask's smile, u from its left end (0) to its right end (1). */
+const smileAt = (u: number): P2 => {
+  const a = lerp(MASK.smileA1, MASK.smileA0, u);
+  return { x: FACE.x + Math.cos(a) * MASK.smileR * FACE.r, y: FACE.y + MASK.smileCY * FACE.r + Math.sin(a) * MASK.smileR * FACE.r };
+};
 /**
  * 06.5 "E tem uma ironia aqui…" — the mask, big, facing us, smiling. "Foi esse tipo de I-Á que escreveu o
  * código deste vídeo, inclusive o do monstro": it turns round, and on its back is the shoggoth's code. "E o
  * roteiro": this chapter's script scrolls, and "Inclusive esta frase" lights word by word as it is said.
- * "E esta voz": the waveform of this very speech, drawn by the spark, labelled "voz sintética"; "Loucura,
- * né?": the wave bends into the mask's smile.
+ * "E esta voz": the waveform of this very speech, drawn by the spark, labelled "voz sintética". "Também é
+ * I-Á": the wave bends into the mask's smile, the face coming in round it; "Loucura, né?": the mask says it,
+ * its smile moving with the voice. (06.6 picks the mask up where it is.)
  */
 class B065 extends Block {
+  private mouth: { pts: P2[]; k: number; w: number } | null = null;
   private tAI = 0; private tTurn = 0; private tScript = 0; private tThis = 0; private tVoice = 0; private tSmile = 0;
   override init() {
     this.tAI = this.at('Foi esse'); this.tTurn = this.at('inclusive o do');
     this.tScript = this.at('E o roteiro'); this.tThis = this.at('Inclusive esta');
-    this.tVoice = this.at('E esta voz'); this.tSmile = this.at('Loucura');
+    this.tVoice = this.at('E esta voz'); this.tSmile = this.at('Também é');
   }
   render(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const { renderer, comp } = this.ctx;
@@ -322,7 +331,7 @@ class B065 extends Block {
     const L = S().ui; L.clear(); const c = L.ctx;
     c.textBaseline = 'alphabetic';
     const lb = S().lines; lb.clear();
-    const M = { x: W / 2, y: 500, r: 300 };
+    const M = FACE;
     if (t < this.tScript) {
       // the mask turning: its back carries the monster's code
       const turn = ease.inOutCubic(prog(t, this.tTurn - 0.3, this.tTurn + 0.5));
@@ -366,19 +375,21 @@ class B065 extends Block {
         x += ww + sp;
       });
     } else {
-      // the voice itself, drawn by the spark; then it bends into the smile
-      const bend = ease.inOutCubic(prog(t, this.tSmile, this.tSmile + 0.6));
+      // the voice itself, drawn by the spark; on "Também é I-Á" it bends into the smile
+      const bend = ease.inOutCubic(prog(t, this.tSmile, this.tSmile + 0.8));
       const x0 = 160, x1 = W - 160, span = 3.2;
+      // how loud the voice is right now: the mouth moves with it once the wave has become one
+      const talk = bend * clamp(this.n.voice(t) * 1.6);
       const pts: P2[] = [];
       for (let i = 0; i <= 320; i++) {
         const u = i / 320;
         const tt = t - span + u * span;
         const v = this.n.voice(tt) * (tt <= t ? 1 : 0);
         const lx = lerp(x0, x1, u), ly = 520 + Math.sin(u * 240 + tt * 30) * v * 150;
-        // the smile: the mask's arc
-        const a = lerp(MASK.smileA1, MASK.smileA0, u);
-        const sx = M.x + Math.cos(a) * MASK.smileR * M.r, sy = M.y + MASK.smileCY * M.r + Math.sin(a) * MASK.smileR * M.r;
-        pts.push({ x: lerp(lx, sx, bend), y: lerp(ly, sy, bend) + Math.sin(u * 240 + tt * 30) * v * 30 * bend });
+        // the smile: the mask's arc (the wave's ripple dies out as it bends), opened by the voice as it speaks
+        const sm = smileAt(u), chord = smileAt(0).y;
+        const my = chord + (sm.y - chord) * (1 + 0.35 * talk);
+        pts.push({ x: lerp(lx, sm.x, bend), y: lerp(ly, my, bend) + Math.sin(u * 240 + tt * 30) * v * 40 * bend * (1 - bend) });
       }
       if (bend > 0) {
         c.globalAlpha = bend;
@@ -387,7 +398,10 @@ class B065 extends Block {
         for (const sgn of [-1, 1]) { c.beginPath(); c.arc(M.x + sgn * MASK.eyeX * M.r, M.y + MASK.eyeY * M.r, MASK.eyeR * M.r, 0, TAU); c.fill(); }
         c.globalAlpha = 1;
       }
-      for (let i = 1; i < pts.length; i++) lb.seg2(pts[i - 1]!.x, pts[i - 1]!.y, pts[i]!.x, pts[i]!.y, 2.2 + 3 * bend, bend > 0.5 ? [LIN.ink[0], LIN.ink[1], LIN.ink[2]] : hot(1.6), 1);
+      // (the glowing line gives way to the ink mouth, drawn in 2D below: light can't be added in ink)
+      const glow = 1 - prog(bend, 0.4, 0.7);
+      if (glow > 0) for (let i = 1; i < pts.length; i++) lb.seg2(pts[i - 1]!.x, pts[i - 1]!.y, pts[i]!.x, pts[i]!.y, 2.2 + 3 * bend, hot(1.6), glow);
+      this.mouth = bend > 0.4 ? { pts, k: prog(bend, 0.4, 0.7), w: lerp(4, MASK.smileW * M.r, prog(bend, 0.4, 1)) * (1 + 0.5 * talk) } : null;
       const hp = pts[pts.length - 1]!;
       if (bend < 1) sparkHead(lb, hp.x, hp.y, t, 0.9, 1 - bend);
       c.font = font(F.mono(500), 24); c.letterSpacing = '4px'; c.fillStyle = rgba('signal', 1 - bend);
@@ -396,12 +410,12 @@ class B065 extends Block {
       c.fillText('a forma de onda desta frase', 160, 366);
     }
     comp.draw(renderer, L.upload(), out);
-    // (the smile's ink stroke must sit over the bone face: the line batch adds light, so draw it in 2D)
     lb.render(renderer, out);
-    if (t >= this.tVoice && ease.inOutCubic(prog(t, this.tSmile, this.tSmile + 0.6)) > 0.5) {
+    // the mouth: the voice's line as the smile, in ink over the bone face (the line batch only adds light)
+    if (t >= this.tVoice && this.mouth) {
       const L2 = S().ui2; L2.clear(); const c2 = L2.ctx;
-      c2.strokeStyle = rgba('ink'); c2.lineWidth = MASK.smileW * M.r; c2.lineCap = 'round';
-      c2.beginPath(); c2.arc(M.x, M.y + MASK.smileCY * M.r, MASK.smileR * M.r, MASK.smileA0, MASK.smileA1); c2.stroke();
+      c2.globalAlpha = this.mouth.k; c2.strokeStyle = rgba('ink'); c2.lineWidth = this.mouth.w; c2.lineCap = 'round'; c2.lineJoin = 'round';
+      c2.beginPath(); this.mouth.pts.forEach((p, i) => (i ? c2.lineTo(p.x, p.y) : c2.moveTo(p.x, p.y))); c2.stroke();
       comp.draw(renderer, L2.upload(), out);
     }
     return { post: { bloom: 0.5, ca: 0.5, frame: 0 } };
@@ -411,8 +425,9 @@ class B065 extends Block {
 // ---------------------------------------------------------------- 06.6
 const GUESSES: [string, number][] = [['depende', 0.34], ['5%', 0.27], ['50%', 0.18], ['???', 0.21]];
 /**
- * 06.6 "Talvez o fim do mundo que a música canta nunca aconteça…" — the clip's prompt field, empty, the
- * caret blinking. "o seu pê dum subiu ou desceu?": "Meu P(doom) é " types itself, and over the caret a
+ * 06.6 "Talvez o fim do mundo que a música canta nunca aconteça…" — it opens on 06.5's mask, where it was: the
+ * face goes, the smile flattens into a line, the line stretches into the prompt field and the field opens
+ * round the caret. The clip's prompt field, empty, the caret blinking. "o seu pê dum subiu ou desceu?": "Meu P(doom) é " types itself, and over the caret a
  * next-token distribution: depende, 5%, 50%, ???. "Deixa o seu número nos comentários": the caret waits.
  */
 class B066 extends Block {
@@ -426,9 +441,38 @@ class B066 extends Block {
     c.textBaseline = 'alphabetic';
     const z = 1 + 0.015 * (t - this.e.start);
     c.save(); c.translate(W / 2, H / 2); c.scale(z, z); c.translate(-W / 2, -H / 2);
-    const fx0 = 380, fx1 = 1540, fy0 = 560, fy1 = 680;
-    c.fillStyle = rgba('ink', 0.9); c.fillRect(fx0, fy0, fx1 - fx0, fy1 - fy0);
-    c.strokeStyle = rgba('bone', 0.42); c.lineWidth = 1; c.strokeRect(fx0 + 0.5, fy0 + 0.5, fx1 - fx0, fy1 - fy0);
+    const fx0 = 380, fx1 = 1540, fy0 = 560, fy1 = 680, fym = (fy0 + fy1) / 2;
+    // the opening: 06.5's mask loses its face, its smile flattens into a line, the line stretches to the field's
+    // width, and the field opens round it
+    const t0 = this.e.start;
+    const kFace = prog(t, t0, t0 + 0.35, ease.inOutCubic), kFlat = prog(t, t0 + 0.05, t0 + 0.38, ease.inOutCubic);
+    const kW = prog(t, t0 + 0.3, t0 + 0.65, ease.inOutCubic), kH = prog(t, t0 + 0.55, t0 + 0.9, ease.inOutCubic);
+    if (kFace < 1) {
+      // (the face closes vertically onto the field's line, where the smile is going)
+      c.save(); c.globalAlpha = 1 - kFace * kFace;
+      c.translate(0, fym); c.scale(1, 1 - kFace); c.translate(0, -fym);
+      c.fillStyle = rgba('bone'); c.beginPath(); c.arc(FACE.x, FACE.y, FACE.r, 0, TAU); c.fill();
+      c.fillStyle = rgba('ink');
+      for (const sgn of [-1, 1]) { c.beginPath(); c.arc(FACE.x + sgn * MASK.eyeX * FACE.r, FACE.y + MASK.eyeY * FACE.r, MASK.eyeR * FACE.r, 0, TAU); c.fill(); }
+      c.restore();
+    }
+    if (kH < 1) {
+      const ch = smileAt(0), cw = FACE.x - ch.x;
+      c.strokeStyle = mixC(rgba('ink'), rgba('bone', lerp(0.95, 0.42, kH)), kFace); c.lineWidth = lerp(MASK.smileW * FACE.r, 2, kFlat); c.lineCap = 'round';
+      c.beginPath();
+      for (let i = 0; i <= 64; i++) {
+        const u = i / 64, sm = smileAt(u);
+        const x = lerp(lerp(sm.x, FACE.x - cw + 2 * cw * u, kFlat), lerp(fx0, fx1, u), kW), y = lerp(sm.y, fym, kFlat);
+        if (i) c.lineTo(x, y); else c.moveTo(x, y);
+      }
+      c.stroke(); c.lineCap = 'butt';
+    }
+    if (kH > 0) {
+      const top = lerp(fym, fy0, kH), bot = lerp(fym, fy1, kH);
+      c.fillStyle = rgba('ink', 0.9); c.fillRect(fx0, top, fx1 - fx0, bot - top);
+      c.strokeStyle = rgba('bone', 0.42); c.lineWidth = 1; c.strokeRect(fx0 + 0.5, top + 0.5, fx1 - fx0, bot - top);
+    }
+    c.globalAlpha = kH;
     c.font = font(F.mono(400), 56); c.fillStyle = rgba('ash'); c.fillText('›', fx0 + 36, fy0 + 80);
     const txt = 'Meu P(doom) é ';
     const k = prog(t, this.tType, this.tType + 0.9);
@@ -439,6 +483,7 @@ class B066 extends Block {
     if (blink || k < 1) { c.fillStyle = rgba('signal'); c.fillRect(cx + 4, fy0 + 32, 30, 60); }
     c.font = font(F.mono(500), 18); c.letterSpacing = '3px'; c.fillStyle = rgba('ash');
     c.fillText('PROMPT 04 · VOCÊ', fx0, fy1 + 40); c.letterSpacing = '0px';
+    c.globalAlpha = 1;
     const kd = ease.outCubic(prog(t, this.tDist, this.tDist + 0.4));
     if (kd > 0) {
       const px = cx - 10, py = fy0 - 40;
