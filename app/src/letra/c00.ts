@@ -42,7 +42,7 @@ const SHOTS: Shot[] = [
 /**
  * 00.2 "E tudo que você viu no vídeo é código…" — the last of the Earth's debris; on "tudo que você viu",
  * the clip flashes past, one plate a beat; on "é código" the shoggoth's x-ray band crosses the last one and
- * leaves it drawn by its own source (the glyphs lit by the image). "Nenhum quadro foi…": the plate recedes
+ * leaves only its own source behind it (the picture gone, the listing scrolling). "Nenhum quadro foi…": the code recedes
  * and a strip of film slides in, four frames, one per way of making a picture (filmstrip.ts), each drawn
  * as the voice names it and crossed out as it denies it; "After Effects" is struck through. "vinte mil
  * linhas": the strip leaves and the camera flies down the whole listing while a counter climbs, through
@@ -139,9 +139,10 @@ class B002 extends Block {
     drawListing(L.ctx, file, { x: 48, y: 60, w: W - 60, h: H - 120, scroll, size: 17, colors: { code: rgba('bone', 0.9), comment: rgba('ash', 0.75), glsl: rgba('ember', 1), num: rgba('ash', 0.45) } });
     const band = t >= this.tX0 && t < this.tX1;
     const bx = lerp(-120, W + 120, ease.inOutQuad(prog(t, this.tX0, this.tX1)));
-    // once the strip comes, the plate made of code recedes: dimmer, softer, a little further away
+    // once the strip comes, the code recedes: dimmer, softer, a little further away
     const back = ease.inOutCubic(prog(t, this.tStrip - 0.05, this.tStrip + 0.5));
-    xray(renderer, R[1]!.texture, L.upload(), back > 0 ? R[2]! : out, { x: bx, w: 70, on: band ? 1 : 0, all: t >= this.tX1 ? 1 : 0, t, dim: 0.07 });
+    // (behind the band the picture is gone: only its code is left)
+    xray(renderer, R[1]!.texture, L.upload(), back > 0 ? R[2]! : out, { x: bx, w: 70, on: band ? 1 : 0, all: t >= this.tX1 ? 1 : 0, t, dim: 0.07, plain: 1 });
     if (back > 0) camPass(renderer, R[2]!.texture, out, { dim: lerp(1, 0.3, back), blur: 2.5 * back, zoom: lerp(1, 0.965, back) });
     if (band) this.bandHeader(out, bx);
     let post: PostOverrides = { ...pick(clipPost, 'bloom', 'bloomThreshold'), flash: 0.35 * flash, ca: 0.8, shake: [0, 0], frame: 1 - prog(t, this.tX0, this.tX0 + 0.5, ease.inOutCubic) };
