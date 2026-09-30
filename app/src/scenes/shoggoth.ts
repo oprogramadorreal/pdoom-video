@@ -425,7 +425,7 @@ export default class Shoggoth extends Scene {
     cu.g1Tex!.value = this.gbuf.textures[1];
     this.drawEngraved(t, squash);
     cu.textTex!.value = this.textL.upload();
-    this.drawOverlay(t, squash);
+    if (f.remix?.bare) this.over.clear(); else this.drawOverlay(t, squash); // (opt-in: the YouTube thumbnail draws its own)
     cu.overTex!.value = this.over.upload();
     this.comp.render(renderer, out);
 
