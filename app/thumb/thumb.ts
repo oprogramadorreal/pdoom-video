@@ -9,16 +9,21 @@
 //                (too small to read in a feed, and larger ones crowd the title).
 //   clipe        the title of simples beside a single paperclip instead of the creature: the first one of
 //                the paperclips plate, the spark that bent it still glowing at its end.
+//   olho         the same title beside the basilisk's eye, just snapped open.
+//   terra        the same title beside the explainer's Earth, Brazil at its left, cracking before it blows.
 // (Outside app/src on purpose: the explainer counts and lists the video's code from there.)
 import * as THREE from 'three';
 import { Scene, type Frame, type PostOverrides } from '../src/engine/scene';
-import { FSPass, Layer2D, W, H, makeRT } from '../src/engine/gl';
-import { rgba } from '../src/engine/palette';
+import { FSPass, Layer2D, W, H, makeRT, clearRT } from '../src/engine/gl';
+import { LIN, rgba } from '../src/engine/palette';
 import { F, font, glyphX, measure } from '../src/engine/type';
 import { TAU } from '../src/engine/util';
 import { MASK } from '../src/scenes/_motifs';
 import { Clips } from '../src/letra/clips';
 import { source } from '../src/letra/code';
+import { Narration } from '../src/letra/narration';
+import { Opening } from '../src/letra/opening';
+import { blockCuts } from '../src/letra/timeline';
 
 /** Song time of the shoggoth: every eye open, back from their glance at the P(doom) box, none shut yet. */
 const SHOG_T = 35.1;
@@ -52,6 +57,8 @@ interface Variant {
   titleX?: number;
   /** The x-ray band (source px): left of it, the creature is made of its code. */
   band?: number;
+  /** Ink over the left of the frame, 0..1 at its edge, fading out past the title (for a picture that fills the frame). */
+  shade?: number;
   /** The mask (default: shown), the detector tags (default TAGS) and the framing (default DEFAULT_CAM). */
   mask?: boolean;
   tags?: Tag[];
@@ -74,6 +81,10 @@ const VARIANTS: Record<string, Variant> = {
   simples: { lines: ['O HINO', 'DA IA'], hot: [-1, 3], titleW: 820, titleX: 125, tags: [], mask: false, cam: { x: 735, y: 525, zoom: 1.05 } },
   // (the first paperclip of the paperclips plate, just bent by the spark and still hot, turned to rise on the right)
   clipe: { lines: ['O HINO', 'DA IA'], hot: [-1, 3], titleW: 820, titleX: 125, scene: { id: 'paperclips', t: 97.65 }, cam: { x: 545, y: 126, zoom: 0.78, roll: -0.7 } },
+  // (the basilisk's eye just snapped open, its shockwave ring round it; the scales darkened under the title)
+  olho: { lines: ['O HINO', 'DA IA'], hot: [-1, 3], titleW: 820, titleX: 125, scene: { id: 'ascent', t: 61.3 }, cam: { x: 540, y: 570, zoom: 1.1 }, shade: 0.85 },
+  // (the explainer's opening: the Earth, Brazil at its left, cracking and heating up just before it blows)
+  terra: { lines: ['O HINO', 'DA IA'], hot: [-1, 3], titleW: 820, titleX: 125, scene: { id: 'opening', t: 159.5 }, cam: { x: 718, y: 520, zoom: 1.9 } },
 };
 
 /**
@@ -127,6 +138,7 @@ const view = new FSPass(/* glsl */ `
 
 export default class Thumb extends Scene {
   private clips!: Clips;
+  private opening: Opening | null = null;
   private v!: Variant;
   private rt = makeRT();
   private ui = new Layer2D();
@@ -136,7 +148,11 @@ export default class Thumb extends Scene {
   override async init() {
     this.v = VARIANTS[String(this.ctx.params.variant)] ?? VARIANTS.hino!;
     this.clips = new Clips(this.ctx);
-    await this.clips.load(this.v.scene?.id ?? 'shoggoth');
+    if (this.v.scene?.id === 'opening') {
+      // the explainer's opening (letra/opening.ts): its heart and globe keep time with the narration
+      const n = await Narration.load();
+      this.opening = new Opening(n, blockCuts(n)[1]!);
+    } else await this.clips.load(this.v.scene?.id ?? 'shoggoth');
     if (this.v.band) {
       // the creature's shader, as one dense run of its real source filling every row (large enough to read
       // as code in the thumbnail), from its first line of GLSL
@@ -158,7 +174,11 @@ export default class Thumb extends Scene {
     // the clip's picture without its lyric; the shoggoth also without its tags and boxes (drawn here,
     // bigger) and without its mask (drawn here too, so it can sit whole in the frame: in the clip's shot
     // it runs off the top edge)
-    const sp = this.clips.render(id, v.scene?.t ?? SHOG_T, this.rt, shog ? { bare: true, hideMask: true } : { bare: true });
+    let sp: PostOverrides;
+    if (this.opening) {
+      clearRT(renderer, this.rt, LIN.ink);
+      sp = this.opening.render(this.ctx, v.scene!.t, this.rt);
+    } else sp = this.clips.render(id, v.scene?.t ?? SHOG_T, this.rt, shog ? { bare: true, hideMask: true } : { bare: true });
     const u = view.u;
     u.tex!.value = this.rt.texture;
     u.codeTex!.value = this.code.texture;
@@ -177,6 +197,11 @@ export default class Thumb extends Scene {
         sc.eyeScr.forEach((e, i) => { const p = toScreen(CAM, e.x, e.y); c.fillText(String(i), p.x + 6, p.y - 6); c.beginPath(); c.arc(p.x, p.y, e.r * CAM.zoom, 0, TAU); c.stroke(); });
       }
       this.drawTags(c, sc);
+    }
+    if (v.shade) {
+      const g = c.createLinearGradient(0, 0, 1180, 0);
+      g.addColorStop(0, rgba('ink', v.shade)); g.addColorStop(0.55, rgba('ink', v.shade * 0.8)); g.addColorStop(1, rgba('ink', 0));
+      c.fillStyle = g; c.fillRect(0, 0, 1180, H);
     }
     this.drawTitle(c);
     comp.draw(renderer, L.upload(), out);
