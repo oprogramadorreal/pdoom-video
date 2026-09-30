@@ -5,6 +5,8 @@
 //   codigo       "100% CÓDIGO": an x-ray band (the explainer's, 00.2 and 02.5) has crossed half the
 //                creature, which is left made of its own shader code.
 //   hino-codigo  the title of hino over the creature of codigo, under "FEITO 100% COM CÓDIGO".
+//   simples      the title alone, a little larger, and the creature alone beside it: no mask, no tags
+//                (too small to read in a feed, and larger ones crowd the title).
 // (Outside app/src on purpose: the explainer counts and lists the video's code from there.)
 import * as THREE from 'three';
 import { Scene, type Frame, type PostOverrides } from '../src/engine/scene';
@@ -30,14 +32,23 @@ const toScreen = (c: Cam, x: number, y: number) => ({ x: (x - c.x) * c.zoom + W 
 /** A detector box as the clip draws them (scenes/shoggoth.ts, box()), twice the size: on an eye or on the mask. */
 interface Tag { eye: number | 'mask'; name: string; conf: string; below?: boolean }
 interface Variant {
-  kicker: string;
+  /** The line above the title (none: the title alone). */
+  kicker?: string;
   /** The kicker's size (px; default 30): a short one can be read larger. */
   kickSize?: number;
   lines: string[];
   /** Where the signal colour starts in each line (-1: none). */
   hot: number[];
+  /** The title's width (px; default 780). */
+  titleW?: number;
+  /** The title's left edge (px; default 96). */
+  titleX?: number;
   /** The x-ray band (source px): left of it, the creature is made of its code. */
   band?: number;
+  /** The mask (default: shown), the detector tags (default TAGS) and the framing (default DEFAULT_CAM). */
+  mask?: boolean;
+  tags?: Tag[];
+  cam?: Cam;
 }
 
 /** The mask and one of the clip's own eye labels: the assistant, and what the detector sees behind it. */
@@ -46,12 +57,14 @@ const TAGS: Tag[] = [
   { eye: 0, name: 'BAJULAÇÃO', conf: '0.91' },
 ];
 /** The creature right of the title, the mask whole in the top-right corner. */
-const CAM: Cam = { x: 934, y: 500, zoom: 0.95 };
+const DEFAULT_CAM: Cam = { x: 934, y: 500, zoom: 0.95 };
 
 const VARIANTS: Record<string, Variant> = {
   hino: { kicker: 'UMA MÚSICA DE AMOR SOBRE O FIM DO MUNDO', lines: ['O HINO', 'DA IA'], hot: [-1, 3] },
   codigo: { kicker: 'NENHUM QUADRO FOI DESENHADO À MÃO', lines: ['100%', 'CÓDIGO'], hot: [0, -1], band: 1130 },
   'hino-codigo': { kicker: 'FEITO 100% COM CÓDIGO', lines: ['O HINO', 'DA IA'], hot: [-1, 3], band: 1130, kickSize: 44 },
+  // (the creature right, with the tentacle that held the mask reaching out of the frame's top-right corner)
+  simples: { lines: ['O HINO', 'DA IA'], hot: [-1, 3], titleW: 820, titleX: 125, tags: [], mask: false, cam: { x: 735, y: 525, zoom: 1.05 } },
 };
 
 /**
@@ -122,7 +135,7 @@ export default class Thumb extends Scene {
 
   override render(_f: Frame, out: THREE.WebGLRenderTarget): PostOverrides {
     const { renderer, comp } = this.ctx;
-    const v = this.v;
+    const v = this.v, CAM = v.cam ?? DEFAULT_CAM;
     // the creature alone: no lyric, tags or boxes (drawn here, bigger), and its mask drawn here too, so it
     // can sit whole in the frame (in the clip's shot it runs off the top edge)
     this.clips.render('shoggoth', SHOG_T, this.rt, { bare: true, hideMask: true });
@@ -136,7 +149,7 @@ export default class Thumb extends Scene {
     const sc = this.clips.scene<ShogLike>('shoggoth');
     const L = this.ui; L.clear(); const c = L.ctx;
     const m = sc.project(sc.maskW), mp = toScreen(CAM, m.x, m.y);
-    engravedMask(c, mp.x, mp.y, MASK_R * m.s * CAM.zoom);
+    if (v.mask !== false) engravedMask(c, mp.x, mp.y, MASK_R * m.s * CAM.zoom);
     if (this.debug) {
       c.font = font(F.mono(700), 22); c.fillStyle = rgba('acid'); c.strokeStyle = rgba('acid');
       sc.eyeScr.forEach((e, i) => { const p = toScreen(CAM, e.x, e.y); c.fillText(String(i), p.x + 6, p.y - 6); c.beginPath(); c.arc(p.x, p.y, e.r * CAM.zoom, 0, TAU); c.stroke(); });
@@ -148,7 +161,8 @@ export default class Thumb extends Scene {
   }
 
   private drawTags(c: CanvasRenderingContext2D, sc: ShogLike) {
-    for (const tag of TAGS) {
+    const CAM = this.v.cam ?? DEFAULT_CAM;
+    for (const tag of this.v.tags ?? TAGS) {
       let x: number, y: number, hw: number, hh: number;
       if (tag.eye === 'mask') {
         const m = sc.project(sc.maskW);
@@ -182,16 +196,18 @@ export default class Thumb extends Scene {
   /** The kicker in Plex Mono, then the title in Archivo condensed black, the block centred on the frame's height. */
   private drawTitle(c: CanvasRenderingContext2D) {
     const v = this.v;
-    const X = 96, maxW = 780;
+    const X = v.titleX ?? 96, maxW = v.titleW ?? 780;
     const fam = F.archivo(62, 900);
     const size = Math.min(360, ...v.lines.map((l) => (maxW / measure(l, fam, 100)) * 100));
-    const cap = size * 0.72, lead = size * 0.9, kick = v.kickSize ?? 30, gap = kick * 1.7;
+    const cap = size * 0.72, lead = size * 0.9, kick = v.kicker ? v.kickSize ?? 30 : 0, gap = kick * 1.7;
     const top = (H - (kick + gap + cap + lead * (v.lines.length - 1))) / 2;
     c.textBaseline = 'alphabetic';
-    c.font = font(F.mono(500), kick); c.letterSpacing = `${kick / 10}px`;
-    c.fillStyle = rgba('signal');
-    c.fillText(v.kicker, X + 4, top + kick * 0.72);
-    c.letterSpacing = '0px';
+    if (v.kicker) {
+      c.font = font(F.mono(500), kick); c.letterSpacing = `${kick / 10}px`;
+      c.fillStyle = rgba('signal');
+      c.fillText(v.kicker, X + 4, top + kick * 0.72);
+      c.letterSpacing = '0px';
+    }
     c.font = font(fam, size);
     v.lines.forEach((line, i) => {
       const y = top + kick + gap + cap + i * lead, h = v.hot[i] ?? -1;
