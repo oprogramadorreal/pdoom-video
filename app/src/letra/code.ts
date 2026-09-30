@@ -9,7 +9,8 @@ const RAW = import.meta.glob<string>('../**/*.ts', { query: '?raw', import: 'def
 export interface SourceFile { path: string; name: string; lines: string[]; kind: ('code' | 'comment' | 'glsl' | 'blank')[] }
 
 const FILES: SourceFile[] = Object.entries(RAW).map(([p, text]) => {
-  const path = p.replace(/^\.\.\//, 'app/src/');
+  // (Vite keys the files of this folder './x.ts', the rest '../dir/x.ts')
+  const path = p.startsWith('./') ? `app/src/letra/${p.slice(2)}` : p.replace(/^\.\.\//, 'app/src/');
   const lines = text.replace(/\r\n/g, '\n').replace(/\n$/, '').split('\n');
   // GLSL: the template literals tagged /* glsl */ (the shaders)
   let glsl = false;
