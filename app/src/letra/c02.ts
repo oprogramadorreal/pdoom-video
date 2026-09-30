@@ -151,8 +151,8 @@ class B021 extends Block {
 }
 
 /**
- * 02.2 "O quarto chinês…" — the clip's room ("John Searle, 1980"); then the room seen from above, in
- * section, as a plan: someone who reads no Chinese locked in (the door bolted), question cards coming in
+ * 02.2 "O quarto chinês…" — the clip's room ("John Searle, 1980"); then the room in section, seen from the
+ * side: someone who reads no Chinese, on a chair at a desk, locked in (the door bolted), question cards coming in
  * through a slot, a rulebook ("SE VIR 你好吗？ ESCREVA 我很好。"), the answer going out. Outside, a stamp:
  * FLUENTE. Inside, a card turns: 我不懂 = eu não entendo. "uma máquina que responde tudo certo": the person
  * becomes a chip, cards streaming through, all ticked; "entende alguma coisa?" — a question mark. "E os
@@ -191,74 +191,111 @@ class B022 extends Block {
     const z = 1.22 + 0.012 * lt;
     c.save();
     c.translate(W / 2, H / 2 - 20); c.scale(z, z); c.rotate(-0.01 + 0.002 * lt); c.translate(-W / 2, -(H / 2 - 20));
-    const X0 = 520, Y0 = 250, X1 = 1400, Y1 = 790; // the room's inner walls
+    // the room in section, seen from the side: walls, floor, ceiling; the door in the left wall, the slot
+    // in the right one
+    const X0 = 520, Y0 = 250, X1 = 1400, Y1 = 790; // the room's inner walls, ceiling and floor
     const draw = ease.inOutCubic(prog(t, this.tPlan, this.tPlan + 0.8));
-    // walls (double hairline), the door (left) and the slot (right)
+    const slotY = 520, doorTop = 560;
     c.strokeStyle = rgba('bone', 0.8); c.lineWidth = 1.3;
-    const slotY = 520, doorY = 470;
     const wall = (o: number) => {
       c.beginPath();
-      c.moveTo(X1 + o, slotY - 26); c.lineTo(X1 + o, Y0 - o); c.lineTo(X0 - o, Y0 - o); c.lineTo(X0 - o, doorY - 50);
-      c.moveTo(X0 - o, doorY + 50); c.lineTo(X0 - o, Y1 + o); c.lineTo(X1 + o, Y1 + o); c.lineTo(X1 + o, slotY + 26);
+      c.moveTo(X1 + o, slotY - 26); c.lineTo(X1 + o, Y0 - o); c.lineTo(X0 - o, Y0 - o); c.lineTo(X0 - o, doorTop);
+      c.moveTo(X0 - o, Y1 + o); c.lineTo(X1 + o, Y1 + o); c.lineTo(X1 + o, slotY + 26);
       c.setLineDash([4000 * draw, 4000]); c.stroke(); c.setLineDash([]);
     };
     wall(0); wall(16);
-    c.fillStyle = rgba('bone', 0.08 * draw); c.fillRect(X0 - 16, Y0 - 16, 16, Y1 - Y0 + 32);
-    // shelves along the top wall
-    c.strokeStyle = rgba('ash', 0.6 * draw); c.lineWidth = 1;
-    for (let x = X0 + 30; x < X1 - 60; x += 90) { c.strokeRect(x, Y0 + 12, 70, 34); for (let k = 1; k < 7; k++) { c.beginPath(); c.moveTo(x + k * 10, Y0 + 12); c.lineTo(x + k * 10, Y0 + 46); c.stroke(); } }
-    // the door, bolted on "trancado"
+    // (the cut through the ground: short hatching under the floor)
+    c.strokeStyle = rgba('bone', 0.25 * draw); c.lineWidth = 1;
+    for (let x = X0 - 16; x < X1 + 16; x += 22) { c.beginPath(); c.moveTo(x, Y1 + 16); c.lineTo(x - 14, Y1 + 30); c.stroke(); }
+    // the door: a panel in the left wall, down to the floor; bolted on "trancado"
+    c.strokeStyle = rgba('bone', 0.8 * draw); c.lineWidth = 1.3;
+    c.fillStyle = rgba('bone', 0.1 * draw); c.fillRect(X0 - 16, doorTop, 16, Y1 - doorTop);
+    c.strokeRect(X0 - 16, doorTop, 16, Y1 - doorTop);
+    c.beginPath(); c.arc(X0 + 6, 680, 4, 0, TAU); c.stroke();
     const lk = prog(t, this.tLock, this.tLock + 0.25);
-    c.strokeStyle = rgba('bone', 0.8 * draw);
-    c.beginPath(); c.arc(X0, doorY - 50, 100, Math.PI / 2 * (1 - 0.1 * (1 - lk)), Math.PI / 2 - 0.02); c.stroke();
-    c.beginPath(); c.moveTo(X0, doorY - 50); c.lineTo(X0 + 100 * Math.cos(0.15 * (1 - lk)), doorY - 50 + 100 * Math.sin(Math.PI / 2 - 0.15 * (1 - lk))); c.stroke();
     if (lk > 0) {
-      c.fillStyle = rgba('signal', lk); c.fillRect(X0 - 30, doorY - 6, 22, 16);
-      c.strokeStyle = rgba('signal', lk); c.lineWidth = 2.5; c.beginPath(); c.arc(X0 - 19, doorY - 8, 7, Math.PI, 0); c.stroke();
+      const ly = 660;
+      c.fillStyle = rgba('signal', lk); c.fillRect(X0 - 16 - 22 * ease.outCubic(lk), ly - 5, 22 * ease.outCubic(lk) + 30, 8);
+      c.fillRect(X0 - 60, ly + 8, 26, 20);
+      c.strokeStyle = rgba('signal', lk); c.lineWidth = 3; c.beginPath(); c.arc(X0 - 47, ly + 8, 8, Math.PI, 0); c.stroke();
       c.font = font(F.mono(500), 18); c.fillStyle = rgba('signal', lk); c.textAlign = 'right';
-      c.fillText('TRANCADO', X0 - 44, doorY + 8); c.textAlign = 'left';
+      c.fillText('TRANCADO', X0 - 72, ly + 26); c.textAlign = 'left';
     }
-    // the desk, the rulebook, and whoever is inside (a plan symbol: head and shoulders from above)
-    const dx = 820, dy = 470;
-    c.strokeStyle = rgba('bone', 0.7 * draw); c.lineWidth = 1.2; c.strokeRect(dx, dy, 300, 120);
+    // a lamp hanging over the desk, and a low bookcase by the right wall
+    c.strokeStyle = rgba('bone', 0.6 * draw); c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(1100, Y0); c.lineTo(1100, 420); c.stroke();
+    c.beginPath(); c.moveTo(1078, 448); c.lineTo(1086, 420); c.lineTo(1114, 420); c.lineTo(1122, 448); c.closePath(); c.stroke();
+    const cone = c.createLinearGradient(0, 448, 0, 640);
+    cone.addColorStop(0, rgba('bone', 0.07 * draw)); cone.addColorStop(1, rgba('bone', 0));
+    c.fillStyle = cone; c.beginPath(); c.moveTo(1078, 448); c.lineTo(1122, 448); c.lineTo(1200, 640); c.lineTo(1000, 640); c.closePath(); c.fill();
+    c.strokeStyle = rgba('ash', 0.6 * draw); c.lineWidth = 1;
+    c.strokeRect(1225, 610, 150, Y1 - 610);
+    for (const y of [670, 730]) { c.beginPath(); c.moveTo(1225, y); c.lineTo(1375, y); c.stroke(); }
+    for (const [y0, y1] of [[610, 670], [670, 730], [730, Y1]] as const) {
+      for (let x = 1233, k = 0; x < 1360; x += 9 + (k % 3) * 3, k++) { const h = (y1 - y0) * (0.55 + 0.35 * ((k * 7) % 5) / 4); c.beginPath(); c.moveTo(x, y1); c.lineTo(x, y1 - h); c.stroke(); }
+    }
+    // the desk, side on
+    c.strokeStyle = rgba('bone', 0.8 * draw); c.lineWidth = 1.3; c.fillStyle = rgba('ink');
+    c.fillRect(870, 640, 320, 12); c.strokeRect(870, 640, 320, 12);
+    for (const x of [905, 1165]) { c.beginPath(); c.moveTo(x, 652); c.lineTo(x, Y1); c.stroke(); }
+    // whoever is inside: a person on a chair, reading the rulebook
     const mac = ease.inOutCubic(prog(t, this.tMac, this.tMac + 0.5));
-    const px = 970, py = 640;
+    const px = 790, py = 610;
+    c.strokeStyle = rgba('bone', 0.8 * draw); c.lineWidth = 1.3;
+    c.beginPath(); c.moveTo(733, 690); c.lineTo(815, 690); c.moveTo(733, 690); c.lineTo(733, Y1); c.moveTo(810, 690); c.lineTo(810, Y1); c.stroke();
+    c.strokeStyle = rgba('bone', 0.8 * draw * (1 - mac)); c.beginPath(); c.moveTo(722, 590); c.lineTo(728, 690); c.stroke();
     if (mac < 1) {
-      // a person seen from above: shoulders, head, two arms reaching for the desk
       c.globalAlpha = (1 - mac) * draw;
-      c.fillStyle = rgba('ink'); c.strokeStyle = rgba('bone', 0.95); c.lineWidth = 1.6;
-      c.beginPath(); c.roundRect(px - 70, py - 8, 140, 40, 20); c.fill(); c.stroke();
-      c.beginPath(); c.moveTo(px - 58, py); c.lineTo(px - 44, py - 52); c.moveTo(px + 58, py); c.lineTo(px + 44, py - 52); c.stroke();
-      c.beginPath(); c.arc(px, py + 6, 25, 0, TAU); c.fill(); c.stroke();
-      c.font = font(F.mono(400), 16); c.fillStyle = rgba('ash'); c.fillText('alguém que não sabe chinês', px + 90, py + 20);
+      const limb = (pts: [number, number][], w: number) => {
+        for (const [col, ww] of [[rgba('ink'), w + 8], [rgba('bone', 0.95), w]] as const) {
+          c.strokeStyle = col; c.lineWidth = ww; c.lineCap = 'round'; c.lineJoin = 'round';
+          c.beginPath(); pts.forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y))); c.stroke();
+        }
+      };
+      limb([[772, 674], [866, 674], [872, 780]], 17); // thigh and shin
+      limb([[772, 674], [786, 568]], 30); // torso
+      limb([[788, 578], [836, 622], [918, 628]], 14); // arm, the hand on the book
+      c.fillStyle = rgba('ink'); c.beginPath(); c.arc(800, 522, 30, 0, TAU); c.fill();
+      c.fillStyle = rgba('bone', 0.95); c.beginPath(); c.arc(800, 522, 25, 0, TAU); c.fill();
+      c.lineCap = 'butt'; c.lineJoin = 'miter';
+      c.font = font(F.mono(400), 16); c.fillStyle = rgba('ash'); c.textAlign = 'center';
+      c.fillText('alguém que não sabe chinês', px, Y1 + 62); c.textAlign = 'left';
       c.globalAlpha = 1;
     }
     if (mac > 0) {
       c.globalAlpha = mac;
-      c.strokeStyle = rgba('bone', 0.9); c.fillStyle = rgba('ink');
-      c.fillRect(px - 50, py - 40, 100, 80); c.strokeRect(px - 50, py - 40, 100, 80);
-      for (let k = 0; k < 5; k++) for (const s of [-1, 1]) { c.beginPath(); c.moveTo(px - 38 + k * 19, py + s * 40); c.lineTo(px - 38 + k * 19, py + s * 52); c.stroke(); }
+      c.strokeStyle = rgba('bone', 0.9); c.fillStyle = rgba('ink'); c.lineWidth = 1.3;
+      c.fillRect(px - 55, py - 85, 110, 160); c.strokeRect(px - 55, py - 85, 110, 160);
+      for (let k = 0; k < 6; k++) for (const sd of [-1, 1]) { const y = py - 70 + k * 26; c.beginPath(); c.moveTo(px + sd * 55, y); c.lineTo(px + sd * 67, y); c.stroke(); }
       c.font = font(F.mono(600), 16); c.fillStyle = rgba('bone'); c.textAlign = 'center'; c.fillText('MÁQUINA', px, py + 6); c.textAlign = 'left';
       c.globalAlpha = 1;
     }
-    // the rulebook: open on the desk, pages turning while it is used
+    // the rulebook, open on the desk, its pages turning while it is used; its label clear above it
+    const bx = 1000, by = 638;
+    c.strokeStyle = rgba('bone', 0.9 * draw); c.fillStyle = rgba('ink'); c.lineWidth = 1.3;
+    c.beginPath(); c.moveTo(bx - 70, by); c.lineTo(bx - 66, by - 10); c.lineTo(bx, by - 16); c.lineTo(bx + 66, by - 10); c.lineTo(bx + 70, by); c.closePath(); c.fill(); c.stroke();
+    c.beginPath(); c.moveTo(bx, by - 16); c.lineTo(bx, by); c.stroke();
     const flip = t >= this.tRule && t < this.tOut ? (t - this.tRule) * 3 : 0;
-    const bx = 880, by = 490;
-    c.strokeStyle = rgba('bone', 0.85 * draw); c.fillStyle = rgba('ink');
-    c.fillRect(bx, by, 170, 80); c.strokeRect(bx, by, 85, 80); c.strokeRect(bx + 85, by, 85, 80);
-    if (flip > 0) { const a = (flip % 1) * Math.PI; c.beginPath(); c.moveTo(bx + 85, by); c.lineTo(bx + 85 + 85 * Math.cos(a), by + 6 * Math.sin(a)); c.lineTo(bx + 85 + 85 * Math.cos(a), by + 80); c.lineTo(bx + 85, by + 80); c.stroke(); }
-    c.font = font(F.mono(400), 15); c.fillStyle = rgba('ash', draw);
-    c.fillText('MANUAL DE REGRAS', bx, by - 12);
+    if (flip > 0) {
+      const a = (flip % 1) * Math.PI;
+      c.beginPath(); c.moveTo(bx, by - 16); c.quadraticCurveTo(bx + 34 * Math.cos(a), by - 16 - 40 * Math.sin(a), bx + 66 * Math.cos(a), by - 10 - 30 * Math.sin(a)); c.stroke();
+    }
+    // (the label goes when the machine comes: the cards stream past there)
+    const kl = draw * (1 - mac);
+    c.font = font(F.mono(500), 15); c.fillStyle = rgba('ash', kl); c.textAlign = 'center';
+    c.fillText('MANUAL DE REGRAS', bx, by - 86); c.textAlign = 'left';
+    c.strokeStyle = rgba('ash', 0.6 * kl); c.lineWidth = 1;
+    c.beginPath(); c.moveTo(bx, by - 76); c.lineTo(bx, by - 24); c.stroke();
     if (t >= this.tRule) {
       const k = prog(t, this.tRule, this.tRule + 0.6);
       c.font = font(F.mono(500), 20); c.fillStyle = rgba('bone', 0.95);
-      typed(c, 'SE VIR', 560, 330, k * 3);
+      typed(c, 'SE VIR', 560, 320, k * 3);
       c.font = `500 26px ${CJK}`; c.fillStyle = rgba('signal');
-      if (k > 0.33) c.fillText('你好吗？', 650, 332);
+      if (k > 0.33) c.fillText('你好吗？', 650, 322);
       c.font = font(F.mono(500), 20); c.fillStyle = rgba('bone', 0.95);
-      if (k > 0.5) c.fillText('ESCREVA', 790, 330);
+      if (k > 0.5) c.fillText('ESCREVA', 790, 320);
       c.font = `500 26px ${CJK}`; c.fillStyle = rgba('signal');
-      if (k > 0.8) c.fillText('我很好。', 902, 332);
+      if (k > 0.8) c.fillText('我很好。', 902, 322);
     }
     // the cards: a question in, an answer out (then, for the machine, a stream of them, all ticked)
     const card = (x: number, y: number, text: string, a: number, tick = false) => {
@@ -272,17 +309,17 @@ class B022 extends Block {
     const slotX = X1 + 8;
     if (t >= this.tQ && t < this.tMac) {
       const kin = ease.inOutCubic(prog(t, this.tQ, this.tQ + 0.9));
-      if (t < this.tOut) card(lerp(slotX + 260, 1060, kin), lerp(slotY, 450, kin), '你好吗？', 1);
+      if (t < this.tOut) card(lerp(slotX + 260, 1130, kin), lerp(slotY, 596, kin), '你好吗？', 1);
       const kout = ease.inOutCubic(prog(t, this.tOut, this.tOut + 0.9));
-      if (t >= this.tOut) card(lerp(1000, slotX + 300, kout), lerp(450, slotY, kout), '我很好。', 1);
+      if (t >= this.tOut) card(lerp(1130, slotX + 300, kout), lerp(596, slotY, kout), '我很好。', 1);
     }
     if (t >= this.tMac) {
       for (let i = 0; i < 12; i++) {
         const t0 = this.tMac + 0.3 + i * 0.22, k = prog(t, t0, t0 + 0.8);
         if (k <= 0 || k >= 1) continue;
         const inb = k < 0.5, kk = inb ? k * 2 : (k - 0.5) * 2;
-        const x = inb ? lerp(slotX + 260, px + 90, kk) : lerp(px + 90, slotX + 280, kk);
-        card(x, slotY + (inb ? -40 : 40), inb ? '问？' : '答。', 1, !inb);
+        const x = inb ? lerp(slotX + 260, px + 150, kk) : lerp(px + 150, slotX + 280, kk);
+        card(x, slotY + (inb ? -70 : 10), inb ? '问？' : '答。', 1, !inb);
       }
     }
     // outside: FLUENTE; inside: the card that turns
@@ -297,12 +334,12 @@ class B022 extends Block {
     const kn = prog(t, this.tNo - 0.1, this.tNo + 0.35);
     if (kn > 0 && t < this.tMac + 0.2) {
       const sx = Math.abs(Math.cos(kn * Math.PI));
-      c.save(); c.translate(760, 660); c.scale(Math.max(0.02, sx), 1);
+      c.save(); c.translate(640, 430); c.scale(Math.max(0.02, sx), 1);
       c.fillStyle = rgba('bone', 0.95); c.fillRect(-90, -40, 180, 80);
       c.fillStyle = rgba('ink');
       if (kn > 0.5) { c.font = `600 34px ${CJK}`; c.textAlign = 'center'; c.fillText('我不懂', 0, 12); c.textAlign = 'left'; }
       c.restore();
-      if (kn > 0.6) { c.font = font(F.mono(500), 22); c.fillStyle = rgba('bone'); c.fillText('= eu não entendo', 680, 740); }
+      if (kn > 0.6) { c.font = font(F.mono(500), 22); c.fillStyle = rgba('bone'); c.fillText('= eu não entendo', 555, 505); }
     }
     c.restore();
     // "entende alguma coisa?"
