@@ -13,3 +13,6 @@ analysis/__pycache__/
 analysis/stems/
 analysis/work/
 analysis/qa/
+
+# external figures (not ours: see "Imagens de fora" in docs/letra-explicada-pt-br/ROTEIRO.md)
+app/src/letra/external/

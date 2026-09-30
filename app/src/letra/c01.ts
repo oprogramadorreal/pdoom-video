@@ -17,9 +17,71 @@ import { at, lengths, octilinear, type Part } from '../scenes/open-geo';
 interface OCam { cx: number; cy: number; z: number; roll: number }
 const WIDE: OCam = { cx: 2.7, cy: 1.5, z: 80, roll: 0 };
 
+// ---------------------------------------------------------------- the outside figure
+/** GPT-4's unicorns as analysis/figura_gpt4.py extracts them from the paper: vector paths, in PDF points. */
+interface FigData { source: string; size: [number, number]; paths: { fill: number[] | null; stroke: number[] | null; width: number; evenOdd: boolean; box: number[]; d: (string | number)[][] }[] }
+// The figure is not ours (Fig. 1.3 of "Sparks of AGI", Bubeck et al., 2023), so it is not in the repository:
+// analysis/figura_gpt4.py extracts it from the paper into ./external/ (git-ignored). It is picked up when the
+// app is built, so a checkout without it makes no request and shows the placeholder instead.
+const EXTERNAL = import.meta.glob<FigData>('./external/sparks-fig-1-3.json', { eager: true, import: 'default' });
+interface FigShape { path: Path2D; fill: [number, number] | null; stroke: [number, number] | null; width: number; rule: CanvasFillRule; group: number }
+interface Figure { w: number; h: number; shapes: FigShape[]; centres: number[] }
+let figCache: Figure | null | undefined;
+/** The figure, ready to print (null when its file is missing). */
+function gptFigure(): Figure | null {
+  if (figCache !== undefined) return figCache;
+  const j = Object.values(EXTERNAL)[0];
+  if (!j) return (figCache = null);
+  // the duotone of the outro's plates, in the sheet's inks: print for how dark a colour is, orange for how
+  // coloured it is
+  const ink = (c: number[] | null): [number, number] | null => {
+    if (!c) return null;
+    const [r, g, b] = c as [number, number, number];
+    // (a gamma lifts the paper-pale bodies, which would print almost white)
+    return [clamp(1.05 * (1 - (0.3 * r + 0.59 * g + 0.11 * b)) ** 0.7), clamp(1.15 * (Math.max(r, g, b) - Math.min(r, g, b)) ** 0.8)];
+  };
+  const W0 = j.size[0];
+  const shapes = j.paths.map((p) => {
+    const path = new Path2D();
+    for (const [op, ...v] of p.d) {
+      const n = v as number[];
+      if (op === 'M') path.moveTo(n[0]!, n[1]!);
+      else if (op === 'L') path.lineTo(n[0]!, n[1]!);
+      else if (op === 'C') path.bezierCurveTo(n[0]!, n[1]!, n[2]!, n[3]!, n[4]!, n[5]!);
+      else path.closePath();
+    }
+    // the three unicorns, left to right: the three times GPT-4 was asked
+    const cx = (p.box[0]! + p.box[2]!) / 2;
+    return { path, fill: ink(p.fill), stroke: ink(p.stroke), width: p.width, rule: (p.evenOdd ? 'evenodd' : 'nonzero') as CanvasFillRule, group: cx < W0 * 0.31 ? 0 : cx < W0 * 0.7 ? 1 : 2 };
+  });
+  const centres = [0, 1, 2].map((g) => {
+    const bs = j.paths.filter((_, i) => shapes[i]!.group === g).map((p) => p.box);
+    return (Math.min(...bs.map((b) => b[0]!)) + Math.max(...bs.map((b) => b[2]!))) / 2;
+  });
+  return (figCache = { w: W0, h: j.size[1], shapes, centres });
+}
+/**
+ * Print the figure on a sheet (its ink layer): each shape painted opaque in its own inks, so the shapes cover
+ * one another as in the paper; unicorn g comes in over k[g] (0..1).
+ */
+function printFigure(c: CanvasRenderingContext2D, fig: Figure, x: number, y: number, w: number, k: number[]) {
+  const s = w / fig.w;
+  c.save();
+  c.translate(x, y); c.scale(s, s);
+  c.globalCompositeOperation = 'source-over';
+  const col = (v: [number, number], a: number) => `rgb(0,${Math.round(255 * v[0] * a)},${Math.round(255 * v[1] * a)})`;
+  for (const sh of fig.shapes) {
+    const a = k[sh.group]!;
+    if (a <= 0) continue;
+    if (sh.fill) { c.fillStyle = col(sh.fill, a); c.fill(sh.path, sh.rule); }
+    if (sh.stroke && sh.width > 0) { c.strokeStyle = col(sh.stroke, a); c.lineWidth = sh.width; c.stroke(sh.path); }
+  }
+  c.restore();
+}
+
 /**
  * A placeholder for the one outside image the ROTEIRO asks for (GPT-4's TikZ unicorns, Fig. 1.3 of
- * "Sparks of AGI"): not in the repository, so a clearly marked empty frame stands in for it.
+ * "Sparks of AGI"), when its file has not been extracted: a clearly marked empty frame.
  */
 export function drawFigurePlaceholder(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
   c.save();
@@ -44,8 +106,9 @@ export function drawFigurePlaceholder(c: CanvasRenderingContext2D, x: number, y:
  * Intelligence"), glossed in Portuguese; on "A AGI" the initials light and stand in the margin; a small
  * figure shows the machine's bar reaching the person's; "GPT-4" is underlined and the S of Sparks
  * ignites. "desenhar um unicórnio usando só código": the TikZ listing and its prompt. "Saiu isto": the
- * GPT-4 figure (placeholder). "Três anos depois": 2023 | 2026, our unicorn being plotted; on "um clipe
- * inteiro" the camera pulls back and it is one tile of the whole clip.
+ * paper's figure, printed on the sheet in the plates' duotone, its three unicorns coming in one after the
+ * other (a marked placeholder if the figure has not been extracted). "Três anos depois": 2023 | 2026, our
+ * unicorn being plotted; on "um clipe inteiro" the camera pulls back and it is one tile of the whole clip.
  */
 class B011 extends Block {
   private tLapse = 0; private tPaper = 0; private tTitle = 0; private tGloss = 0; private tAGI = 0; private tBars = 0; private tEq = 0;
@@ -186,12 +249,27 @@ class B011 extends Block {
     return { post: { ...post, frame: 0, flash: 0, shake: [0, 0], zoom: 1 } };
   }
 
-  /** The GPT-4 figure (placeholder), on its own paper. */
+  /** The GPT-4 figure, on its own paper: the prompt, the three unicorns in order, the credit. */
   private drawFig(c: CanvasRenderingContext2D, t: number) {
-    drawFigurePlaceholder(c, 60, 60, 980, 520);
+    const fig = gptFigure();
+    if (!fig) {
+      drawFigurePlaceholder(c, 60, 60, 980, 520);
+      c.fillStyle = INK.print(0.85); c.font = font(F.serif(400, true), 28);
+      c.fillText('Figura 1.3 — “Sparks of Artificial General Intelligence”, 2023', 60, 630);
+      return;
+    }
+    const lt = t - this.tFig, x0 = 60, y0 = 190, w = 980, s = w / fig.w;
+    c.fillStyle = INK.print(0.75); c.font = font(F.mono(500), 18); c.letterSpacing = '3px';
+    c.fillText('PROMPT: “DRAW A UNICORN IN TIKZ.”', x0, 120); c.letterSpacing = '0px';
+    const k = [0, 1, 2].map((g) => ease.outCubic(prog(lt, 0.05 + g * 0.2, 0.3 + g * 0.2)));
+    printFigure(c, fig, x0, y0, w, k);
+    c.font = font(F.mono(400), 17); c.textAlign = 'center';
+    fig.centres.forEach((cx, g) => { c.fillStyle = INK.print(0.65 * k[g]!); c.fillText(`pedido ${g + 1}`, x0 + cx * s, y0 + fig.h * s + 44); });
+    c.textAlign = 'left';
     c.fillStyle = INK.print(0.85); c.font = font(F.serif(400, true), 28);
-    c.fillText('Figura 1.3 — “Sparks of Artificial General Intelligence”, 2023', 60, 630);
-    void t;
+    c.fillText('Figura 1.3 — “Sparks of Artificial General Intelligence”, 2023', x0, 540);
+    c.fillStyle = INK.print(0.6); c.font = font(F.mono(400), 16);
+    c.fillText('Bubeck et al. · Microsoft Research · arXiv:2303.12712 · três pedidos ao longo de um mês', x0, 578);
   }
   private figure(t: number, out: THREE.WebGLRenderTarget): BlockOut {
     const { renderer } = this.ctx;
