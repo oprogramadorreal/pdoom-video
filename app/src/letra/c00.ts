@@ -13,6 +13,7 @@ import { CLIP_FILES, docIndex, drawDoc, drawListing, lineCount, source } from '.
 import { callout, hot, outline, traceContours, typed, type P2 } from './draw';
 import { sparkHead } from '../scenes/_motifs';
 import { Opening } from './opening';
+import { drawBrowser } from './browser';
 import { FilmStrip } from './filmstrip';
 
 /**
@@ -29,6 +30,11 @@ class B001 extends Block {
     return { post: { ...post, ...this.op.render(this.ctx, f.t, out) }, regua: { draw: 0, pos: 0 } };
   }
 }
+
+/** The shader's output beside the code (00.2): where the window is, and the camera looking into the clip. */
+const PREVIEW = { x0: 1180, y0: 300, w: 640, h: 360, cam: { x: 760, y: 470, zoom: 1.5 } };
+/** The browser the preview becomes: its viewport (16:9), centred below its chrome. */
+const PAGE = { w: 1280, cx: W / 2, cy: 585 };
 
 /** A clip moment shown in 00.2, with the file whose code draws it. */
 interface Shot { id: string; s: number; rate: number; file: string; cam?: Cam }
@@ -164,21 +170,32 @@ class B002 extends Block {
   }
 
   // ---------------------------------------------------------------- 2. the code, all of it
+  /**
+   * The clip's whole listing: the flight from its top down to open.ts, fast, braking into the landing; then
+   * the camera easing in on the region (TypeScript first, then the GLSL block).
+   */
+  private listing(c: CanvasRenderingContext2D, t: number, alpha: number) {
+    const k = prog(t, this.tFlight, this.tLand);
+    const scroll = lerp(0, this.landAt, ease.inOutQuart(k)) + (t > this.tLand ? (t - this.tLand) * 0.6 : 0);
+    const zin = ease.inOutCubic(prog(t, this.tShader, this.tShader + 0.8));
+    const zoom = lerp(1, 1.32, zin);
+    const cx = lerp(W / 2, W / 2 + 60, zin), cy = lerp(H / 2, H / 2 + 110, zin);
+    c.save();
+    c.translate(W / 2, H / 2); c.scale(zoom, zoom); c.translate(-cx, -cy);
+    const lh = drawDoc(c, { x: 60, y: 40, w: zin > 0 ? 1080 : W - 120, h: H - 80, scroll, size: 18, alpha });
+    c.restore();
+    return { lh, scroll, zoom, cx, cy };
+  }
+  /** The song time the preview (then the browser) shows: the clip from 0:04, running on. */
+  private previewS(t: number) {
+    return t < this.tPage ? 4.4 + (t - this.tShader) * 0.3 : 4.4 + (this.tPage - this.tShader) * 0.3 + (t - this.tPage) * 0.8;
+  }
+
   private partCode(f: Frame, out: THREE.WebGLRenderTarget): BlockOut {
     const { renderer, comp } = this.ctx;
     const t = f.t;
     const L = S().ui; L.clear(); const c = L.ctx;
-    // the flight: from the top of the listing down to open.ts, fast, braking into the landing
-    const k = prog(t, this.tFlight, this.tLand);
-    const scroll = lerp(0, this.landAt, ease.inOutQuart(k)) + (t > this.tLand ? (t - this.tLand) * 0.6 : 0);
-    // after landing, the camera eases in on the region (TypeScript first, then the GLSL block)
-    const zin = ease.inOutCubic(prog(t, this.tShader, this.tShader + 0.8));
-    c.save();
-    const zoom = lerp(1, 1.32, zin);
-    const cx = lerp(W / 2, W / 2 + 60, zin), cy = lerp(H / 2, H / 2 + 110, zin);
-    c.translate(W / 2, H / 2); c.scale(zoom, zoom); c.translate(-cx, -cy);
-    const lh = drawDoc(c, { x: 60, y: 40, w: zin > 0 ? 1080 : W - 120, h: H - 80, scroll, size: 18 });
-    c.restore();
+    const { lh, scroll, zoom, cx, cy } = this.listing(c, t, 1);
     // callouts from the ends of two lines of open.ts (horizontal leaders into the empty right side), and
     // brackets in the gutter: the TypeScript around the shader, the GLSL block itself
     const src = source('open.ts');
@@ -213,9 +230,9 @@ class B002 extends Block {
       const wk = ease.outExpo(prog(t, this.tShader + 0.2, this.tShader + 0.8));
       if (wk > 0) {
         const R = S().rt;
-        this.clips.render('open', 4.4 + (t - this.tShader) * 0.3, R[0]!);
-        const rx0 = 1180, ry0 = 300, rw = 640, rh = 360;
-        camPass(renderer, R[0]!.texture, out, { x: 760, y: 470, zoom: 1.5, rect: [rx0, ry0 + (1 - wk) * 40, rx0 + rw, ry0 + rh + (1 - wk) * 40], alpha: wk }, true);
+        this.clips.render('open', this.previewS(t), R[0]!);
+        const rx0 = PREVIEW.x0, ry0 = PREVIEW.y0, rw = PREVIEW.w, rh = PREVIEW.h;
+        camPass(renderer, R[0]!.texture, out, { ...PREVIEW.cam, rect: [rx0, ry0 + (1 - wk) * 40, rx0 + rw, ry0 + rh + (1 - wk) * 40], alpha: wk }, true);
         const L2 = S().ui2; L2.clear(); const c2 = L2.ctx;
         c2.strokeStyle = rgba('bone', 0.5 * wk); c2.lineWidth = 1; c2.strokeRect(rx0 + 0.5, ry0 + 0.5, rw, rh);
         c2.font = font(F.mono(400), 16); c2.fillStyle = rgba('ash', wk);
@@ -280,27 +297,38 @@ class B002 extends Block {
     const { renderer, comp } = this.ctx;
     const t = f.t;
     const R = S().rt;
-    // the page: the code (left) and the clip running (right), shrinking into a frame with its address
-    const k = ease.inOutCubic(prog(t, this.tPage, this.tPage + 0.6));
+    // "rodando numa página web": the shader's preview becomes a browser. It glides to the middle and grows,
+    // its camera pulling back to the whole frame (the clip keeps running), the browser's chrome unfolds above
+    // it, and the code behind goes dark; the address is typed on "página"
+    const k = ease.inOutCubic(prog(t, this.tPage, this.tPage + 1.0));
+    const unfold = prog(t, this.tPage + 0.35, this.tPage + 1.0);
     const away = ease.inOutCubic(prog(t, this.tAuthor, this.tAuthor + 0.9));
     const nameK = prog(t, this.tName - 0.3, this.tName);
-    const pw = lerp(W, 1180, k) * lerp(1, 0.62, away), ph = pw * 9 / 16;
-    const px = lerp(W / 2, W / 2, k) - lerp(0, 520, away), py = lerp(H / 2, H / 2 - 40, k) - lerp(0, 150, away);
+    const pw = lerp(PREVIEW.w, PAGE.w, k) * lerp(1, 0.6, away), ph = pw * 9 / 16;
+    const px = lerp(PREVIEW.x0 + PREVIEW.w / 2, PAGE.cx, k) - lerp(0, 540, away);
+    const py = lerp(PREVIEW.y0 + PREVIEW.h / 2, PAGE.cy, k) - lerp(0, 190, away);
     const rect: [number, number, number, number] = [px - pw / 2, py - ph / 2, px + pw / 2, py + ph / 2];
-    // the page's content: the clip playing from its start
-    this.clips.render('open', 3.4 + (t - this.tPage) * 0.8, R[0]!);
+    const winA = 1 - 0.85 * nameK;
     clearRT(renderer, out, LIN.ink);
-    camPass(renderer, R[0]!.texture, out, { rect, alpha: 1 - 0.85 * nameK }, true);
     const L = S().ui; L.clear(); const c = L.ctx;
-    const bar = 34 * (pw / W) + 8;
-    c.globalAlpha = 1 - 0.85 * nameK;
-    c.strokeStyle = rgba('bone', 0.55); c.lineWidth = 1;
-    c.strokeRect(rect[0] + 0.5, rect[1] - bar + 0.5, pw, ph + bar);
-    c.beginPath(); c.moveTo(rect[0], rect[1] + 0.5); c.lineTo(rect[2], rect[1] + 0.5); c.stroke();
-    c.font = font(F.mono(400), Math.max(12, 20 * (pw / W) + 4)); c.fillStyle = rgba('bone', 0.85);
-    c.textBaseline = 'middle';
-    typed(c, 'localhost:5173/?lang=pt-BR', rect[0] + 14, rect[1] - bar / 2, prog(t, this.tWeb - 0.1, this.tWeb + 0.5), { caret: true });
-    c.globalAlpha = 1;
+    if (k < 1) this.listing(c, t, 1 - k);
+    c.font = font(F.mono(400), 16); c.fillStyle = rgba('ash', 1 - prog(t, this.tPage, this.tPage + 0.25));
+    c.fillText('BG_FRAG → a folha quadriculada do começo', PREVIEW.x0, PREVIEW.y0 + PREVIEW.h + 30);
+    drawBrowser(c, rect, { unfold, url: prog(t, this.tWeb - 0.1, this.tWeb + 0.6), t, alpha: winA, title: 'Aumento meu P(doom) · pt-BR', host: 'localhost:5173', path: '/?lang=pt-BR' });
+    comp.draw(renderer, L.upload(), out);
+    // the page: the clip, running on from where the preview had it
+    this.clips.render('open', this.previewS(t), R[0]!);
+    const cam = { x: lerp(PREVIEW.cam.x, W / 2, k), y: lerp(PREVIEW.cam.y, H / 2, k), zoom: lerp(PREVIEW.cam.zoom, 1, k) };
+    camPass(renderer, R[0]!.texture, out, { ...cam, rect, alpha: winA }, true);
+    const L2 = S().ui2; L2.clear(); const c2 = L2.ctx;
+    this.author(c2, t);
+    comp.draw(renderer, L2.upload(), out);
+    // the spark traces the name; on "No final" it leaves the name and runs down to the end of the ruler
+    return this.nameAndRun(renderer, out, t);
+  }
+
+  /** "Escritas por uma inteligência artificial:" — a comment typed where the name will go; the name fills in. */
+  private author(c: CanvasRenderingContext2D, t: number) {
     // "Escritas por uma inteligência artificial:" — a comment typed where the name will go
     c.font = font(F.mono(400), 24); c.fillStyle = rgba('ash', 0.9);
     c.textBaseline = 'alphabetic';
@@ -313,8 +341,9 @@ class B002 extends Block {
       c.fillText('Claude Opus 5.5', this.nameBox.x0, this.nameBox.y1);
       c.globalAlpha = 1;
     }
-    comp.draw(renderer, L.upload(), out);
-    // the spark traces it; on "No final" it leaves the name and runs down to the end of the ruler
+  }
+
+  private nameAndRun(renderer: THREE.WebGLRenderer, out: THREE.WebGLRenderTarget, t: number): BlockOut {
     const lb = S().lines; lb.clear();
     const kk = (t - this.tName) / 1.55;
     traceContours(lb, this.name, kk, t, { k0: 0, dur: 0.55, stagger: 0.035, width: 2.4, alpha: 1 - prog(t, this.tName + 1.8, this.tName + 2.3) });
