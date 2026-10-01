@@ -595,7 +595,8 @@ export default class LossScene extends Scene {
   override render(f: Frame, out: THREE.WebGLRenderTarget): PostOverrides {
     const { renderer } = this.ctx;
     const t = f.t;
-    const cm = this.camera(t);
+    // (pt-BR explainer, opt-in: another camera, e.g. riding the curve)
+    const cm: Cam = f.remix?.cam ?? this.camera(t);
     const tens = prog(t, this.tRoll + 0.25, this.T1, ease.inQuad);
     const shakeA = 7 * pulse(t, this.tSudden, 0.09) + 12 * pulse(t, this.tIn, 0.12) + 9 * pulse(t, this.tCut2, 0.1) + 7 * tens;
     const shake: [number, number] = [shakeA * noise1(t * 37, 1), shakeA * noise1(t * 41, 2)];

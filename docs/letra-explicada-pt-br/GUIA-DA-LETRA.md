@@ -73,7 +73,7 @@ Os horários seguem o vídeo em português. Os [comentários de osmarks, um dos 
 
 - **“Pós-Chinchilla, superdenso”** — O [estudo Chinchilla](https://arxiv.org/abs/2203.15556), da DeepMind, mostrou em 2022 que modelos menores, treinados com mais dados, podiam superar modelos maiores usando a mesma quantidade de computação. “Pós-Chinchilla” remete a esse equilíbrio. “Superdenso” sugere uma [rede densa](https://huggingface.co/blog/moe-transformers), que usa toda a rede para processar cada entrada.
 
-- **“Cem mil GPU”** — O verso imagina cem mil GPUs trabalhando juntas e destaca a escala dos recursos dedicados ao desenvolvimento de IA.
+- **“Cem mil GPU”** — O verso imagina cem mil GPUs trabalhando juntas e destaca a escala dos recursos dedicados ao desenvolvimento de IA. Em 2024, o supercomputador [Colossus](https://en.wikipedia.org/wiki/Colossus_(supercomputer)) chegou a esse número; em 2026, já passava de centenas de milhares.
 
 - **“RLHF deu chabu”** — [RLHF](https://openai.com/index/instruction-following/) significa *aprendizado por reforço com feedback humano*: avaliações de pessoas orientam o treino para favorecer respostas que elas preferem. Na letra, a técnica falha em manter o comportamento desejado — a máscara sorridente do shoggoth deixa de bastar.
 
@@ -83,6 +83,6 @@ Os horários seguem o vídeo em português. Os [comentários de osmarks, um dos 
 
 - **“Do pré-treino preditivo / ao auto-upgrade recursivo”** — No pré-treino, modelos como GPT aprendem a prever a próxima palavra ou parte de palavra de um texto. O verso imagina a passagem desse aprendizado para uma IA que melhora a própria capacidade de se aperfeiçoar, retomando o FOOM.
 
-- **“O que Ilya viu? Nunca vamos saber.”** — [Ilya Sutskever](https://pt.wikipedia.org/wiki/Ilya_Sutskever), cofundador da OpenAI, participou da decisão de afastar Sam Altman em 2023; Altman voltou dias depois. A pergunta virou meme, especulando sobre o que Ilya teria visto nos bastidores para motivar essa decisão.
+- **“O que Ilya viu? Nunca vamos saber.”** — [Ilya Sutskever](https://pt.wikipedia.org/wiki/Ilya_Sutskever), cofundador da OpenAI, participou da decisão de afastar Sam Altman em 2023; Altman voltou dias depois. A pergunta virou meme, especulando sobre o que Ilya teria visto nos bastidores para motivar essa decisão. A letra é de 2024; em novembro de 2025, veio a público o [depoimento de Sutskever](https://decrypt.co/347349/inside-deposition-showed-openai-nearly-destroyed-itself) no processo Musk v. Altman: o motivo apresentado ali é um memorando de 52 páginas com queixas sobre a conduta de Altman, e não uma descoberta técnica.
 
 - **“Foi tudo só pra inglês ver?”** — A pergunta pode ser lida como uma dúvida sobre a sinceridade do discurso em torno da IA: quanto das promessas, dos alertas e das garantias de segurança corresponde à realidade?

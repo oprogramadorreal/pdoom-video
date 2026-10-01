@@ -656,7 +656,8 @@ export default class OpenScene extends Scene {
     const { renderer, comp } = this.ctx;
     const t = f.t;
     const B = this.B;
-    const c = this.cam(t);
+    // (pt-BR explainer, opt-in: another camera over the sheet)
+    const c: Cam = f.remix?.cam ?? this.cam(t);
     const trem = this.tremor(t);
     const jit = (x: number, y: number): [number, number] => {
       const s = this.w2s(c, x, y);
@@ -687,7 +688,7 @@ export default class OpenScene extends Scene {
     const T = this.text; T.clear();
     this.drawNotes(t, c, T.ctx, trem);
     this.drawTable(t, c, T.ctx, trem);
-    this.drawLyrics(t, c, T.ctx, trem);
+    if (f.remix?.lyrics !== false) this.drawLyrics(t, c, T.ctx, trem);
     this.drawSurprisal(t, c, T.ctx);
     comp.draw(renderer, T.upload(), out);
 

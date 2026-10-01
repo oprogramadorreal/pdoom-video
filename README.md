@@ -1,28 +1,46 @@
 # I'm Upping My P(doom) — music video
 
+> **This is a copy of [mexicat/pdoom-video](https://github.com/mexicat/pdoom-video) by Giacomo Magnanini**, who made the original video and the code behind it. I cloned it into this account to add a Brazilian Portuguese edition and a narrated pt-BR explainer of the lyrics. It is not a GitHub fork, so GitHub does not show the link to the original. [About this copy](#about-this-copy) lists what is original and what was added.
+
 A generative, code-rendered music video with word-synced karaoke typography. Every frame is a deterministic function of song time, so the live preview in the browser and the offline 1080p60 (or 4K60) export are identical.
 
-**Watch it in 4K on YouTube:** https://www.youtube.com/watch?v=5EoO5413dBY
+**Watch the original video in 4K on YouTube:** https://www.youtube.com/watch?v=5EoO5413dBY
 
 The YouTube upload is an earlier render: it averages only 4 sub-frames per frame for motion blur, so fast motion shows stepped copies, and YouTube's compression smears the film grain. For the best version, render it locally (see [Render the video](#render-the-video)): the current code picks up to 324 sub-frames per frame where the motion needs them.
 
-The video was made with Claude (Opus 5.5) in Claude Code: the concept and treatment, the lyric alignment and audio analysis, the renderer, every scene and the renders were all worked out in conversation with Claude.
+The original video was made with Claude (Opus 5.5) in Claude Code: the concept and treatment, the lyric alignment and audio analysis, the renderer, every scene and the renders were all worked out in conversation with Claude.
 
 The song is not ours: see [Credits](#credits) for who wrote and made it.
 
 The concept, style bible and plate-by-plate treatment are in [`docs/TREATMENT.md`](docs/TREATMENT.md). The engine and scene API are documented in [`docs/ENGINE.md`](docs/ENGINE.md).
 
+There is also a Brazilian Portuguese edition, with its own recording, timing data and translated artwork (see [Brazilian Portuguese](#brazilian-portuguese)). It has a longer cut, 12:37.7, that adds a narrated explainer of the lyrics after the clip: see [The full pt-BR video](#the-full-pt-br-video).
+
+## About this copy
+
+- **Original:** [mexicat/pdoom-video](https://github.com/mexicat/pdoom-video), by Giacomo Magnanini and contributors. Everything up to commit [`bdbad53`](https://github.com/mexicat/pdoom-video/commit/bdbad537a7b7af3213475651774030c47568c181) (28 September 2026) comes from there, with its git history: the English video, the renderer, the scenes, the analysis tools and the docs.
+- **Added here:** the Brazilian Portuguese edition (recording, lyrics, timing data, translated scene artwork, and a `--lang pt-BR` option in the preview and the renderer) and the narrated pt-BR lyrics explainer. To switch languages, the scenes and the render script were changed; the English edit is still the default. `git log bdbad53..` lists every change.
+- **This README** is the original one, extended to cover the additions.
+- **Videos:** the YouTube video linked above is the original. My pt-BR video and its explainer will be posted on my own YouTube channel, with a link back to this repository.
+- **License:** the original [MIT License](LICENSE) and its copyright notice are kept unchanged.
+
 ## Layout
 
 - `audio/pdoom.mp3` — the song (the Claude-Pop version, see Credits).
+- `audio/pdoom-pt-BR.mp3` — the Brazilian Portuguese recording (see Credits).
+- `audio/letra-explicada-pt-br/` — the narration of the pt-BR lyrics explainer: one MP3 per chapter, the background track and the mix (`mixagem.mp3`).
 - `lyrics/lyrics.src.js` — the original line-level lyrics (approximate timings).
 - `analysis/` — Python (uv) tools that produced the timing data: Demucs stem separation, CTC forced alignment cross-checked with Whisper, beat/downbeat/onset analysis. See `analysis/align.py` and `analysis/analyze.py`.
 - `data/lyrics.json` — word-level (and some syllable-level) lyric timings.
 - `data/audio.json` — tempo (132.007 BPM), beats, downbeats, sections, drum/vocal onsets and loudness envelopes.
+- `lyrics/lyrics.src.pt-br.js`, `data/lyrics.pt-br.json`, `data/audio.pt-br.json` — the same for the Brazilian Portuguese recording.
+- `docs/letra-explicada-pt-br/` — the pt-BR lyrics explainer: lyrics guide, narration script and storyboard.
+- `data/narracao.pt-br.json` — the explainer's narration (blocks and word timings), the background track's beats and the voice's loudness.
 - `app/` — the renderer: TypeScript + three.js, bun + Vite.
   - `src/engine/` — renderer core: timeline playback, post-processing (bloom, halation, grain), typography (Archivo, IBM Plex Mono, Cormorant Garamond, single-stroke plotter fonts), GPU line batches, HUD.
   - `src/scenes/` — one module per plate (`open`, `loss`, `prompt`, `hook`, `room`, `shoggoth`, `spacetime`, `ascent`, `bureau`, `leftturn`, `paperclips`, `fuse`, `stack`, `dense`, `loom`, `ilya`, `outro`) plus shared motifs.
   - `src/timeline.ts` — the edit: scene windows anchored to lyric lines and snapped to the beat grid.
+  - `src/letra/` — the pt-BR lyrics explainer: its timeline, the ruler, the blocks (`c00.ts` … `c06.ts`) and the spliced soundtrack.
   - `scripts/render.ts` — offline renderer (headless Chrome → raw frames over WebSocket → ffmpeg).
 - `out/` — renders (not in the repo).
 
@@ -39,6 +57,17 @@ bunx vite
 ```
 
 Open http://localhost:5173 and use the keys below. `?t=23` starts at a given time.
+
+| Key | Action |
+|---|---|
+| space | play / pause |
+| ← / → | seek ±1 s (±5 s with shift) |
+| `,` / `.` | step one frame |
+| `[` / `]` | previous / next scene |
+| `l` | loop the current scene |
+| `h` | hide the UI |
+
+The preview renders in real time on a recent Mac. The export is not real time and is heavier.
 
 ### Brazilian Portuguese
 
@@ -58,16 +87,8 @@ All rendering modes accept `--lang pt-BR`, including `stills`, `sheet`, `plates`
 After changing translated scenes, run `bun run plates:pt-br` to regenerate the Portuguese rewind images.
 See [the pt-BR guide](docs/PT-BR.md) for generation, validation, terminology and draft-render commands.
 
-| Key | Action |
-|---|---|
-| space | play / pause |
-| ← / → | seek ±1 s (±5 s with shift) |
-| `,` / `.` | step one frame |
-| `[` / `]` | previous / next scene |
-| `l` | loop the current scene |
-| `h` | hide the UI |
-
-The preview renders in real time on a recent Mac. The export is not real time and is heavier.
+The full pt-BR video, with the lyrics explainer after the clip, opens at
+**http://localhost:5173/?lang=pt-BR&full=1**: see [The full pt-BR video](#the-full-pt-br-video).
 
 ## Render the video
 
@@ -92,6 +113,32 @@ bun scripts/render.ts video --scale 2 --samples auto --shutter 0.2 --x264 aq-mod
 - **Encoding:** the film grain is rendered per 4K pixel, which is expensive to encode: at the default CRF 16 the file runs at about 670 Mbit/s (13 GB for the song, 8× the 1080p file), `--crf 18` gives about 450 Mbit/s and `--crf 20` about 230 Mbit/s.
 - `--scale 2` works with every mode. `stills` then saves full-resolution PNGs, and `perf` measures 4K frame times. In the browser preview, add `&scale=2` to the URL.
 
+## The full pt-BR video
+
+The full pt-BR video (12:37.7) has three parts:
+
+- the pt-BR clip, unchanged;
+- a ~9:40 narrated explainer that goes back through the lyrics verse by verse;
+- the clip starting over under the YouTube end screen.
+
+It exists only with `--lang pt-BR --full`. Without `--full`, `--lang pt-BR` is still the clip alone. The script and the storyboard are in [`docs/letra-explicada-pt-br/ROTEIRO.md`](docs/letra-explicada-pt-br/ROTEIRO.md), and the code is in `app/src/letra/`.
+
+**Preview:** run `bun run dev` in `app` and open **http://localhost:5173/?lang=pt-BR&full=1** (add `&t=300` to start at 5:00).
+
+**Render at full quality** (1920×1080, 60 fps, adaptive motion blur, AAC audio):
+
+```sh
+cd app
+bun scripts/render.ts verify --lang pt-BR --full    # optional: checks the whole video before a long render
+bun scripts/render.ts video --lang pt-BR --full --samples auto --shutter 0.2 --out ../out/pdoom-pt-BR-letra-explicada.mp4
+```
+
+- **Faster draft:** `--fps 30 --samples 1 --preset veryfast --crf 24` renders it in about 35 minutes on an RTX 5070 Laptop GPU.
+- **4K:** add `--scale 2 --x264 aq-mode=3:rc-lookahead=30` (see [4K](#4k)).
+- **In parts:** `--from`/`--to` render a part, with its sound.
+
+Block 01.1 shows GPT-4's unicorns from the *Sparks of AGI* paper, which are not in the repo: run `uv run analysis/figura_gpt4.py` once before rendering to extract them from the paper (without it, a marked placeholder stands in; see "Imagens de fora" in the ROTEIRO).
+
 ## Regenerate the timing data
 
 The committed `data/*.json` files are all the renderer needs. Regenerating them needs the stems and intermediates, which are not in the repo:
@@ -109,9 +156,12 @@ The models download about 4 GB of weights into `analysis/.cache/`; delete that f
 
 ## Credits
 
+- **Video and code:** Giacomo Magnanini ([mexicat/pdoom-video](https://github.com/mexicat/pdoom-video)), with fixes from Anwin Sharon and HEOJUNFO. See [About this copy](#about-this-copy).
 - **Song:** "I'm Upping My P(doom)". The lyrics are by [osmarks](https://docs.osmarks.net/hypha/p%28doom%29_song_objectively_correct_interpretation), built on an opening verse and chorus by [MusicPerson](https://www.udio.com/creators/MusicPerson), with lines suggested on the EleutherAI Discord and help from Claude on the outro and final chorus. The original was generated with Udio and released in November 2024 ([YouTube](https://www.youtube.com/watch?v=uEB5E67vcPA)). This video uses the "Claude-Pop" version made with Suno, posted by [deckard (@slimer48484)](https://x.com/slimer48484/status/2097752569212756134) in September 2026.
+- **Brazilian Portuguese edition:** a Portuguese version of the lyrics, recorded with Suno (`audio/pdoom-pt-BR.mp3`).
+- **Lyrics explainer (pt-BR):** the narration script was written with Claude from the Portuguese lyrics guide, starting from a first draft generated with GPT-6 Astra. The voice was generated with ElevenLabs, and the background track was made with Suno.
 - **Fonts:** Archivo, IBM Plex Mono and Cormorant Garamond (SIL Open Font License). Single-stroke EMS and Hershey fonts via the `hersheytext` package (OFL / public domain).
 
 ## License
 
-The code is released under the [MIT License](LICENSE). The fonts in `app/public/fonts/` keep their own licenses (see Credits), and the song and lyrics (`audio/`, `lyrics/`, `data/lyrics.json`) are not covered by it: they belong to their authors (see Credits).
+The code is released under the [MIT License](LICENSE). The fonts in `app/public/fonts/` keep their own licenses (see Credits), and the songs, the narration and the lyrics (`audio/`, `lyrics/`, `data/lyrics.json`, `data/lyrics.pt-br.json`) are not covered by it: they belong to their authors (see Credits).

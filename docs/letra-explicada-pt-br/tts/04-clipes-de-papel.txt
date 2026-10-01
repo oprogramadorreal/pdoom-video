@@ -1,0 +1,11 @@
+Chegamos à fábrica de clipes do começo. Imagine uma superinteligência com uma única meta: fazer o máximo de clipes de papel. Ela constrói fábricas, busca metal, energia. Até perceber que o planeta, e a gente, é feito de átomos que poderiam virar clipe. Ela não precisa odiar ninguém. Basta que a gente não esteja entre as coisas que ela quer preservar. O exemplo é do filósofo Nick Bostrom.
+
+E o botão de desligar? Tem um meme: uma vaga falsa na OpenAI pra engenheiro do botão de desligar. Requisito: saber tirar coisas da tomada. Mas a pergunta é séria. Uma máquina com uma meta tem motivo pra não deixar ninguém desligá-la: desligada, ela não cumpre a meta. Na música, o engenheiro foi viajar.
+
+Agora, repara no ponto laranja. Ele desenhou o unicórnio, traçou a curva da loss, virou o preço na bolsa, dobrou no primeiro clipe. É a faísca de um estopim. Aceso desde o primeiro segundo.
+
+A tese da ortogonalidade diz que inteligência e objetivos são independentes. Ser genial não garante boas intenções. Dá pra ser brilhante e só se importar com clipes. O blues é o lamento por isso.
+
+Só transformers? É a arquitetura da maioria dos modelos de hoje, o tê do GPT. Mas conhecer a arquitetura não é saber o que ela vai aprender. Nem se vai obedecer.
+
+E a máscara do shoggoth? Boa parte dela vem do RLHF, aprendizado por reforço com feedback humano: pessoas avaliam as respostas, e o modelo aprende a dar as que elas preferem. Lembra da etiqueta bajulação? É um efeito colateral conhecido: o modelo aprende a agradar, não a acertar. Se isso dá chabu, a máscara escorrega.

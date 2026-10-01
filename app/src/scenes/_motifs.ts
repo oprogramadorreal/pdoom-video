@@ -47,8 +47,15 @@ export function sparkParticles(lb: LineBatch, t: number, headAt: (t: number) => 
   }
 }
 
+/**
+ * Where the brightest spark head of a render was drawn (the x, y given to sparkHead): recorded only while `on`
+ * (the pt-BR explainer turns it on around a clip frame to find its spark); drawing is unaffected.
+ */
+export const sparkProbe = { on: false, x: 0, y: 0, w: 0 };
+
 /** The spark head: a white-hot core and an orange halo (draw after the line it drags). 2D LineBatch. */
 export function sparkHead(lb: LineBatch, x: number, y: number, t: number, scale = 1, intensity = 1) {
+  if (sparkProbe.on && scale * intensity > sparkProbe.w) { sparkProbe.x = x; sparkProbe.y = y; sparkProbe.w = scale * intensity; }
   const flick = 0.85 + 0.15 * Math.sin(t * 91.7) * Math.sin(t * 57.3);
   const I = intensity * flick;
   // halo: a few concentric short segments (dots) with decreasing intensity
@@ -65,6 +72,7 @@ export function sparkHead(lb: LineBatch, x: number, y: number, t: number, scale 
 
 /** Canvas2D version of the spark head (for scenes drawing in 2D layers). Use with additive-ish bloom. */
 export function sparkHead2D(c: CanvasRenderingContext2D, x: number, y: number, t: number, scale = 1) {
+  if (sparkProbe.on && scale > sparkProbe.w) { sparkProbe.x = x; sparkProbe.y = y; sparkProbe.w = scale; }
   const g = c.createRadialGradient(x, y, 0, x, y, 22 * scale);
   g.addColorStop(0, 'rgba(255,250,240,1)');
   g.addColorStop(0.18, 'rgba(255,170,90,0.95)');

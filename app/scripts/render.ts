@@ -9,11 +9,14 @@
 //            --samples auto picks the count per frame (4, 12, 36, 108 or 324, see Engine.render)
 //   --scale N (all modes): render at N× the 1920x1080 layout (--scale 2 = true 3840x2160); stills are then saved
 //            full-res from the pixel buffer, videos are encoded at the physical size.
+//   --full (with --lang pt-BR, all modes): the full pt-BR video — the clip, the narrated lyrics explainer and the
+//            clip restarting under the end screen (docs/letra-explicada-pt-br/). Without it pt-BR is the clip alone.
 // Uses the Vite dev server at --url (default http://localhost:5173); starts a private one if unreachable.
 import { chromium, type Page } from 'playwright-core';
 import { mkdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { PT_END_FADE_SECONDS } from '../src/locale';
+import type { Segment } from '../src/letra/soundtrack';
 
 const argv = process.argv.slice(2);
 const mode = argv[0] ?? 'stills';
@@ -23,6 +26,8 @@ const language = opt('lang', 'en')!.toLowerCase();
 if (!['en', 'pt-br'].includes(language)) throw new Error('--lang must be en or pt-BR');
 const PT = language === 'pt-br';
 const LANG = PT ? 'pt-BR' : 'en';
+const FULL = flag('full');
+if (FULL && !PT) throw new Error('--full is the pt-BR video with its explainer: use it with --lang pt-BR');
 const APP = path.resolve(import.meta.dir, '..');
 const SCALE = Math.max(1, Math.round(+opt('scale', '1')!));
 const OW = 1920 * SCALE, OH = 1080 * SCALE; // output size
@@ -60,7 +65,7 @@ async function openPage(url: string) {
   page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}`));
   page.on('response', (r) => { if (r.status() >= 400) logs.push(`[http ${r.status()}] ${r.url()}`); });
   const only = opt('only');
-  await page.goto(`${url}/?export=1&lang=${LANG}${only ? `&only=${only}` : ''}${SCALE !== 1 ? `&scale=${SCALE}` : ''}`);
+  await page.goto(`${url}/?export=1&lang=${LANG}${FULL ? '&full=1' : ''}${only ? `&only=${only}` : ''}${SCALE !== 1 ? `&scale=${SCALE}` : ''}`);
   await page.waitForFunction(() => (window as any).__pdoom?.ready || (window as any).__pdoom?.error, null, { timeout: 120000 });
   const err = await page.evaluate(() => (window as any).__pdoom.error);
   if (err) { await browser.close(); throw new Error(`app failed to boot:\n${err}\n${logs.join('\n')}`); }
@@ -108,18 +113,56 @@ async function sheet(page: Page, times: number[], cols: number, out: string) {
   await Bun.write(out, Buffer.from(dataUrl.split(',')[1]!, 'base64'));
 }
 
+/**
+ * ffmpeg inputs and filter for the full video's sound over [from, to): the soundtrack's segments (the song,
+ * the mixagem, the song again) trimmed and spliced with silence between them — no mixing, each file as it is,
+ * with only the segments' own fade-outs (the clip's end fade, the end screen's).
+ */
+function spliceAudio(segs: Segment[], from: number, to: number) {
+  const files = [...new Set(segs.map((s) => s.url))];
+  const inputs = files.flatMap((u) => ['-i', path.join(ROOT, u)]);
+  const parts: string[] = [];
+  const labels: string[] = [];
+  let t = from, k = 0;
+  const fmt = 'aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo';
+  const silence = (d: number) => { parts.push(`anullsrc=r=48000:cl=stereo,atrim=duration=${d.toFixed(6)},${fmt}[p${k}]`); labels.push(`[p${k++}]`); };
+  for (const s of segs) {
+    const a = Math.max(t, s.at), b = Math.min(to, s.at + s.dur);
+    if (b <= a) continue;
+    if (a > t + 1e-6) silence(a - t);
+    const fx: string[] = [];
+    if (s.fadeOut) {
+      const fadeAt = s.at + s.dur - s.fadeOut; // video time where the fade starts
+      if (a >= fadeAt) {
+        const remaining = s.at + s.dur - a;
+        fx.push(`volume=${Math.min(1, remaining / s.fadeOut)}`, `afade=t=out:st=0:d=${remaining.toFixed(6)}`);
+      } else if (b > fadeAt) fx.push(`afade=t=out:st=${(fadeAt - a).toFixed(6)}:d=${s.fadeOut}`);
+    }
+    const i = files.indexOf(s.url) + 1; // input 0 is the video pipe
+    parts.push(`[${i}:a]atrim=start=${(s.from + a - s.at).toFixed(6)}:end=${(s.from + b - s.at).toFixed(6)},asetpts=PTS-STARTPTS,${fmt}${fx.length ? ',' + fx.join(',') : ''}[p${k}]`);
+    labels.push(`[p${k++}]`);
+    t = b;
+  }
+  if (to > t + 1e-6) silence(to - t);
+  parts.push(`${labels.join('')}concat=n=${labels.length}:v=0:a=1[aout]`);
+  return { inputs, filter: parts.join(';') };
+}
+
 async function video(page: Page, from: number, to: number, fps: number, out: string) {
   if (!existsSync(path.dirname(out))) mkdirSync(path.dirname(out), { recursive: true });
   const crf = opt('crf', '16')!;
   const audio = path.join(ROOT, PT ? 'audio/pdoom-pt-BR.mp3' : 'audio/pdoom.mp3');
+  const segs: Segment[] | null = FULL ? await page.evaluate(() => (window as any).__pdoom.soundtrack) : null;
+  const splice = segs && !flag('noaudio') ? spliceAudio(segs, from, to) : null;
   const args = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${OW}x${OH}`, '-r', String(fps), '-i', 'pipe:0'];
-  if (!flag('noaudio')) args.push('-ss', String(from), '-t', String(to - from), '-i', audio);
+  if (splice) args.push(...splice.inputs, '-filter_complex', splice.filter, '-map', '0:v', '-map', '[aout]');
+  else if (!flag('noaudio')) args.push('-ss', String(from), '-t', String(to - from), '-i', audio);
   // Frames are sRGB (toSRGB in the final pass): convert with the BT.709 matrix and tag the stream,
   // otherwise ffmpeg converts with BT.601 while players and YouTube decode untagged HD as BT.709.
   // scale tags the matrix and range; primaries and transfer need setparams (the -color_* output flags don't reach the stream).
   args.push('-vf', 'vflip,scale=out_color_matrix=bt709,setparams=color_primaries=bt709:color_trc=bt709', '-c:v', 'libx264', '-preset', opt('preset', 'slow')!, '-crf', crf, '-pix_fmt', 'yuv420p', '-tune', 'grain', '-x264-params', opt('x264', 'aq-mode=3')!);
   if (!flag('noaudio')) args.push('-c:a', 'aac', '-b:a', '320k', '-shortest');
-  if (PT && !flag('noaudio')) {
+  if (PT && !FULL && !flag('noaudio')) {
     const duration: number = await page.evaluate(() => (window as any).__pdoom.duration);
     const remaining = duration - from;
     // Match preview volume; source MP3 stays byte-for-byte unchanged. Handles
@@ -172,18 +215,37 @@ try {
       for (const w of p.engine.lyrics.words) for (const t of [w.start - 1 / 60, w.start + 1 / 60, (w.start + w.end) / 2, w.end]) times.add(t);
       for (const e of p.timeline) for (const t of [e.start - 1 / 60, e.start + 1 / 60, e.end - 1 / 60]) times.add(t);
       for (let t = 0; t < p.duration; t += 0.5) times.add(t);
+      // the explainer: every narration word too (images change on them)
+      if (p.full) for (const w of p.narration.words) for (const t of [w.start - 1 / 60, w.start + 1 / 60, (w.start + w.end) / 2]) times.add(t);
       let frames = 0;
       for (const t of [...times].sort((a, b) => a - b)) {
         if (t < 0 || t >= p.duration) continue;
         p.still(t); frames++;
         if (frames % 20 === 0) await new Promise((r) => setTimeout(r, 0));
       }
-      const audio = new Audio(p.audioUrl);
-      await new Promise<void>((resolve, reject) => { audio.onloadedmetadata = () => resolve(); audio.onerror = () => reject(new Error('Audio asset failed')); });
-      if (Math.abs(audio.duration - p.duration) > 0.1) throw new Error(`Audio duration ${audio.duration} != timeline ${p.duration}`);
-      return { language: p.language, frames, duration: p.duration, audioDuration: audio.duration, timeline: p.timeline, errors: p.errors };
+      const meta = (url: string) => new Promise<number>((resolve, reject) => {
+        const a = new Audio(url);
+        a.onloadedmetadata = () => resolve(a.duration); a.onerror = () => reject(new Error(`Audio asset failed: ${url}`));
+      });
+      if (p.full) {
+        // the picture must run exactly as long as the spliced sound, and every segment must fit in its file
+        const segs = p.soundtrack as { url: string; at: number; from: number; dur: number }[];
+        const end = segs[segs.length - 1]!.at + segs[segs.length - 1]!.dur;
+        if (Math.abs(end - p.duration) > 1e-6) throw new Error(`Soundtrack ${end} s != timeline ${p.duration} s`);
+        const tl = p.timeline as { id: string; start: number; end: number }[];
+        for (let t = 0; t < p.duration; t += 0.05) if (!tl.some((e) => t >= e.start && t < e.end)) throw new Error(`No scene at ${t.toFixed(2)} s`);
+        const files: Record<string, number> = {};
+        for (const s of segs) {
+          const d = files[s.url] ??= await meta(s.url);
+          if (s.from + s.dur > d + 0.05) throw new Error(`${s.url}: segment ends at ${s.from + s.dur} s, the file at ${d} s`);
+        }
+        return { language: p.language, full: true, frames, duration: p.duration, soundtrack: segs, fileDurations: files, timeline: p.timeline, errors: p.errors };
+      }
+      const audioDuration = await meta(p.audioUrl);
+      if (Math.abs(audioDuration - p.duration) > 0.1) throw new Error(`Audio duration ${audioDuration} != timeline ${p.duration}`);
+      return { language: p.language, frames, duration: p.duration, audioDuration, timeline: p.timeline, errors: p.errors };
     });
-    const file = path.resolve(opt('out', path.join(ROOT, `out/verify-${LANG}.json`))!);
+    const file = path.resolve(opt('out', path.join(ROOT, `out/verify-${LANG}${FULL ? '-full' : ''}.json`))!);
     if (!existsSync(path.dirname(file))) mkdirSync(path.dirname(file), { recursive: true });
     const browserErrors = logs.filter((l) => /^\[(error|pageerror|http )/.test(l));
     const result = { ...report, browserErrors, passed: report.errors.length === 0 && browserErrors.length === 0 };
@@ -249,7 +311,7 @@ try {
     console.log(`frames ${r.n}  avg ${r.avg.toFixed(1)}ms  p50 ${r.p50.toFixed(1)}  p95 ${r.p95.toFixed(1)}  max ${r.max.toFixed(1)}  sub-frames ${hist(r.used)}`);
   } else if (mode === 'video') {
     const dur: number = await page.evaluate(() => (window as any).__pdoom.duration);
-    await video(page, +opt('from', '0')!, +opt('to', String(dur))!, +opt('fps', '60')!, path.resolve(opt('out', path.join(ROOT, PT ? 'out/pdoom-pt-BR.mp4' : 'out/pdoom.mp4'))!));
+    await video(page, +opt('from', '0')!, +opt('to', String(dur))!, +opt('fps', '60')!, path.resolve(opt('out', path.join(ROOT, FULL ? 'out/pdoom-pt-BR-letra-explicada.mp4' : PT ? 'out/pdoom-pt-BR.mp4' : 'out/pdoom.mp4'))!));
   }
   const finalErrors: string[] = await page.evaluate(() => (window as any).__pdoom.errors);
   if (finalErrors.length) throw new Error('SCENE ERRORS:\n' + finalErrors.join('\n'));

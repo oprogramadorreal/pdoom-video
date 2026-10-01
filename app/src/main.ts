@@ -2,10 +2,14 @@
 import { Engine, type AdaptiveSampling } from './engine/engine';
 import { PW, PH, SCALE } from './engine/gl';
 import { makeTimeline } from './timeline';
-import { AUDIO_URL, LANG, PT, PT_END_FADE_SECONDS, sceneName, tr } from './locale';
+import { AUDIO_URL, FULL, LANG, PT, PT_END_FADE_SECONDS, sceneName, tr } from './locale';
+import { Narration } from './letra/narration';
+import { narration, setNarration } from './letra/block';
+import { makeExtension } from './letra/timeline';
+import { soundtrack, soundtrackEnd, SoundtrackPlayer, type Segment } from './letra/soundtrack';
 
 document.documentElement.lang = LANG;
-document.title = tr("I'm Upping My P(doom)", 'Aumento meu P(doom)');
+document.title = FULL ? 'Aumento meu P(doom) · A letra explicada' : tr("I'm Upping My P(doom)", 'Aumento meu P(doom)');
 
 const params = new URLSearchParams(location.search);
 const EXPORT = params.has('export');
@@ -17,17 +21,25 @@ const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.width = PW;
 canvas.height = PH;
 
-const engine = new Engine(canvas, makeTimeline);
+// the full pt-BR video (?full=1): the clip, then the explainer's blocks and the clip restarting
+const engine = new Engine(canvas, FULL ? (ly, au) => [...makeTimeline(ly, au), ...makeExtension(narration())] : makeTimeline);
 
 declare global {
   interface Window { __pdoom: any }
 }
 
 let TIMELINE: typeof engine.timeline = [];
+/** The full video's sound: the song, the mixagem and the song again (null for the clip alone). */
+let SOUNDTRACK: Segment[] | null = null;
 
 async function boot() {
   const onlySet = ONLY ? new Set(ONLY.split(',')) : null;
+  if (FULL) {
+    setNarration(await Narration.load());
+    SOUNDTRACK = soundtrack(narration().mixDuration);
+  }
   await engine.init(onlySet ? (e) => onlySet.has(e.id) : undefined);
+  if (SOUNDTRACK) engine.durationOverride = soundtrackEnd(SOUNDTRACK);
   TIMELINE = engine.timeline;
   if (EXPORT) setupExport();
   else setupPlayer();
@@ -40,6 +52,9 @@ function setupExport() {
     engine,
     language: LANG,
     audioUrl: AUDIO_URL,
+    full: FULL,
+    soundtrack: SOUNDTRACK,
+    narration: FULL ? narration() : null,
     duration: engine.duration,
     errors: engine.errors,
     /** Output size in px (1920x1080 times scale); stream() sends frames of width*height*4 bytes. */
@@ -101,6 +116,7 @@ function setupExport() {
 
 // ------------------------------------------------------------------ preview player
 function setupPlayer() {
+  if (SOUNDTRACK) return setupFullPlayer(SOUNDTRACK);
   const audio = new Audio(AUDIO_URL);
   audio.preload = 'auto';
   const ui = document.getElementById('ui')!;
@@ -179,6 +195,76 @@ function setupPlayer() {
       for (const u of payload.updates ?? []) {
         const m = /scenes\/([\w-]+)\.ts/.exec(u.path ?? '');
         if (m) for (const e of TIMELINE) if (e.id === m[1] || (e as any).file === m[1]) engine.reload(e.id);
+      }
+    });
+  }
+}
+
+/** Preview of the full pt-BR video: the same player, with the spliced soundtrack as its clock. */
+function setupFullPlayer(segs: Segment[]) {
+  const track = new SoundtrackPlayer(segs);
+  const ui = document.getElementById('ui')!;
+  const scrub = document.getElementById('scrub') as HTMLInputElement;
+  const info = document.getElementById('info')!;
+  const marks = document.getElementById('marks')!;
+  const errs = document.getElementById('errs')!;
+  scrub.max = String(engine.duration);
+  scrub.step = '0.001';
+  scrub.setAttribute('aria-label', 'Posição no vídeo');
+  canvas.setAttribute('aria-label', 'Reproduzir / pausar');
+  if (engine.errors.length) { errs.textContent = engine.errors.join('\n\n'); errs.style.display = 'block'; }
+  for (const e of TIMELINE) {
+    const m = document.createElement('div');
+    m.className = 'mark';
+    m.style.left = `${(e.start / engine.duration) * 100}%`;
+    m.style.width = `${((e.end - e.start) / engine.duration) * 100}%`;
+    m.title = `${sceneName(e.id)} ${e.start.toFixed(2)}–${e.end.toFixed(2)}`;
+    m.textContent = sceneName(e.id);
+    m.onclick = () => seek(e.start);
+    marks.appendChild(m);
+  }
+  let loop: [number, number] | null = null;
+  const seek = (x: number) => track.seek(Math.max(0, Math.min(engine.duration - 0.001, x)));
+  seek(FROM ?? 0);
+  const toggle = () => (track.playing ? track.pause() : track.play());
+  canvas.onclick = toggle;
+  scrub.oninput = () => seek(parseFloat(scrub.value));
+  window.addEventListener('keydown', (ev) => {
+    const t = track.now();
+    if (ev.key === ' ') { ev.preventDefault(); toggle(); }
+    if (ev.key === 'ArrowRight') seek(t + (ev.shiftKey ? 5 : 1));
+    if (ev.key === 'ArrowLeft') seek(t - (ev.shiftKey ? 5 : 1));
+    if (ev.key === '.') seek(t + 1 / 60);
+    if (ev.key === ',') seek(t - 1 / 60);
+    if (ev.key === 'l') { const e = TIMELINE.find((x) => t >= x.start && t < x.end); loop = loop ? null : e ? [e.start, e.end] : null; }
+    if (ev.key === 'h') ui.classList.toggle('hidden');
+    if (ev.key === ']') { const e = TIMELINE.find((x) => x.start > t + 0.01); if (e) seek(e.start); }
+    if (ev.key === '[') { const es = TIMELINE.filter((x) => x.start < t - 0.3); const e = es[es.length - 1]; if (e) seek(e.start); }
+  });
+  let frames = 0, fpsT = performance.now(), fps = 0;
+  const tick = () => {
+    track.sync();
+    let t = track.now();
+    if (loop && t >= loop[1]) { seek(loop[0]); t = track.now(); }
+    engine.render(Math.min(t, engine.duration - 0.001), 1 / 60);
+    scrub.value = String(t);
+    frames++;
+    const now = performance.now();
+    if (now - fpsT > 500) { fps = (frames * 1000) / (now - fpsT); frames = 0; fpsT = now; }
+    const e = TIMELINE.find((x) => t >= x.start && t < x.end);
+    const w = narration().words.find((x) => t >= x.start - 0.05 && t < x.end + 0.3);
+    const l = engine.lyrics.lineAt(t);
+    const said = e?.id.startsWith('x') ? (w ? `“${w.w}”` : '') : l ? `“${l.text}”` : '';
+    info.textContent = `${t.toFixed(2)}s  [${e ? sceneName(e.id) : '—'}]  ${fps.toFixed(0)}fps   ${said}${loop ? '  REPETIR' : ''}`;
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  if (import.meta.hot) {
+    import.meta.hot.on('vite:afterUpdate', (payload: any) => {
+      for (const u of payload.updates ?? []) {
+        if (/letra\//.test(u.path ?? '')) for (const e of TIMELINE) if (e.id.startsWith('x')) engine.reload(e.id);
+        const m = /scenes\/([\w-]+)\.ts/.exec(u.path ?? '');
+        if (m) for (const e of TIMELINE) if (e.id === m[1]) engine.reload(e.id);
       }
     });
   }

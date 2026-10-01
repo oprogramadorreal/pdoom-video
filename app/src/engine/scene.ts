@@ -53,6 +53,11 @@ export interface Frame {
   tin: number;
   /** 0..1 progress through the overlap with the next scene (0 when not overlapping). */
   tout: number;
+  /**
+   * Opt-in variations for a scene re-rendered by the pt-BR explainer (another camera, parts hidden, the
+   * lyric left out...). Absent in the clip: every scene must render exactly as before without it.
+   */
+  remix?: Record<string, any>;
 }
 
 export type PostOverrides = Partial<PostParams>;

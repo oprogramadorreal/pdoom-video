@@ -188,7 +188,7 @@ export default class Ascent extends Scene {
     c.lineJoin = 'round';
     const fadeOut = 1 - prog(t, tb + 0.12, tb + 0.4, ease.inQuad);
     const appear = prog(t, this.ctx.start - 0.05, this.ctx.start + 0.12);
-    if (fadeOut > 0) {
+    if (fadeOut > 0 && !f.remix?.bare) { // (opt-in: the YouTube thumbnail has its own title)
       for (const g of lay.glyphs) {
         const wi = charWord[g.i]!;
         if (wi < 0 || g.ch === ' ') continue;
@@ -221,7 +221,7 @@ export default class Ascent extends Scene {
     }
     // ---- BOOM / BUM!: the word rides the shockwave rings, repeated around each ring
     const boomW = wordOf(line, 'boom');
-    if (t >= boomW.start) {
+    if (t >= boomW.start && !f.remix?.bare) {
       const bf = F.archivo(125, 900);
       const ctr = this.eyeToPx(0, 0, cam);
       for (let i = 0; i < 3; i++) {
